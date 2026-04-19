@@ -34,6 +34,13 @@ export default function EditorPage() {
     setSelected(null);
   };
 
+  const addBook = () => {
+    const newBook = makeBlankBook(books.length);
+    patch({ books: [newBook, ...books] });
+    setSelected(0);
+    trackEvent("book_added_manual");
+  };
+
   return (
     <div className="absolute inset-0 bg-bg text-ink flex flex-col overflow-hidden">
       {/* Top bar */}
@@ -76,11 +83,7 @@ export default function EditorPage() {
                 {books.length} books
               </div>
             </div>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => trackEvent("book_added_manual")}
-            >
+            <Button variant="secondary" size="sm" onClick={addBook}>
               <Icon name="plus" size={12} />
               Add book
             </Button>
@@ -412,4 +415,30 @@ function Field({
       />
     </div>
   );
+}
+
+/** Rotation of neutral, readable spine palettes used for newly-added blanks. */
+const BLANK_PALETTE: Array<Pick<Book, "spineColor" | "textColor" | "accent">> = [
+  { spineColor: "#3d5a3a", textColor: "#e4d8b8", accent: "none" },
+  { spineColor: "#8b3a2f", textColor: "#f0e4c8", accent: "gold" },
+  { spineColor: "#1a2847", textColor: "#e8d9a8", accent: "gold" },
+  { spineColor: "#d4c4a0", textColor: "#3a2818", accent: "none" },
+  { spineColor: "#6b8e8a", textColor: "#f4ead9", accent: "silver" },
+  { spineColor: "#7a2838", textColor: "#e8d4a8", accent: "gold" },
+  { spineColor: "#c9b87a", textColor: "#3a3018", accent: "none" },
+];
+
+function makeBlankBook(existingCount: number): Book {
+  const now = new Date();
+  const palette = BLANK_PALETTE[existingCount % BLANK_PALETTE.length];
+  return {
+    title: "Untitled",
+    author: "Unknown author",
+    year: now.getFullYear(),
+    month: now.getMonth() + 1,
+    pages: 300,
+    rating: 4,
+    genre: "Fiction",
+    ...palette,
+  };
 }

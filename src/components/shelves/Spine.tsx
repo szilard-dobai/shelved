@@ -184,7 +184,7 @@ export function Spine({
             className="absolute left-0 right-0 flex items-center justify-center overflow-hidden"
             style={{ top: titleTop, height: titleAreaH }}
           >
-            <div className="flex flex-row-reverse items-center gap-px">
+            <div className="flex flex-row items-center gap-px">
               {titleFit.rows.map((rowText, i) => (
                 <div
                   key={i}

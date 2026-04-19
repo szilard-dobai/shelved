@@ -30,12 +30,16 @@ interface FitOptions {
   vPad?: number;
 }
 
-const ROW_WIDTH_FACTOR = 1.15; // char glyph width + inter-row spacing, per font unit
-const CHAR_HEIGHT_FACTOR = 0.7; // vertical-writing character height per font unit
+const ROW_WIDTH_FACTOR = 1.3; // char glyph block-size + inter-row spacing, per font unit
+const CHAR_HEIGHT_FACTOR = 0.7; // vertical-writing character inline-size per font unit
 
 /**
- * Core fitting algorithm. Searches (rowCount, fontSize) space for the best
- * combination that fits the title.
+ * Core fitting algorithm. For each font size from base → min, packs the
+ * title into rows that each respect the vertical character capacity at that
+ * font, then accepts the first font whose resulting row count fits the
+ * spine's horizontal budget.
+ *
+ * Prefers larger font + more rows over tiny font + fewer rows.
  */
 export function fitTitle(title: string, opts: FitOptions): TitleFit {
   const {
@@ -44,76 +48,72 @@ export function fitTitle(title: string, opts: FitOptions): TitleFit {
     baseFontSize,
     minReadable = 9,
     absoluteMin = 6,
-    hPad = 4,
+    hPad = 5,
     vPad = 4,
   } = opts;
 
   const widthBudget = Math.max(0, spineWidth - hPad);
   const heightBudget = Math.max(0, availHeight - vPad);
 
-  const fits = (fs: number, rowCount: number): boolean => {
-    const rowWidth = fs * ROW_WIDTH_FACTOR;
-    if (rowCount * rowWidth > widthBudget) return false;
-    const charsPerRow = Math.max(1, Math.floor(heightBudget / (fs * CHAR_HEIGHT_FACTOR)));
-    return title.length <= charsPerRow * rowCount;
-  };
-
-  const fontSteps: number[] = [];
-  for (let fs = baseFontSize; fs >= minReadable; fs -= 0.5) fontSteps.push(fs);
-
-  // Phase 1: prefer 1 row, shrink font as needed, but stay readable.
-  for (const fs of fontSteps) {
-    if (fits(fs, 1)) return { fontSize: fs, rows: [title] };
+  // Phase 1: readable fonts, word-based packing.
+  for (let fs = baseFontSize; fs >= minReadable; fs -= 0.5) {
+    const result = tryFit(title, fs, widthBudget, heightBudget, "words");
+    if (result) return result;
   }
 
-  // Phase 2: need multiple rows. For each row count, take the largest readable
-  // font that fits — prefers "bigger text, more rows" over "tiny text, one row".
-  for (let rowCount = 2; rowCount <= 10; rowCount++) {
-    for (const fs of fontSteps) {
-      if (fits(fs, rowCount)) {
-        return { fontSize: fs, rows: splitIntoRows(title, rowCount) };
-      }
-    }
-  }
-
-  // Phase 3: readable floor isn't enough. Keep shrinking below minReadable,
-  // preferring the largest font + fewest rows that fits.
+  // Phase 2: below readable floor, still word-based.
   for (let fs = minReadable - 0.5; fs >= absoluteMin; fs -= 0.5) {
-    const rowWidth = fs * ROW_WIDTH_FACTOR;
-    const maxRows = Math.floor(widthBudget / rowWidth);
-    const charsPerRow = Math.max(1, Math.floor(heightBudget / (fs * CHAR_HEIGHT_FACTOR)));
-    for (let rowCount = 1; rowCount <= maxRows; rowCount++) {
-      if (title.length <= charsPerRow * rowCount) {
-        return { fontSize: fs, rows: splitIntoRows(title, rowCount) };
-      }
-    }
+    const result = tryFit(title, fs, widthBudget, heightBudget, "words");
+    if (result) return result;
   }
 
-  // Absolute fallback: smallest font, however many rows the spine width allows.
+  // Phase 3: last-resort char-splitting (single word too long for any font).
+  for (let fs = baseFontSize; fs >= absoluteMin; fs -= 0.5) {
+    const result = tryFit(title, fs, widthBudget, heightBudget, "chars");
+    if (result) return result;
+  }
+
+  // Absolute fallback: smallest font, char-split, whatever rows fit.
   const fs = absoluteMin;
-  const maxRows = Math.max(1, Math.floor(widthBudget / (fs * ROW_WIDTH_FACTOR)));
-  return { fontSize: fs, rows: splitIntoRows(title, maxRows) };
+  const charsPerRow = Math.max(1, Math.floor(heightBudget / (fs * CHAR_HEIGHT_FACTOR)));
+  return { fontSize: fs, rows: splitByChars(title, charsPerRow) };
+}
+
+function tryFit(
+  title: string,
+  fs: number,
+  widthBudget: number,
+  heightBudget: number,
+  mode: "words" | "chars",
+): TitleFit | null {
+  const charsPerRow = Math.max(1, Math.floor(heightBudget / (fs * CHAR_HEIGHT_FACTOR)));
+  const rowWidth = fs * ROW_WIDTH_FACTOR;
+
+  const rows =
+    mode === "words"
+      ? packByWords(title, charsPerRow)
+      : splitByChars(title, charsPerRow);
+
+  if (!rows) return null; // word-mode returned null — a single word was too long
+  if (rows.length * rowWidth > widthBudget) return null;
+  return { fontSize: fs, rows };
 }
 
 /**
- * Split a title into N rows, balancing on word boundaries where possible.
- * If the requested row count exceeds the number of words (or the title is a
- * single word), falls back to character splitting.
+ * Pack a title into rows where each row's character count is ≤ `charsPerRow`,
+ * breaking only on word boundaries. Returns null if any single word exceeds
+ * the cap (caller should retry at a smaller font or fall back to char-split).
  */
-export function splitIntoRows(text: string, rowCount: number): string[] {
-  if (rowCount <= 1) return [text];
-  const words = text.split(/\s+/).filter(Boolean);
-  if (words.length < 2) return splitByChars(text, rowCount);
+export function packByWords(title: string, charsPerRow: number): string[] | null {
+  const words = title.split(/\s+/).filter(Boolean);
+  if (words.length === 0) return [title];
+  if (words.some((w) => w.length > charsPerRow)) return null;
 
-  const target = text.length / rowCount;
   const rows: string[] = [];
   let cur = "";
-
   for (const w of words) {
     const candidate = cur ? cur + " " + w : w;
-    const wouldOvershoot = cur.length > 0 && candidate.length > target * 1.15;
-    const haveBudgetForMore = rows.length < rowCount - 1;
-    if (wouldOvershoot && haveBudgetForMore) {
+    if (candidate.length > charsPerRow && cur) {
       rows.push(cur);
       cur = w;
     } else {
@@ -124,11 +124,11 @@ export function splitIntoRows(text: string, rowCount: number): string[] {
   return rows;
 }
 
-function splitByChars(text: string, rowCount: number): string[] {
-  const perRow = Math.ceil(text.length / rowCount);
+function splitByChars(text: string, charsPerRow: number): string[] {
+  if (charsPerRow <= 0) return [text];
   const rows: string[] = [];
-  for (let i = 0; i < text.length; i += perRow) {
-    rows.push(text.slice(i, i + perRow));
+  for (let i = 0; i < text.length; i += charsPerRow) {
+    rows.push(text.slice(i, i + charsPerRow));
   }
   return rows;
 }
