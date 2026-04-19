@@ -8,14 +8,19 @@ import { Icon } from "@/components/ui/Icon";
 import { ShelfPreview } from "@/components/ShelfPreview";
 import { Shelf } from "@/components/shelves";
 import { useAppState } from "@/lib/app-state";
+import { useIsMobile } from "@/lib/use-media";
 import type { BgVariant, Book, ShelfStyle, SortMode } from "@/lib/shelf/types";
 import { darken } from "@/lib/shelf/helpers";
 import { trackEvent } from "@/lib/tracking";
+
+type MobileTab = "books" | "preview";
 
 export default function EditorPage() {
   const { state, patch } = useAppState();
   const { books, userTitle, sortMode, style, bgVariant } = state;
   const [selected, setSelected] = useState<number | null>(null);
+  const [mobileTab, setMobileTab] = useState<MobileTab>("books");
+  const mobile = useIsMobile();
 
   useEffect(() => {
     trackEvent("editor_view");
@@ -44,27 +49,29 @@ export default function EditorPage() {
   return (
     <div className="absolute inset-0 bg-bg text-ink flex flex-col overflow-hidden">
       {/* Top bar */}
-      <div className="flex-shrink-0 flex items-center justify-between px-8 py-[18px] border-b border-rule">
-        <div className="flex items-center gap-5">
+      <div className="flex-shrink-0 flex items-center justify-between px-4 py-[14px] md:px-8 md:py-[18px] border-b border-rule gap-2">
+        <div className="flex items-center gap-[10px] md:gap-5 min-w-0">
           <Link
             href="/import"
             className="flex items-center gap-2 text-ink-muted hover:text-ink text-[13px] font-sans"
+            aria-label="Back"
           >
-            <Icon name="arrowLeft" size={16} /> Back
+            <Icon name="arrowLeft" size={16} />
+            <span className="hidden md:inline">Back</span>
           </Link>
-          <div className="w-px h-5 bg-rule" />
-          <Wordmark size={20} />
-          <div className="font-sans text-xs text-ink-faint tracking-[0.3em] ml-2">
+          <div className="hidden md:block w-px h-5 bg-rule" />
+          <Wordmark size={20} className="!text-[18px] md:!text-[20px]" />
+          <div className="hidden md:block font-sans text-xs text-ink-faint tracking-[0.3em] ml-2">
             STEP 2 · EDITOR
           </div>
         </div>
-        <div className="flex gap-3 items-center">
-          <div className="font-sans text-[13px] text-ink-muted">
+        <div className="flex gap-3 items-center flex-shrink-0">
+          <div className="hidden md:block font-sans text-[13px] text-ink-muted">
             {books.length} books ·{" "}
             {books.reduce((s, b) => s + b.pages, 0).toLocaleString()} pages
           </div>
           <Link href="/export">
-            <Button variant="gold">
+            <Button variant="gold" size={mobile ? "sm" : "md"}>
               <Icon name="download" size={14} />
               Export
             </Button>
@@ -72,10 +79,42 @@ export default function EditorPage() {
         </div>
       </div>
 
-      {/* Main 2-pane */}
-      <div className="flex-1 flex min-h-0">
-        {/* Left: gallery */}
-        <div className="flex-1 min-w-0 border-r border-rule overflow-auto px-8 pt-6 pb-28">
+      {/* Mobile tab bar */}
+      <div className="md:hidden flex flex-shrink-0 border-b border-rule">
+        {(
+          [
+            { id: "books" as const, label: "Books" },
+            { id: "preview" as const, label: "Preview" },
+          ]
+        ).map((tab) => {
+          const active = mobileTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setMobileTab(tab.id)}
+              className={[
+                "flex-1 py-3 bg-transparent border-0 font-sans text-[11px] font-medium uppercase tracking-[0.24em] cursor-pointer",
+                "border-b-2",
+                active ? "border-gold text-ink" : "border-transparent text-ink-muted",
+              ].join(" ")}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Main pane: row on desktop, column on mobile with tab-driven visibility */}
+      <div className="flex-1 flex flex-col md:flex-row min-h-0">
+        {/* Gallery */}
+        <div
+          className={[
+            "flex-1 min-w-0 overflow-auto",
+            "border-b md:border-b-0 md:border-r border-rule",
+            "px-4 pt-[18px] pb-40 md:px-8 md:pt-6 md:pb-28",
+            mobile && mobileTab !== "books" ? "hidden" : "block",
+          ].join(" ")}
+        >
           <div className="flex items-baseline justify-between mb-[18px]">
             <div>
               <Eyebrow>Your library</Eyebrow>
@@ -92,8 +131,7 @@ export default function EditorPage() {
           <Hairline className="mb-5" />
 
           <div
-            className="grid gap-5"
-            style={{ gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))" }}
+            className="grid gap-[14px] md:gap-5 [grid-template-columns:repeat(auto-fill,minmax(100px,1fr))] md:[grid-template-columns:repeat(auto-fill,minmax(130px,1fr))]"
           >
             {books.map((b, i) => (
               <button
@@ -159,13 +197,21 @@ export default function EditorPage() {
           </div>
         </div>
 
-        {/* Right: preview + controls */}
+        {/* Preview + controls pane */}
         <div
-          className="flex-shrink-0 bg-bg-raised flex flex-col min-h-0"
-          style={{ width: "min(54%, 760px)" }}
+          className={[
+            "flex-shrink-0 bg-bg-raised flex-col min-h-0",
+            "w-full md:w-[min(54%,760px)]",
+            mobile && mobileTab !== "preview" ? "hidden" : "flex",
+          ].join(" ")}
         >
-          <div className="flex-1 flex items-center justify-center p-8 overflow-hidden min-h-0">
-            <ShelfPreview>
+          <div className="flex-1 flex items-center justify-center p-4 md:p-8 overflow-hidden min-h-0">
+            <ShelfPreview
+              fitMode={mobile ? "viewport" : "height"}
+              heightOffset={mobile ? 280 : 220}
+              widthOffset={40}
+              maxScale={mobile ? 0.38 : 0.5}
+            >
               <Shelf
                 style={style}
                 books={books}
@@ -177,7 +223,7 @@ export default function EditorPage() {
 
           {/* Controls dock */}
           <div
-            className="flex-shrink-0 px-6 pt-[18px] pb-5 border-t border-rule"
+            className="flex-shrink-0 px-4 pt-[14px] pb-20 md:px-6 md:pt-[18px] md:pb-5 border-t border-rule"
             style={{ background: "var(--color-bg-panel-solid)" }}
           >
             <div className="mb-[14px]">
@@ -188,14 +234,11 @@ export default function EditorPage() {
                   patch({ userTitle: e.target.value });
                   trackEvent("title_edited");
                 }}
-                className="w-full box-border bg-transparent border-0 border-b border-rule text-ink font-serif italic text-[24px] py-1 outline-none"
+                className="w-full box-border bg-transparent border-0 border-b border-rule text-ink font-serif italic text-[20px] md:text-[24px] py-1 outline-none"
               />
             </div>
 
-            <div
-              className="grid gap-[14px]"
-              style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}
-            >
+            <div className="grid gap-[10px] md:gap-[14px] [grid-template-columns:repeat(auto-fit,minmax(110px,1fr))] md:[grid-template-columns:repeat(auto-fit,minmax(150px,1fr))]">
               <SegControl<ShelfStyle>
                 label="Style"
                 options={[
@@ -305,12 +348,12 @@ function BookEditModal({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 flex items-center justify-center z-[100]"
+      className="fixed inset-0 flex items-end md:items-center justify-center z-[100]"
       style={{ background: "rgba(0,0,0,0.6)" }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative border border-rule p-9 w-[540px] max-w-[calc(100%-40px)] text-ink"
+        className="relative border border-rule p-6 md:p-9 w-full md:w-[540px] md:max-w-[calc(100%-40px)] max-h-[92vh] md:max-h-none overflow-y-auto md:overflow-visible text-ink"
         style={{ background: "var(--color-bg-panel-solid)" }}
       >
         <button
@@ -320,9 +363,9 @@ function BookEditModal({
           <Icon name="x" size={20} />
         </button>
         <Eyebrow>Edit book</Eyebrow>
-        <div className="flex gap-6 mt-5">
+        <div className="flex flex-col md:flex-row gap-[18px] md:gap-6 mt-5 items-center md:items-stretch">
           <div
-            className="w-[100px] h-[150px] flex-shrink-0 p-[10px] box-border shadow-[0_6px_20px_rgba(0,0,0,0.4)]"
+            className="w-20 h-[120px] md:w-[100px] md:h-[150px] flex-shrink-0 p-[10px] box-border shadow-[0_6px_20px_rgba(0,0,0,0.4)]"
             style={{ background: book.spineColor }}
           >
             <div

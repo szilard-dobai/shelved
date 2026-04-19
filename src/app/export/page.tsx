@@ -83,26 +83,33 @@ export default function ExportPage() {
   return (
     <div className="absolute inset-0 bg-bg text-ink overflow-auto">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-8 py-[18px] border-b border-rule">
-        <div className="flex items-center gap-5">
+      <div className="flex items-center justify-between px-4 py-[14px] md:px-8 md:py-[18px] border-b border-rule gap-2">
+        <div className="flex items-center gap-[10px] md:gap-5 min-w-0">
           <Link
             href="/editor"
             className="flex items-center gap-2 text-ink-muted hover:text-ink text-[13px] font-sans"
+            aria-label="Back to editor"
           >
-            <Icon name="arrowLeft" size={16} /> Back to editor
+            <Icon name="arrowLeft" size={16} />
+            <span className="hidden md:inline">Back to editor</span>
           </Link>
-          <div className="w-px h-5 bg-rule" />
-          <Wordmark size={20} />
-          <div className="font-sans text-xs text-ink-faint tracking-[0.3em] ml-2">
+          <div className="hidden md:block w-px h-5 bg-rule" />
+          <Wordmark size={20} className="!text-[18px] md:!text-[20px]" />
+          <div className="hidden md:block font-sans text-xs text-ink-faint tracking-[0.3em] ml-2">
             STEP 3 · SHARE
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-10 p-10 max-w-[1400px] mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_420px] gap-7 md:gap-10 px-5 py-6 md:p-10 max-w-[1400px] mx-auto">
         {/* Preview */}
         <div className="flex justify-center items-start">
-          <ShelfPreview heightOffset={180}>
+          <ShelfPreview
+            fitMode="viewport"
+            heightOffset={240}
+            widthOffset={40}
+            maxScale={0.5}
+          >
             <Shelf
               style={style}
               books={books}
@@ -115,11 +122,14 @@ export default function ExportPage() {
         {/* Share panel */}
         <div>
           <Eyebrow className="mb-3">Ready to share</Eyebrow>
-          <Display size="lg" className="mb-[18px]">
+          <Display
+            size="lg"
+            className="mb-[18px] !text-[44px] md:!text-[64px]"
+          >
             {userTitle}
           </Display>
 
-          <div className="font-serif italic text-[18px] text-ink-muted mb-7">
+          <div className="font-serif italic text-[16px] md:text-[18px] text-ink-muted mb-[22px] md:mb-7">
             Your shelf is ready. Download the image, share anywhere, or publish a
             link to a page where people can browse every title.
           </div>
@@ -163,7 +173,7 @@ export default function ExportPage() {
           <Hairline className="my-5" />
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-[10px] md:gap-4">
             {[
               { k: String(books.length), l: "books" },
               {
@@ -178,7 +188,7 @@ export default function ExportPage() {
               },
             ].map((it) => (
               <div key={it.l}>
-                <div className="font-serif italic text-[42px] font-medium leading-none text-ink">
+                <div className="font-serif italic text-[32px] md:text-[42px] font-medium leading-none text-ink">
                   {it.k}
                 </div>
                 <div className="text-[11px] tracking-[0.22em] uppercase text-ink-faint mt-1 font-sans">

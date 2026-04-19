@@ -76,33 +76,37 @@ export default function ImportPage() {
   return (
     <div className="absolute inset-0 bg-bg overflow-auto">
       {/* Top bar */}
-      <div className="sticky top-0 z-[5] flex items-center justify-between px-12 py-6 bg-bg border-b border-rule">
-        <div className="flex items-center gap-5">
+      <div className="sticky top-0 z-[5] flex items-center justify-between px-5 py-4 md:px-12 md:py-6 bg-bg border-b border-rule gap-3">
+        <div className="flex items-center gap-3 md:gap-5 min-w-0">
           <Link
             href="/"
             className="flex items-center gap-2 text-ink-muted hover:text-ink text-[13px] font-sans"
+            aria-label="Back"
           >
-            <Icon name="arrowLeft" size={16} /> Back
+            <Icon name="arrowLeft" size={16} />
+            <span className="hidden md:inline">Back</span>
           </Link>
-          <div className="w-px h-5 bg-rule" />
-          <Wordmark size={20} />
+          <div className="hidden md:block w-px h-5 bg-rule" />
+          <Wordmark size={20} className="!text-[18px] md:!text-[20px]" />
         </div>
-        <div className="font-sans text-xs text-ink-faint tracking-[0.3em]">
+        <div className="hidden md:block font-sans text-xs text-ink-faint tracking-[0.3em]">
           STEP 1 OF 3 · IMPORT
         </div>
       </div>
 
       {/* Hero */}
-      <div className="text-center max-w-[900px] mx-auto px-12 pt-20 pb-10">
-        <Eyebrow className="mb-5">Bring your books</Eyebrow>
-        <Display size="xl">How do you track?</Display>
-        <p className="font-serif italic text-[20px] text-ink-muted mt-[18px]">
+      <div className="text-center max-w-[900px] mx-auto px-5 pt-12 pb-6 md:px-12 md:pt-20 md:pb-10">
+        <Eyebrow className="mb-[14px] md:mb-5">Bring your books</Eyebrow>
+        <Display size="xl" className="!text-[48px] md:!text-[88px]">
+          How do you track?
+        </Display>
+        <p className="font-serif italic text-[16px] md:text-[20px] text-ink-muted mt-[18px]">
           Pick any method below — you can add more later.
         </p>
       </div>
 
       {/* Method cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 px-12 pb-8 max-w-[1200px] mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5 px-5 md:px-12 pb-6 md:pb-8 max-w-[1200px] mx-auto">
         {METHODS.map((m) => {
           const active = method === m.id;
           return (
@@ -121,10 +125,10 @@ export default function ImportPage() {
                   {m.tag}
                 </div>
               )}
-              <div className={`mb-5 ${active ? "text-gold" : "text-ink"}`}>
+              <div className={`mb-4 md:mb-5 ${active ? "text-gold" : "text-ink"}`}>
                 <Icon name={m.icon} size={28} />
               </div>
-              <div className="font-serif italic text-[28px] font-medium mb-2 text-ink">
+              <div className="font-serif italic text-[22px] md:text-[28px] font-medium mb-2 text-ink">
                 {m.label}
               </div>
               <div className="text-sm text-ink-muted leading-[1.5]">
@@ -136,7 +140,7 @@ export default function ImportPage() {
       </div>
 
       {/* Active method panel */}
-      <div className="px-12 pt-5 pb-12 max-w-[1200px] mx-auto min-h-[360px]">
+      <div className="px-5 pt-4 pb-12 md:px-12 md:pt-5 max-w-[1200px] mx-auto min-h-[360px]">
         {method === "csv" && (
           <div
             onDragOver={(e) => {
@@ -150,17 +154,17 @@ export default function ImportPage() {
               trackEvent("csv_upload", { source: "drop" });
             }}
             className={[
-              "rounded-[2px] p-16 text-center border-2 border-dashed transition-all",
+              "rounded-[2px] p-8 md:p-16 text-center border-2 border-dashed transition-all",
               dragOver ? "border-gold bg-gold-soft" : "border-rule-strong bg-bg-raised",
             ].join(" ")}
           >
             <div className="text-gold flex justify-center">
               <Icon name="upload" size={40} />
             </div>
-            <div className="font-serif italic text-[32px] mt-5 text-ink">
+            <div className="font-serif italic text-[24px] md:text-[32px] mt-4 md:mt-5 text-ink">
               Drop your export here
             </div>
-            <div className="text-sm text-ink-muted mt-2 mb-7">
+            <div className="text-sm text-ink-muted mt-2 mb-6 md:mb-7">
               .csv from Goodreads or Storygraph · up to 5,000 books
             </div>
             <Button
@@ -178,7 +182,7 @@ export default function ImportPage() {
         )}
 
         {method === "isbn" && (
-          <div className="bg-bg-raised border border-rule p-8 rounded-[2px]">
+          <div className="bg-bg-raised border border-rule p-5 md:p-8 rounded-[2px]">
             <Eyebrow className="mb-3">ISBN · one per line</Eyebrow>
             <textarea
               value={isbnText}
@@ -205,7 +209,7 @@ export default function ImportPage() {
         )}
 
         {method === "search" && (
-          <div className="bg-bg-raised border border-rule p-8 rounded-[2px]">
+          <div className="bg-bg-raised border border-rule p-5 md:p-8 rounded-[2px]">
             <div className="relative">
               <div className="absolute top-0 left-0 text-ink-muted">
                 <Icon name="search" size={18} />
@@ -215,7 +219,7 @@ export default function ImportPage() {
                 placeholder="Search by title or author…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="absolute -top-1 left-[30px] right-0 bg-transparent border-none outline-none text-ink font-serif italic text-[28px] font-medium"
+                className="absolute -top-1 left-[30px] right-0 bg-transparent border-none outline-none text-ink font-serif italic text-[22px] md:text-[28px] font-medium"
               />
             </div>
             <div className="h-px bg-rule mt-[22px]" />

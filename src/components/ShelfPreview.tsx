@@ -5,12 +5,21 @@ import { STORY_H, STORY_W } from "@/lib/shelf/helpers";
 
 interface ShelfPreviewProps {
   children: ReactNode;
-  /** Fixed scale. If omitted, scale is computed to fit the available height. */
+  /** Fixed scale. If omitted, scale is computed from viewport. */
   scale?: number;
   /** Reserved vertical space (header/footer/controls) when auto-scaling. */
   heightOffset?: number;
+  /** Reserved horizontal space (outer page padding) for viewport-fit mode. */
+  widthOffset?: number;
   /** Maximum scale when auto-scaling. */
   maxScale?: number;
+  /**
+   * "height" (default): scale fits viewport height only — appropriate when a
+   * side panel constrains width on desktop.
+   * "viewport": fits both width and height — used when the preview lives in
+   * a stacked single-column layout (mobile, or mobile-style export panels).
+   */
+  fitMode?: "height" | "viewport";
   className?: string;
 }
 
@@ -23,7 +32,9 @@ export function ShelfPreview({
   children,
   scale,
   heightOffset = 220,
+  widthOffset = 40,
   maxScale = 0.5,
+  fitMode = "height",
   className = "",
 }: ShelfPreviewProps) {
   const [auto, setAuto] = useState(scale ?? 0.4);
@@ -31,13 +42,18 @@ export function ShelfPreview({
   useEffect(() => {
     if (scale != null) return;
     const resize = () => {
-      const availH = window.innerHeight - heightOffset;
-      setAuto(Math.min(maxScale, availH / STORY_H));
+      const hFit = (window.innerHeight - heightOffset) / STORY_H;
+      if (fitMode === "viewport") {
+        const wFit = (window.innerWidth - widthOffset) / STORY_W;
+        setAuto(Math.min(maxScale, wFit, hFit));
+      } else {
+        setAuto(Math.min(maxScale, hFit));
+      }
     };
     resize();
     window.addEventListener("resize", resize);
     return () => window.removeEventListener("resize", resize);
-  }, [scale, heightOffset, maxScale]);
+  }, [scale, heightOffset, widthOffset, maxScale, fitMode]);
 
   const s = scale ?? auto;
 
