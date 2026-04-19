@@ -1,0 +1,56 @@
+import type { Book } from "@/lib/shelf/types";
+
+/**
+ * Sample dataset — 42 plausible books across 2024/2025/2026.
+ * Spine colors curated to feel like a real shelf: warm ochres, muted greens,
+ * oxblood, ink navy, cream, forest, rust. Avoid pure saturated colors.
+ */
+export const SAMPLE_BOOKS: Book[] = [
+  // ── 2026 ──
+  { title: "The Wandering Earth", author: "Liu Cixin", year: 2026, month: 4, pages: 442, rating: 5, genre: "Sci-fi", spineColor: "#1a2847", textColor: "#e8d9a8", accent: "gold" },
+  { title: "Small Things Like These", author: "Claire Keegan", year: 2026, month: 3, pages: 114, rating: 5, genre: "Fiction", spineColor: "#d4c4a0", textColor: "#3a2818", accent: "none" },
+  { title: "Piranesi", author: "Susanna Clarke", year: 2026, month: 3, pages: 272, rating: 4, genre: "Fiction", spineColor: "#6b8e8a", textColor: "#f4ead9", accent: "silver" },
+  { title: "The Covenant of Water", author: "Abraham Verghese", year: 2026, month: 2, pages: 736, rating: 5, genre: "Fiction", spineColor: "#8b3a2f", textColor: "#f0e4c8", accent: "gold" },
+  { title: "How to Do Nothing", author: "Jenny Odell", year: 2026, month: 2, pages: 232, rating: 4, genre: "Nonfiction", spineColor: "#c9b87a", textColor: "#3a3018", accent: "none" },
+  { title: "Tomorrow, and Tomorrow, and Tomorrow", author: "Gabrielle Zevin", year: 2026, month: 1, pages: 416, rating: 4, genre: "Fiction", spineColor: "#2d4a3a", textColor: "#e8d4a0", accent: "gold" },
+  { title: "Chip War", author: "Chris Miller", year: 2026, month: 1, pages: 464, rating: 4, genre: "Nonfiction", spineColor: "#1e1e24", textColor: "#d9a84a", accent: "gold" },
+
+  // ── 2025 ──
+  { title: "The Overstory", author: "Richard Powers", year: 2025, month: 12, pages: 512, rating: 5, genre: "Fiction", spineColor: "#3d5a3a", textColor: "#e4d8b8", accent: "none" },
+  { title: "Demon Copperhead", author: "Barbara Kingsolver", year: 2025, month: 11, pages: 560, rating: 5, genre: "Fiction", spineColor: "#b84a28", textColor: "#f4e8d0", accent: "none" },
+  { title: "Trust", author: "Hernan Diaz", year: 2025, month: 11, pages: 416, rating: 4, genre: "Fiction", spineColor: "#0f2a3a", textColor: "#c8a858", accent: "gold" },
+  { title: "Sea of Tranquility", author: "Emily St. John Mandel", year: 2025, month: 10, pages: 272, rating: 4, genre: "Sci-fi", spineColor: "#5a6b88", textColor: "#f0e8d4", accent: "silver" },
+  { title: "Poverty, by America", author: "Matthew Desmond", year: 2025, month: 10, pages: 304, rating: 4, genre: "Nonfiction", spineColor: "#d9b84a", textColor: "#2a1e0a", accent: "none" },
+  { title: "Klara and the Sun", author: "Kazuo Ishiguro", year: 2025, month: 9, pages: 320, rating: 4, genre: "Sci-fi", spineColor: "#e4c8a0", textColor: "#4a2818", accent: "none" },
+  { title: "Braiding Sweetgrass", author: "Robin Wall Kimmerer", year: 2025, month: 9, pages: 408, rating: 5, genre: "Nonfiction", spineColor: "#4a6b3a", textColor: "#f0e4c4", accent: "none" },
+  { title: "The Remains of the Day", author: "Kazuo Ishiguro", year: 2025, month: 8, pages: 245, rating: 5, genre: "Fiction", spineColor: "#7a2838", textColor: "#e8d4a8", accent: "gold" },
+  { title: "Project Hail Mary", author: "Andy Weir", year: 2025, month: 8, pages: 496, rating: 4, genre: "Sci-fi", spineColor: "#2a3a5a", textColor: "#e4c878", accent: "none" },
+  { title: "A Gentleman in Moscow", author: "Amor Towles", year: 2025, month: 7, pages: 462, rating: 5, genre: "Fiction", spineColor: "#8b4a28", textColor: "#f4e4b8", accent: "gold" },
+  { title: "The Creative Act", author: "Rick Rubin", year: 2025, month: 6, pages: 432, rating: 4, genre: "Nonfiction", spineColor: "#f0e8d4", textColor: "#2a1e0a", accent: "none" },
+  { title: "Pachinko", author: "Min Jin Lee", year: 2025, month: 6, pages: 496, rating: 5, genre: "Fiction", spineColor: "#c84a3a", textColor: "#f0e4c4", accent: "none" },
+  { title: "Four Thousand Weeks", author: "Oliver Burkeman", year: 2025, month: 5, pages: 288, rating: 4, genre: "Nonfiction", spineColor: "#e8a858", textColor: "#2a1808", accent: "none" },
+  { title: "Crying in H Mart", author: "Michelle Zauner", year: 2025, month: 5, pages: 256, rating: 4, genre: "Memoir", spineColor: "#d98b88", textColor: "#3a1818", accent: "none" },
+  { title: "The Three-Body Problem", author: "Liu Cixin", year: 2025, month: 4, pages: 400, rating: 4, genre: "Sci-fi", spineColor: "#1a1a2a", textColor: "#c8d4e8", accent: "silver" },
+  { title: "Mrs. Dalloway", author: "Virginia Woolf", year: 2025, month: 4, pages: 194, rating: 4, genre: "Fiction", spineColor: "#8ba0b8", textColor: "#f4ead4", accent: "none" },
+  { title: "The Dawn of Everything", author: "David Graeber", year: 2025, month: 3, pages: 704, rating: 4, genre: "Nonfiction", spineColor: "#d9b478", textColor: "#2a1e0a", accent: "none" },
+  { title: "All the Light We Cannot See", author: "Anthony Doerr", year: 2025, month: 2, pages: 544, rating: 5, genre: "Fiction", spineColor: "#4a688b", textColor: "#f0e4b8", accent: "gold" },
+  { title: "Bewilderment", author: "Richard Powers", year: 2025, month: 2, pages: 288, rating: 4, genre: "Fiction", spineColor: "#2a4a4a", textColor: "#e4d4a8", accent: "none" },
+  { title: "The Midnight Library", author: "Matt Haig", year: 2025, month: 1, pages: 304, rating: 3, genre: "Fiction", spineColor: "#3a3a5a", textColor: "#e8d488", accent: "gold" },
+  { title: "Stolen Focus", author: "Johann Hari", year: 2025, month: 1, pages: 368, rating: 4, genre: "Nonfiction", spineColor: "#e84a38", textColor: "#f4e4c8", accent: "none" },
+
+  // ── 2024 ──
+  { title: "Station Eleven", author: "Emily St. John Mandel", year: 2024, month: 12, pages: 333, rating: 5, genre: "Sci-fi", spineColor: "#4a3a5a", textColor: "#e8d4a8", accent: "none" },
+  { title: "The Goldfinch", author: "Donna Tartt", year: 2024, month: 11, pages: 771, rating: 5, genre: "Fiction", spineColor: "#d9a848", textColor: "#2a1808", accent: "none" },
+  { title: "Normal People", author: "Sally Rooney", year: 2024, month: 10, pages: 273, rating: 4, genre: "Fiction", spineColor: "#6b8bd9", textColor: "#f0e4c4", accent: "none" },
+  { title: "Educated", author: "Tara Westover", year: 2024, month: 9, pages: 334, rating: 5, genre: "Memoir", spineColor: "#2a3a4a", textColor: "#d9a858", accent: "gold" },
+  { title: "Circe", author: "Madeline Miller", year: 2024, month: 9, pages: 393, rating: 4, genre: "Fiction", spineColor: "#d97a3a", textColor: "#2a1a0a", accent: "gold" },
+  { title: "The Secret History", author: "Donna Tartt", year: 2024, month: 8, pages: 559, rating: 5, genre: "Fiction", spineColor: "#1a2a1a", textColor: "#d9b858", accent: "gold" },
+  { title: "Sapiens", author: "Yuval Noah Harari", year: 2024, month: 7, pages: 464, rating: 4, genre: "Nonfiction", spineColor: "#f0e4c8", textColor: "#2a1e0a", accent: "none" },
+  { title: "Beloved", author: "Toni Morrison", year: 2024, month: 6, pages: 324, rating: 5, genre: "Fiction", spineColor: "#3a1a28", textColor: "#e4c488", accent: "none" },
+  { title: "The Bee Sting", author: "Paul Murray", year: 2024, month: 5, pages: 656, rating: 4, genre: "Fiction", spineColor: "#d9b848", textColor: "#2a1e0a", accent: "none" },
+  { title: "Homegoing", author: "Yaa Gyasi", year: 2024, month: 4, pages: 305, rating: 5, genre: "Fiction", spineColor: "#6b3a28", textColor: "#e4c488", accent: "none" },
+  { title: "The Road", author: "Cormac McCarthy", year: 2024, month: 3, pages: 287, rating: 4, genre: "Fiction", spineColor: "#2a2a2a", textColor: "#a8a8a8", accent: "none" },
+  { title: "Never Let Me Go", author: "Kazuo Ishiguro", year: 2024, month: 2, pages: 288, rating: 5, genre: "Sci-fi", spineColor: "#c4b8a8", textColor: "#3a2818", accent: "none" },
+  { title: "Atomic Habits", author: "James Clear", year: 2024, month: 1, pages: 320, rating: 3, genre: "Nonfiction", spineColor: "#e8e4d8", textColor: "#2a1e0a", accent: "none" },
+  { title: "The Power", author: "Naomi Alderman", year: 2024, month: 1, pages: 386, rating: 4, genre: "Sci-fi", spineColor: "#4a1a3a", textColor: "#e8c488", accent: "gold" },
+];

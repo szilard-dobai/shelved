@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+/* ───────────────────────────────────────────────────────────── *
+ * Shelved — warm literary palette. Dark is the default.
+ * Light variant applies when <html class="light">.
+ * ───────────────────────────────────────────────────────────── */
+
+:root {
+  --color-bg: #140a06;
+  --color-bg-raised: #1e120a;
+  --color-bg-panel: rgba(26, 14, 8, 0.78);
+  --color-bg-panel-solid: #1a0e08;
+  --color-ink: #f4ead4;
+  --color-ink-muted: rgba(244, 234, 212, 0.62);
+  --color-ink-faint: rgba(244, 234, 212, 0.38);
+  --color-rule: rgba(244, 234, 212, 0.14);
+  --color-rule-strong: rgba(244, 234, 212, 0.3);
+  --color-gold: #d9b858;
+  --color-gold-soft: rgba(217, 184, 88, 0.18);
+  --color-danger: #c84a3a;
+}
+
+html.light {
+  --color-bg: #f4ead4;
+  --color-bg-raised: #ebdec0;
+  --color-bg-panel: rgba(244, 234, 212, 0.92);
+  --color-bg-panel-solid: #f4ead4;
+  --color-ink: #1a0e08;
+  --color-ink-muted: rgba(26, 14, 8, 0.66);
+  --color-ink-faint: rgba(26, 14, 8, 0.38);
+  --color-rule: rgba(26, 14, 8, 0.15);
+  --color-rule-strong: rgba(26, 14, 8, 0.3);
+  --color-gold: #a88230;
+  --color-gold-soft: rgba(168, 130, 48, 0.12);
+  --color-danger: #a03020;
+}
+
+@theme inline {
+  --color-bg: var(--color-bg);
+  --color-bg-raised: var(--color-bg-raised);
+  --color-bg-panel: var(--color-bg-panel);
+  --color-bg-panel-solid: var(--color-bg-panel-solid);
+  --color-ink: var(--color-ink);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-ink-faint: var(--color-ink-faint);
+  --color-rule: var(--color-rule);
+  --color-rule-strong: var(--color-rule-strong);
+  --color-gold: var(--color-gold);
+  --color-gold-soft: var(--color-gold-soft);
+  --color-danger: var(--color-danger);
+
+  --font-serif: var(--font-cormorant), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+body {
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-rule);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Utilities not in Tailwind's core — used by book spine typography */
+@utility writing-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
