@@ -50,28 +50,28 @@ export default function LandingPage() {
         <Wordmark size={mobile ? 22 : 26} />
       </header>
 
-      <section className="mx-auto grid max-w-page grid-cols-1 items-center gap-9 px-5 pt-6 pb-28 md:min-h-[calc(100vh-5.625rem)] md:grid-cols-[1.05fr_1fr] md:gap-15 md:px-16 md:pt-8 md:pb-20">
-        <div className="mx-auto max-w-xl text-center md:mx-0 md:justify-self-start md:text-left">
+      <section className="mx-auto grid max-w-page grid-cols-1 items-center gap-9 px-5 pt-6 pb-20 md:px-16 md:pt-8 md:pb-24 lg:min-h-[calc(100vh-5.625rem)] lg:grid-cols-[1.05fr_1fr] lg:gap-15 lg:pb-20">
+        <div className="mx-auto max-w-xl text-center lg:mx-0 lg:justify-self-start lg:text-left">
           <Eyebrow className="mb-4 !text-2xs md:mb-6 md:!text-xs">
             A year in books · visualised
           </Eyebrow>
-          <Display className="mb-5 !text-display md:mb-7 md:!text-display-xl">
+          <Display className="mb-5 !text-display md:mb-7 lg:!text-display-xl">
             Your&nbsp;bookshelf,
             <br />
             beautifully.
           </Display>
-          <p className="mx-auto mb-7 max-w-lg font-serif text-lg italic leading-normal text-ink-muted md:mx-0 md:mb-9 md:text-xl">
+          <p className="mx-auto mb-7 max-w-lg font-serif text-lg italic leading-normal text-ink-muted md:mb-9 md:text-xl lg:mx-0">
             Turn your reading history into a shareable shelf. Import from
             Goodreads, paste a list of ISBNs, or just your memory — we&apos;ll
             do the rest.
           </p>
-          <div className="flex flex-col gap-2.5 md:flex-row md:justify-start">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:justify-center lg:justify-start">
             <Link
               href="/import"
               onClick={() => trackEvent("landing_cta_click", { cta: "start" })}
-              className="contents md:inline-block"
+              className="contents sm:inline-block"
             >
-              <Button size="md" className="w-full md:w-auto">
+              <Button size="md" className="w-full sm:w-auto">
                 Start your shelf
                 <Icon name="arrowRight" size={16} />
               </Button>
@@ -79,9 +79,9 @@ export default function LandingPage() {
             <Link
               href="/editor"
               onClick={() => trackEvent("landing_cta_click", { cta: "demo" })}
-              className="contents md:inline-block"
+              className="contents sm:inline-block"
             >
-              <Button size="md" variant="secondary" className="w-full md:w-auto">
+              <Button size="md" variant="secondary" className="w-full sm:w-auto">
                 Try the demo
               </Button>
             </Link>
@@ -91,7 +91,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div className="flex items-center justify-center pt-2 md:pt-0">
+        <div className="flex items-center justify-center pt-2 lg:pt-0">
           <div className="relative rounded-xs bg-[#0a0604] p-1.5 shadow-[0_2.5rem_5rem_rgba(0,0,0,0.6),_0_0.875rem_1.875rem_rgba(0,0,0,0.4)]">
             <div
               className="relative overflow-hidden border border-black/50 outline outline-ink/8"

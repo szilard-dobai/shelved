@@ -55,26 +55,26 @@ export default function EditorPage() {
   const editingIndex = editing?.mode === "edit" ? editing.index : null;
 
   return (
-    <div className="bg-bg text-ink flex flex-col md:h-[100dvh]">
-      <div className="sticky top-0 z-10 bg-bg flex-shrink-0 md:static">
-        <div className="flex items-center justify-between px-4 py-[14px] md:px-8 md:py-[18px] border-b border-rule gap-2">
-          <div className="flex items-center gap-[10px] md:gap-5 min-w-0">
+    <div className="flex flex-col bg-bg text-ink md:h-[100dvh]">
+      <header className="sticky top-0 z-10 flex-shrink-0 bg-bg md:static">
+        <div className="flex items-center justify-between gap-2 border-b border-rule px-4 py-3.5 md:px-8 md:py-4">
+          <div className="flex min-w-0 items-center gap-2.5 md:gap-5">
             <Link
               href="/import"
-              className="flex items-center gap-2 text-ink-muted hover:text-ink text-[13px] font-sans"
+              className="flex items-center gap-2 font-sans text-md text-ink-muted hover:text-ink"
               aria-label="Back"
             >
               <Icon name="arrowLeft" size={16} />
               <span className="hidden md:inline">Back</span>
             </Link>
-            <div className="hidden md:block w-px h-5 bg-rule" />
-            <Wordmark size={20} className="!text-[18px] md:!text-[20px]" />
-            <div className="hidden md:block font-sans text-xs text-ink-faint tracking-[0.3em] ml-2">
+            <div className="hidden h-5 w-px bg-rule md:block" />
+            <Wordmark size={mobile ? 18 : 20} />
+            <div className="ml-2 hidden font-sans text-xs tracking-eyebrow text-ink-faint md:block">
               STEP 2 · EDITOR
             </div>
           </div>
-          <div className="flex gap-3 items-center flex-shrink-0">
-            <div className="hidden md:block font-sans text-[13px] text-ink-muted">
+          <div className="flex flex-shrink-0 items-center gap-3">
+            <div className="hidden font-sans text-md text-ink-muted md:block">
               {books.length} books ·{" "}
               {books.reduce((s, b) => s + b.pages, 0).toLocaleString()} pages
             </div>
@@ -87,7 +87,7 @@ export default function EditorPage() {
           </div>
         </div>
 
-        <div className="md:hidden flex border-b border-rule">
+        <div className="flex border-b border-rule md:hidden">
           {[
             { id: "books" as const, label: "Books" },
             { id: "preview" as const, label: "Preview" },
@@ -98,8 +98,7 @@ export default function EditorPage() {
                 key={tab.id}
                 onClick={() => setMobileTab(tab.id)}
                 className={[
-                  "flex-1 py-3 bg-transparent border-0 font-sans text-[11px] font-medium uppercase tracking-[0.24em] cursor-pointer",
-                  "border-b-2",
+                  "flex-1 cursor-pointer border-0 border-b-2 bg-transparent py-3 font-sans text-xs font-medium uppercase tracking-widest",
                   active
                     ? "border-gold text-ink"
                     : "border-transparent text-ink-muted",
@@ -110,21 +109,20 @@ export default function EditorPage() {
             );
           })}
         </div>
-      </div>
+      </header>
 
       <div className="flex flex-col md:flex-1 md:flex-row md:min-h-0">
-        <div
+        <section
           className={[
-            "min-w-0 md:flex-1 md:overflow-auto",
-            "border-b md:border-b-0 md:border-r border-rule",
-            "px-4 pt-[18px] pb-10 md:px-8 md:pt-6 md:pb-28",
+            "border-b border-rule px-4 pt-4 pb-10 md:border-b-0 md:border-r md:flex-1 md:overflow-auto md:px-8 md:pt-6 md:pb-28",
+            "min-w-0",
             mobile && mobileTab !== "books" ? "hidden" : "block",
           ].join(" ")}
         >
-          <div className="flex items-baseline justify-between mb-[18px]">
+          <div className="mb-4 flex items-baseline justify-between">
             <div>
               <Eyebrow>Your library</Eyebrow>
-              <div className="font-serif italic text-[36px] mt-1 text-ink">
+              <div className="mt-1 font-serif text-4xl italic text-ink">
                 {books.length} books
               </div>
             </div>
@@ -136,80 +134,25 @@ export default function EditorPage() {
 
           <Hairline className="mb-5" />
 
-          <div className="grid gap-[14px] md:gap-5 [grid-template-columns:repeat(auto-fill,minmax(100px,1fr))] md:[grid-template-columns:repeat(auto-fill,minmax(130px,1fr))]">
+          <div className="grid gap-3.5 [grid-template-columns:repeat(auto-fill,minmax(6.25rem,1fr))] md:gap-5 md:[grid-template-columns:repeat(auto-fill,minmax(8.125rem,1fr))]">
             {books.map((b, i) => (
-              <button
+              <BookCard
                 key={i}
+                book={b}
+                selected={editingIndex === i}
                 onClick={() => openEdit(i)}
-                className="bg-transparent border-none cursor-pointer p-0 text-left text-ink group"
-              >
-                <div
-                  className={`aspect-[2/3] w-full p-[10px] box-border flex flex-col justify-between transition-transform group-hover:-translate-y-[3px] ${
-                    editingIndex === i
-                      ? "outline outline-2 outline-gold outline-offset-[3px]"
-                      : ""
-                  }`}
-                  style={{
-                    background: b.spineColor,
-                    boxShadow: `inset 0 0 0 1px ${
-                      b.accent === "gold" ? "#d9b858" : "rgba(0,0,0,0.3)"
-                    }, 0 4px 14px rgba(0,0,0,0.5)`,
-                  }}
-                >
-                  <div>
-                    <div
-                      className="h-[2px] mb-2"
-                      style={{
-                        background:
-                          b.accent === "gold"
-                            ? "#d9b858"
-                            : darken(b.spineColor, 0.4),
-                      }}
-                    />
-                    <div
-                      className="font-serif font-semibold text-[11px] leading-[1.15] line-clamp-3"
-                      style={{
-                        color: b.textColor,
-                        letterSpacing: "-0.005em",
-                        fontStyle: b.accent === "gold" ? "italic" : "normal",
-                      }}
-                    >
-                      {b.title}
-                    </div>
-                  </div>
-                  <div
-                    className="font-sans text-[9px] whitespace-nowrap overflow-hidden text-ellipsis opacity-75 tracking-[0.06em]"
-                    style={{ color: b.textColor }}
-                  >
-                    {b.author}
-                  </div>
-                </div>
-                <div className="mt-[10px] font-sans text-[11px] text-ink-muted leading-[1.35]">
-                  <div className="text-ink font-medium text-[12px] overflow-hidden text-ellipsis whitespace-nowrap">
-                    {b.title}
-                  </div>
-                  <div className="italic opacity-70">{b.author}</div>
-                  <div className="text-[10px] tracking-[0.08em] mt-[2px] opacity-55">
-                    {"★".repeat(b.rating)}
-                    <span className="opacity-30">
-                      {"★".repeat(5 - b.rating)}
-                    </span>{" "}
-                    · {b.year}
-                  </div>
-                </div>
-              </button>
+              />
             ))}
           </div>
-        </div>
+        </section>
 
-        <div
+        <section
           className={[
-            "flex-shrink-0 bg-bg-raised flex-col md:min-h-0",
-            "w-full md:w-[min(54%,760px)]",
+            "w-full flex-shrink-0 flex-col bg-bg-raised md:w-[min(54%,47.5rem)] md:min-h-0",
             mobile && mobileTab !== "preview" ? "hidden" : "flex",
           ].join(" ")}
         >
-          <div className="flex items-center justify-center p-4 md:p-8 md:flex-1 md:overflow-hidden md:min-h-0">
+          <div className="flex items-center justify-center p-4 md:flex-1 md:overflow-hidden md:p-8 md:min-h-0">
             <ShelfPreview
               fitMode={mobile ? "viewport" : "height"}
               heightOffset={mobile ? 280 : 220}
@@ -225,23 +168,20 @@ export default function EditorPage() {
             </ShelfPreview>
           </div>
 
-          <div
-            className="flex-shrink-0 px-4 pt-[14px] pb-20 md:px-6 md:pt-[18px] md:pb-5 border-t border-rule"
-            style={{ background: "var(--color-bg-panel-solid)" }}
-          >
-            <div className="mb-[14px]">
-              <Eyebrow className="mb-[6px] !text-[10px]">Title</Eyebrow>
+          <div className="flex-shrink-0 border-t border-rule bg-bg-panel-solid px-4 pt-3.5 pb-20 md:px-6 md:pt-4 md:pb-5">
+            <div className="mb-3.5">
+              <Eyebrow className="mb-1.5 !text-2xs">Title</Eyebrow>
               <input
                 value={userTitle}
                 onChange={(e) => {
                   patch({ userTitle: e.target.value });
                   trackEvent("title_edited");
                 }}
-                className="w-full box-border bg-transparent border-0 border-b border-rule text-ink font-serif italic text-[20px] md:text-[24px] py-1 outline-none"
+                className="box-border w-full border-0 border-b border-rule bg-transparent py-1 font-serif text-xl italic text-ink outline-none md:text-2xl"
               />
             </div>
 
-            <div className="grid gap-[10px] md:gap-[14px] [grid-template-columns:repeat(auto-fit,minmax(110px,1fr))] md:[grid-template-columns:repeat(auto-fit,minmax(150px,1fr))]">
+            <div className="grid gap-2.5 [grid-template-columns:repeat(auto-fit,minmax(6.875rem,1fr))] md:gap-3.5 md:[grid-template-columns:repeat(auto-fit,minmax(9.375rem,1fr))]">
               <SegControl<ShelfStyle>
                 label="Style"
                 options={[
@@ -283,7 +223,7 @@ export default function EditorPage() {
               />
             </div>
           </div>
-        </div>
+        </section>
       </div>
 
       {editing && (
@@ -295,6 +235,75 @@ export default function EditorPage() {
         />
       )}
     </div>
+  );
+}
+
+function BookCard({
+  book,
+  selected,
+  onClick,
+}: {
+  book: Book;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  const accentColor = book.accent === "gold" ? "#d9b858" : null;
+  return (
+    <button
+      onClick={onClick}
+      className="group cursor-pointer border-none bg-transparent p-0 text-left text-ink"
+    >
+      <div
+        className={[
+          "box-border flex aspect-[2/3] w-full flex-col justify-between p-2.5 transition-transform group-hover:-translate-y-0.5",
+          selected
+            ? "outline outline-2 outline-offset-4 outline-gold"
+            : "",
+        ].join(" ")}
+        style={{
+          background: book.spineColor,
+          boxShadow: `inset 0 0 0 1px ${
+            accentColor ?? "rgba(0,0,0,0.3)"
+          }, 0 0.25rem 0.875rem rgba(0,0,0,0.5)`,
+        }}
+      >
+        <div>
+          <div
+            className="mb-2 h-0.5"
+            style={{
+              background: accentColor ?? darken(book.spineColor, 0.4),
+            }}
+          />
+          <div
+            className="line-clamp-3 font-serif text-xs font-semibold leading-cover"
+            style={{
+              color: book.textColor,
+              letterSpacing: "-0.005em",
+              fontStyle: book.accent === "gold" ? "italic" : "normal",
+            }}
+          >
+            {book.title}
+          </div>
+        </div>
+        <div
+          className="overflow-hidden text-ellipsis whitespace-nowrap font-sans text-2xs tracking-wide opacity-75"
+          style={{ color: book.textColor }}
+        >
+          {book.author}
+        </div>
+      </div>
+      <div className="mt-2.5 font-sans text-xs leading-snug text-ink-muted">
+        <div className="overflow-hidden text-ellipsis whitespace-nowrap text-xs font-medium text-ink">
+          {book.title}
+        </div>
+        <div className="italic opacity-70">{book.author}</div>
+        <div className="mt-0.5 text-2xs tracking-wide opacity-55">
+          {"★".repeat(book.rating)}
+          <span className="opacity-30">{"★".repeat(5 - book.rating)}</span> ·{" "}
+          {book.year}
+        </div>
+      </div>
+    </button>
   );
 }
 
@@ -311,8 +320,8 @@ function SegControl<T extends string>({
 }) {
   return (
     <div>
-      <Eyebrow className="mb-[6px] !text-[10px]">{label}</Eyebrow>
-      <div className="flex border border-rule rounded-[2px]">
+      <Eyebrow className="mb-1.5 !text-2xs">{label}</Eyebrow>
+      <div className="flex rounded-xs border border-rule">
         {options.map((o, i) => {
           const active = value === o.id;
           return (
@@ -320,7 +329,7 @@ function SegControl<T extends string>({
               key={o.id}
               onClick={() => onChange(o.id)}
               className={[
-                "flex-1 min-w-0 py-2 px-1 text-[11px] font-sans font-medium uppercase tracking-[0.12em] whitespace-nowrap overflow-hidden text-ellipsis cursor-pointer border-0",
+                "flex-1 min-w-0 cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap border-0 px-1 py-2 font-sans text-xs font-medium uppercase tracking-wider",
                 i === 0 ? "" : "border-l border-rule",
                 active
                   ? "bg-ink text-bg"
@@ -336,6 +345,9 @@ function SegControl<T extends string>({
   );
 }
 
+const TITLE_PLACEHOLDER = "Untitled";
+const AUTHOR_PLACEHOLDER = "Unknown author";
+
 function BookEditModal({
   initial,
   mode,
@@ -349,9 +361,6 @@ function BookEditModal({
 }) {
   const [draft, setDraft] = useState<Book>(initial);
   const [confirmingDiscard, setConfirmingDiscard] = useState(false);
-
-  const TITLE_PLACEHOLDER = "Untitled";
-  const AUTHOR_PLACEHOLDER = "Unknown author";
 
   const isDirty = useMemo(
     () => JSON.stringify(draft) !== JSON.stringify(initial),
@@ -370,42 +379,39 @@ function BookEditModal({
     }
   };
 
+  const accentColor = draft.accent === "gold" ? "#d9b858" : null;
+
   return (
     <>
       <div
         onClick={requestClose}
-        className="fixed inset-0 flex items-end md:items-center justify-center z-[100]"
-        style={{ background: "rgba(0,0,0,0.6)" }}
+        className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 md:items-center"
       >
         <div
           onClick={(e) => e.stopPropagation()}
-          className="relative border border-rule p-6 md:p-9 w-full md:w-[540px] md:max-w-[calc(100%-40px)] max-h-[92vh] md:max-h-none overflow-y-auto md:overflow-visible text-ink"
-          style={{ background: "var(--color-bg-panel-solid)" }}
+          className="relative max-h-[92vh] w-full overflow-y-auto border border-rule bg-bg-panel-solid p-6 text-ink md:max-h-none md:w-[33.75rem] md:max-w-[calc(100%-2.5rem)] md:overflow-visible md:p-9"
         >
           <button
             onClick={requestClose}
             aria-label="Close"
-            className="absolute top-4 right-4 bg-transparent border-0 cursor-pointer text-ink-muted hover:text-ink"
+            className="absolute right-4 top-4 cursor-pointer border-0 bg-transparent text-ink-muted hover:text-ink"
           >
             <Icon name="x" size={20} />
           </button>
           <Eyebrow>{mode === "create" ? "Add a book" : "Edit book"}</Eyebrow>
-          <div className="flex flex-col md:flex-row gap-[18px] md:gap-6 mt-5 items-center md:items-stretch">
+          <div className="mt-5 flex flex-col items-center gap-4 md:flex-row md:items-stretch md:gap-6">
             <div
-              className="w-20 h-[120px] md:w-[100px] md:h-[150px] flex-shrink-0 p-[10px] box-border shadow-[0_6px_20px_rgba(0,0,0,0.4)]"
+              className="box-border h-[7.5rem] w-20 flex-shrink-0 p-2.5 shadow-[0_0.375rem_1.25rem_rgba(0,0,0,0.4)] md:h-[9.375rem] md:w-[6.25rem]"
               style={{ background: draft.spineColor }}
             >
               <div
-                className="h-[2px] mb-2"
+                className="mb-2 h-0.5"
                 style={{
-                  background:
-                    draft.accent === "gold"
-                      ? "#d9b858"
-                      : darken(draft.spineColor, 0.4),
+                  background: accentColor ?? darken(draft.spineColor, 0.4),
                 }}
               />
               <div
-                className="font-serif italic font-semibold text-[12px] leading-[1.15]"
+                className="font-serif text-xs font-semibold italic leading-cover"
                 style={{
                   color: draft.textColor,
                   opacity: draft.title.trim() ? 1 : 0.5,
@@ -414,7 +420,7 @@ function BookEditModal({
                 {draft.title.trim() || TITLE_PLACEHOLDER}
               </div>
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 flex-1">
               <Field
                 label="Title"
                 value={draft.title}
@@ -427,7 +433,7 @@ function BookEditModal({
                 onChange={(v) => updateDraft({ author: v })}
                 placeholder={AUTHOR_PLACEHOLDER}
               />
-              <div className="flex gap-[14px] mt-[10px]">
+              <div className="mt-2.5 flex gap-3.5">
                 <Field
                   label="Year"
                   value={draft.year}
@@ -449,7 +455,7 @@ function BookEditModal({
               </div>
             </div>
           </div>
-          <Hairline className="my-[18px] mt-7" />
+          <Hairline className="my-4 mt-7" />
           <div className="flex justify-end gap-3">
             <Button variant="secondary" onClick={requestClose}>
               Cancel
@@ -473,16 +479,14 @@ function BookEditModal({
       {confirmingDiscard && (
         <div
           onClick={() => setConfirmingDiscard(false)}
-          className="fixed inset-0 z-[110] flex items-center justify-center px-4"
-          style={{ background: "rgba(0,0,0,0.55)" }}
+          className="fixed inset-0 z-[110] flex items-center justify-center bg-black/55 px-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="border border-rule p-6 md:p-7 w-full max-w-[380px] text-ink text-center"
-            style={{ background: "var(--color-bg-panel-solid)" }}
+            className="w-full max-w-sm border border-rule bg-bg-panel-solid p-6 text-center text-ink md:p-7"
           >
             <Eyebrow className="mb-3">Discard changes?</Eyebrow>
-            <p className="font-serif italic text-[18px] text-ink-muted mb-6 leading-[1.45]">
+            <p className="mb-6 font-serif text-lg italic leading-snug text-ink-muted">
               {mode === "create"
                 ? "This book hasn't been added yet. Close anyway?"
                 : "Your edits to this book will be lost."}
@@ -520,16 +524,16 @@ function Field({
   placeholder?: string;
 }) {
   return (
-    <div className={`flex-1 min-w-0 ${small ? "" : "mt-[10px]"}`}>
-      <div className="font-sans text-[10px] tracking-[0.2em] text-ink-faint uppercase mb-1">
+    <div className={`min-w-0 flex-1 ${small ? "" : "mt-2.5"}`}>
+      <div className="mb-1 font-sans text-2xs uppercase tracking-widest text-ink-faint">
         {label}
       </div>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full box-border bg-transparent border-0 border-b border-rule text-ink font-serif py-1 outline-none placeholder:text-ink-faint placeholder:italic ${
-          small ? "text-[16px]" : "text-[18px]"
+        className={`box-border w-full border-0 border-b border-rule bg-transparent py-1 font-serif text-ink outline-none placeholder:italic placeholder:text-ink-faint ${
+          small ? "text-base" : "text-lg"
         }`}
       />
     </div>

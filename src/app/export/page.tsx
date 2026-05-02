@@ -14,6 +14,7 @@ import { ShelfPreview } from "@/components/ShelfPreview";
 import { Shelf } from "@/components/shelves";
 import { QRCode } from "@/components/decor/QRCode";
 import { useAppState } from "@/lib/app-state";
+import { useIsMobile } from "@/lib/use-media";
 import { trackEvent } from "@/lib/tracking";
 
 interface ShareInfo {
@@ -26,6 +27,7 @@ interface ShareInfo {
 export default function ExportPage() {
   const { state, rememberShare } = useAppState();
   const { books, userTitle, sortMode, style } = state;
+  const mobile = useIsMobile();
   const [share, setShare] = useState<ShareInfo | null>(null);
   const [publishing, setPublishing] = useState(false);
   const [copiedView, setCopiedView] = useState(false);
@@ -85,33 +87,47 @@ export default function ExportPage() {
     } catch {}
   };
 
+  const stats = [
+    { label: "books", value: String(books.length) },
+    {
+      label: "pages",
+      value: books.reduce((s, b) => s + b.pages, 0).toLocaleString(),
+    },
+    {
+      label: "avg",
+      value: books.length
+        ? (books.reduce((s, b) => s + b.rating, 0) / books.length).toFixed(1)
+        : "0.0",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-bg text-ink">
-      <div className="sticky top-0 z-10 bg-bg flex items-center justify-between px-4 py-[14px] md:px-8 md:py-[18px] border-b border-rule gap-2">
-        <div className="flex items-center gap-[10px] md:gap-5 min-w-0">
+      <header className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-rule bg-bg px-4 py-3.5 md:px-8 md:py-4">
+        <div className="flex min-w-0 items-center gap-2.5 md:gap-5">
           <Link
             href="/editor"
-            className="flex items-center gap-2 text-ink-muted hover:text-ink text-[13px] font-sans"
+            className="flex items-center gap-2 font-sans text-md text-ink-muted hover:text-ink"
             aria-label="Back to editor"
           >
             <Icon name="arrowLeft" size={16} />
             <span className="hidden md:inline">Back to editor</span>
           </Link>
-          <div className="hidden md:block w-px h-5 bg-rule" />
-          <Wordmark size={20} className="!text-[18px] md:!text-[20px]" />
-          <div className="hidden md:block font-sans text-xs text-ink-faint tracking-[0.3em] ml-2">
+          <div className="hidden h-5 w-px bg-rule md:block" />
+          <Wordmark size={mobile ? 18 : 20} />
+          <div className="ml-2 hidden font-sans text-xs tracking-eyebrow text-ink-faint md:block">
             STEP 3 · SHARE
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_420px] gap-7 md:gap-10 px-5 py-6 md:p-10 max-w-[1400px] mx-auto">
-        <div className="flex justify-center items-start">
+      <section className="mx-auto grid max-w-page grid-cols-1 gap-7 px-5 py-6 md:grid-cols-[1fr_26.25rem] md:gap-10 md:p-10">
+        <div className="flex items-start justify-center">
           <ShelfPreview
             fitMode="viewport"
             heightOffset={240}
             widthOffset={40}
-            maxScale={0.5}
+            maxScale={mobile ? 0.25 : 0.5}
           >
             <Shelf
               style={style}
@@ -124,19 +140,19 @@ export default function ExportPage() {
 
         <div>
           <Eyebrow className="mb-3">Ready to share</Eyebrow>
-          <Display size="lg" className="mb-[18px] !text-[44px] md:!text-[64px]">
+          <Display size="lg" className="mb-4 !text-5xl md:!text-display">
             {userTitle}
           </Display>
 
-          <div className="font-serif italic text-[16px] md:text-[18px] text-ink-muted mb-[22px] md:mb-7">
+          <p className="mb-5 font-serif text-base italic text-ink-muted md:mb-7 md:text-lg">
             Your shelf is ready. Download the image, share anywhere, or publish
             a link to a page where people can browse every title.
-          </div>
+          </p>
 
-          <div className="grid gap-[10px] mb-7">
+          <div className="mb-7 grid gap-2.5">
             <Button
               variant="gold"
-              size="lg"
+              size={mobile ? "md" : "lg"}
               full
               onClick={() => trackEvent("export_png_click")}
             >
@@ -171,28 +187,14 @@ export default function ExportPage() {
 
           <Hairline className="my-5" />
 
-          <div className="grid grid-cols-3 gap-[10px] md:gap-4">
-            {[
-              { k: String(books.length), l: "books" },
-              {
-                k: books.reduce((s, b) => s + b.pages, 0).toLocaleString(),
-                l: "pages",
-              },
-              {
-                k: books.length
-                  ? (
-                      books.reduce((s, b) => s + b.rating, 0) / books.length
-                    ).toFixed(1)
-                  : "0.0",
-                l: "avg",
-              },
-            ].map((it) => (
-              <div key={it.l}>
-                <div className="font-serif italic text-[32px] md:text-[42px] font-medium leading-none text-ink">
-                  {it.k}
+          <div className="grid grid-cols-3 gap-2.5 md:gap-4">
+            {stats.map((stat) => (
+              <div key={stat.label}>
+                <div className="font-serif text-3xl font-medium italic leading-none text-ink md:text-4xl">
+                  {stat.value}
                 </div>
-                <div className="text-[11px] tracking-[0.22em] uppercase text-ink-faint mt-1 font-sans">
-                  {it.l}
+                <div className="mt-1 font-sans text-xs uppercase tracking-widest text-ink-faint">
+                  {stat.label}
                 </div>
               </div>
             ))}
@@ -200,12 +202,12 @@ export default function ExportPage() {
 
           <Hairline className="my-5" />
 
-          <div className="text-xs text-ink-faint font-sans leading-[1.6]">
+          <p className="font-sans text-xs leading-relaxed text-ink-faint">
             The QR on your shelf links to a public page where viewers can see
             every title, author and rating.
-          </div>
+          </p>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
@@ -224,55 +226,39 @@ function SharePanel({
   onCopyEdit: () => void;
 }) {
   return (
-    <div className="space-y-3 mt-2">
-      <div className="border border-rule rounded-[2px] p-4 bg-bg-raised">
-        <Eyebrow className="!text-[10px] mb-2">Share this publicly</Eyebrow>
+    <div className="mt-2 space-y-3">
+      <div className="rounded-xs border border-rule bg-bg-raised p-4">
+        <Eyebrow className="mb-2 !text-2xs">Share this publicly</Eyebrow>
         <div className="flex items-center gap-2">
-          <code className="flex-1 text-xs text-ink truncate font-mono">
+          <code className="flex-1 truncate font-mono text-xs text-ink">
             {share.viewUrl}
           </code>
-          <Button variant="secondary" size="sm" onClick={onCopyView}>
-            {copiedView ? (
-              <>
-                <Icon name="check" size={12} /> Copied
-              </>
-            ) : (
-              <>Copy</>
-            )}
-          </Button>
+          <CopyButton copied={copiedView} onClick={onCopyView} />
         </div>
       </div>
 
-      <div className="border border-gold rounded-[2px] p-4 bg-gold-soft">
+      <div className="rounded-xs border border-gold bg-gold-soft p-4">
         <div className="flex items-start gap-3">
-          <div className="flex-shrink-0 mt-1 text-gold">
+          <div className="mt-1 flex-shrink-0 text-gold">
             <Icon name="edit" size={14} />
           </div>
-          <div className="flex-1 min-w-0">
-            <Eyebrow className="!text-[10px] mb-2 !text-gold">
+          <div className="min-w-0 flex-1">
+            <Eyebrow className="mb-2 !text-2xs !text-gold">
               Save to edit later
             </Eyebrow>
-            <div className="text-[12px] text-ink-muted mb-3 leading-[1.5]">
+            <p className="mb-3 text-xs leading-normal text-ink-muted">
               Bookmark this link — it&apos;s the only way to edit your shelf. We
               can&apos;t recover it for you.
-            </div>
+            </p>
             <div className="flex items-center gap-2">
-              <code className="flex-1 text-xs text-ink truncate font-mono">
+              <code className="flex-1 truncate font-mono text-xs text-ink">
                 {share.editUrl}
               </code>
-              <Button variant="secondary" size="sm" onClick={onCopyEdit}>
-                {copiedEdit ? (
-                  <>
-                    <Icon name="check" size={12} /> Copied
-                  </>
-                ) : (
-                  <>Copy</>
-                )}
-              </Button>
+              <CopyButton copied={copiedEdit} onClick={onCopyEdit} />
             </div>
 
-            <div className="flex items-center gap-3 mt-4 pt-4 border-t border-rule">
-              <div className="flex-shrink-0 p-2 bg-[#f4ead4]">
+            <div className="mt-4 flex items-center gap-3 border-t border-rule pt-4">
+              <div className="flex-shrink-0 bg-[#f4ead4] p-2">
                 <QRCode
                   size={72}
                   bg="#f4ead4"
@@ -280,15 +266,35 @@ function SharePanel({
                   seed={share.editUrl}
                 />
               </div>
-              <div className="text-[11px] text-ink-muted leading-[1.5] font-sans">
+              <p className="font-sans text-xs leading-normal text-ink-muted">
                 On your laptop?{" "}
                 <span className="text-ink">Scan with your phone</span> to open
                 the editor there too.
-              </div>
+              </p>
             </div>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+function CopyButton({
+  copied,
+  onClick,
+}: {
+  copied: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <Button variant="secondary" size="sm" onClick={onClick}>
+      {copied ? (
+        <>
+          <Icon name="check" size={12} /> Copied
+        </>
+      ) : (
+        <>Copy</>
+      )}
+    </Button>
   );
 }

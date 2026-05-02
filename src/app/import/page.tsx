@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { Eyebrow, Display, Wordmark } from "@/components/ui/typography";
+import { Display, Eyebrow, Wordmark } from "@/components/ui/typography";
 import { Icon, type IconName } from "@/components/ui/Icon";
+import { useIsMobile } from "@/lib/use-media";
 import { trackEvent } from "@/lib/tracking";
 
 type Method = "csv" | "storygraph" | "search" | null;
@@ -44,6 +45,7 @@ const METHODS: MethodCard[] = [
 
 export default function ImportPage() {
   const router = useRouter();
+  const mobile = useIsMobile();
   const [method, setMethod] = useState<Method>(null);
   const [dragOver, setDragOver] = useState(false);
   const [title, setTitle] = useState("");
@@ -62,35 +64,35 @@ export default function ImportPage() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <div className="sticky top-0 z-[5] flex items-center justify-between px-5 py-4 md:px-12 md:py-6 bg-bg border-b border-rule gap-3">
-        <div className="flex items-center gap-3 md:gap-5 min-w-0">
+      <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-rule bg-bg px-5 py-4 md:px-12 md:py-6">
+        <div className="flex min-w-0 items-center gap-3 md:gap-5">
           <Link
             href="/"
-            className="flex items-center gap-2 text-ink-muted hover:text-ink text-[13px] font-sans"
+            className="flex items-center gap-2 font-sans text-md text-ink-muted hover:text-ink"
             aria-label="Back"
           >
             <Icon name="arrowLeft" size={16} />
             <span className="hidden md:inline">Back</span>
           </Link>
-          <div className="hidden md:block w-px h-5 bg-rule" />
-          <Wordmark size={20} className="!text-[18px] md:!text-[20px]" />
+          <div className="hidden h-5 w-px bg-rule md:block" />
+          <Wordmark size={mobile ? 18 : 20} />
         </div>
-        <div className="hidden md:block font-sans text-xs text-ink-faint tracking-[0.3em]">
+        <div className="hidden font-sans text-xs tracking-eyebrow text-ink-faint md:block">
           STEP 1 OF 3 · IMPORT
         </div>
-      </div>
+      </header>
 
-      <div className="text-center max-w-[900px] mx-auto px-5 pt-12 pb-6 md:px-12 md:pt-20 md:pb-10">
-        <Eyebrow className="mb-[14px] md:mb-5">Bring your books</Eyebrow>
-        <Display size="xl" className="!text-[48px] md:!text-[88px]">
+      <section className="mx-auto max-w-4xl px-5 pt-12 pb-6 text-center md:px-12 md:pt-20 md:pb-10">
+        <Eyebrow className="mb-3.5 md:mb-5">Bring your books</Eyebrow>
+        <Display size="xl" className="!text-5xl md:!text-display-lg">
           How do you track?
         </Display>
-        <p className="font-serif italic text-[16px] md:text-[20px] text-ink-muted mt-[18px]">
+        <p className="mt-4 font-serif text-base italic text-ink-muted md:mt-5 md:text-xl">
           Pick any method below — you can add more later.
         </p>
-      </div>
+      </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5 px-5 md:px-12 pb-6 md:pb-8 max-w-[1200px] mx-auto">
+      <section className="mx-auto grid max-w-6xl grid-cols-1 gap-3 px-5 pb-6 md:grid-cols-3 md:gap-5 md:px-12 md:pb-8">
         {METHODS.map((m) => {
           const active = method === m.id;
           return (
@@ -98,34 +100,32 @@ export default function ImportPage() {
               key={m.id}
               onClick={() => selectMethod(m.id)}
               className={[
-                "text-left rounded-[2px] p-8 cursor-pointer text-ink font-sans relative transition-all",
+                "relative cursor-pointer rounded-xs p-8 text-left font-sans text-ink transition-all",
                 active
-                  ? "bg-bg-raised border border-gold"
-                  : "bg-transparent border border-rule hover:border-rule-strong",
+                  ? "border border-gold bg-bg-raised"
+                  : "border border-rule bg-transparent hover:border-rule-strong",
               ].join(" ")}
             >
               {m.tag && (
-                <div className="absolute top-4 right-4 text-[10px] uppercase tracking-[0.2em] text-gold">
+                <div className="absolute right-4 top-4 text-2xs uppercase tracking-widest text-gold">
                   {m.tag}
                 </div>
               )}
-              <div
-                className={`mb-4 md:mb-5 ${active ? "text-gold" : "text-ink"}`}
-              >
+              <div className={`mb-4 md:mb-5 ${active ? "text-gold" : "text-ink"}`}>
                 <Icon name={m.icon} size={28} />
               </div>
-              <div className="font-serif italic text-[22px] md:text-[28px] font-medium mb-2 text-ink">
+              <div className="mb-2 font-serif text-2xl font-medium italic text-ink md:text-3xl">
                 {m.label}
               </div>
-              <div className="text-sm text-ink-muted leading-[1.5]">
+              <div className="text-sm leading-normal text-ink-muted">
                 {m.blurb}
               </div>
             </button>
           );
         })}
-      </div>
+      </section>
 
-      <div className="px-5 pt-4 pb-12 md:px-12 md:pt-5 max-w-[1200px] mx-auto min-h-[360px]">
+      <section className="mx-auto min-h-[22.5rem] max-w-6xl px-5 pt-4 pb-12 md:px-12 md:pt-5">
         {isCsv && (
           <div
             onDragOver={(e) => {
@@ -139,19 +139,19 @@ export default function ImportPage() {
               trackEvent("csv_upload", { source: "drop", from: method });
             }}
             className={[
-              "rounded-[2px] p-8 md:p-16 text-center border-2 border-dashed transition-all",
+              "rounded-xs border-2 border-dashed p-8 text-center transition-all md:p-16",
               dragOver
                 ? "border-gold bg-gold-soft"
                 : "border-rule-strong bg-bg-raised",
             ].join(" ")}
           >
-            <div className="text-gold flex justify-center">
+            <div className="flex justify-center text-gold">
               <Icon name="upload" size={40} />
             </div>
-            <div className="font-serif italic text-[24px] md:text-[32px] mt-4 md:mt-5 text-ink">
+            <div className="mt-4 font-serif text-2xl italic text-ink md:mt-5 md:text-3xl">
               Drop your export here
             </div>
-            <div className="text-sm text-ink-muted mt-2 mb-6 md:mb-7">
+            <div className="mt-2 mb-6 text-sm text-ink-muted md:mb-7">
               .csv from {sourceLabel} · up to 5,000 books
             </div>
             <Button
@@ -162,8 +162,8 @@ export default function ImportPage() {
             >
               Choose a file
             </Button>
-            <div className="mt-8 text-xs text-ink-faint font-sans">
-              <a className="text-ink-muted underline underline-offset-[3px] cursor-pointer">
+            <div className="mt-8 font-sans text-xs text-ink-faint">
+              <a className="cursor-pointer text-ink-muted underline underline-offset-2">
                 How to export from {sourceLabel} →
               </a>
             </div>
@@ -171,44 +171,23 @@ export default function ImportPage() {
         )}
 
         {method === "search" && (
-          <div className="bg-bg-raised border border-rule p-[22px] md:p-8 rounded-[2px]">
+          <div className="rounded-xs border border-rule bg-bg-raised p-6 md:p-8">
             <Eyebrow className="mb-4">Type a book to add</Eyebrow>
-            <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr_80px] gap-3 items-end">
-              <div>
-                <div className="font-sans text-[10px] tracking-[0.2em] text-ink-faint uppercase mb-1">
-                  Title
-                </div>
-                <input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. The Name of the Wind"
-                  className="w-full box-border bg-transparent border-0 border-b border-rule text-ink font-serif italic text-[22px] py-1 outline-none focus:border-rule-strong"
-                />
-              </div>
-              <div>
-                <div className="font-sans text-[10px] tracking-[0.2em] text-ink-faint uppercase mb-1">
-                  Author
-                </div>
-                <input
-                  placeholder="Patrick Rothfuss"
-                  className="w-full box-border bg-transparent border-0 border-b border-rule text-ink font-serif italic text-[22px] py-1 outline-none focus:border-rule-strong"
-                />
-              </div>
-              <div>
-                <div className="font-sans text-[10px] tracking-[0.2em] text-ink-faint uppercase mb-1">
-                  Year
-                </div>
-                <input
-                  placeholder="2007"
-                  className="w-full box-border bg-transparent border-0 border-b border-rule text-ink font-serif italic text-[22px] py-1 outline-none focus:border-rule-strong"
-                />
-              </div>
+            <div className="grid grid-cols-1 items-end gap-3 md:grid-cols-[1.4fr_1fr_5rem]">
+              <SearchField
+                label="Title"
+                placeholder="e.g. The Name of the Wind"
+                value={title}
+                onChange={setTitle}
+              />
+              <SearchField label="Author" placeholder="Patrick Rothfuss" />
+              <SearchField label="Year" placeholder="2007" />
             </div>
-            <div className="flex justify-between items-center mt-[22px] gap-3 flex-wrap">
-              <div className="font-sans text-[13px] text-ink-muted">
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+              <div className="font-sans text-md text-ink-muted">
                 You can edit covers, ratings &amp; dates next.
               </div>
-              <div className="flex gap-[10px]">
+              <div className="flex gap-2.5">
                 <Button variant="secondary" size="sm">
                   + Add another
                 </Button>
@@ -228,22 +207,48 @@ export default function ImportPage() {
         )}
 
         {!method && (
-          <div className="text-center py-8">
-            <div className="font-sans text-[13px] text-ink-faint tracking-[0.16em] uppercase">
+          <div className="py-8 text-center">
+            <div className="font-sans text-md uppercase tracking-widest text-ink-faint">
               or —
             </div>
             <div className="mt-4">
               <Link
                 href="/editor"
                 onClick={() => trackEvent("skip_with_sample_click")}
-                className="text-ink font-serif italic text-[22px] underline underline-offset-[6px] decoration-rule-strong"
+                className="font-serif text-2xl italic text-ink underline underline-offset-8 decoration-rule-strong"
               >
                 skip & try with sample books
               </Link>
             </div>
           </div>
         )}
+      </section>
+    </div>
+  );
+}
+
+function SearchField({
+  label,
+  placeholder,
+  value,
+  onChange,
+}: {
+  label: string;
+  placeholder: string;
+  value?: string;
+  onChange?: (v: string) => void;
+}) {
+  return (
+    <div>
+      <div className="mb-1 font-sans text-2xs uppercase tracking-widest text-ink-faint">
+        {label}
       </div>
+      <input
+        value={value}
+        onChange={onChange ? (e) => onChange(e.target.value) : undefined}
+        placeholder={placeholder}
+        className="box-border w-full border-0 border-b border-rule bg-transparent py-1 font-serif text-2xl italic text-ink outline-none focus:border-rule-strong"
+      />
     </div>
   );
 }

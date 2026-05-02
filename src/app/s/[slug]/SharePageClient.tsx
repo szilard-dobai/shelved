@@ -9,6 +9,7 @@ import { Icon } from "@/components/ui/Icon";
 import { ShelfPreview } from "@/components/ShelfPreview";
 import { Shelf } from "@/components/shelves";
 import { useAppState } from "@/lib/app-state";
+import { useIsMobile } from "@/lib/use-media";
 import type { BgVariant, Book, ShelfStyle, SortMode } from "@/lib/shelf/types";
 import { trackEvent } from "@/lib/tracking";
 
@@ -31,6 +32,7 @@ export function SharePageClient({
 }: Props) {
   const router = useRouter();
   const params = useSearchParams();
+  const mobile = useIsMobile();
   const { setState, rememberShare, ownedShares } = useAppState();
 
   const incomingEditKey = params.get("edit");
@@ -52,17 +54,17 @@ export function SharePageClient({
 
   return (
     <div className="min-h-screen bg-bg text-ink">
-      <div className="sticky top-0 z-10 bg-bg flex items-center justify-between px-8 py-[18px] border-b border-rule">
+      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-rule bg-bg px-8 py-4">
         <div className="flex items-center gap-5">
           <Link href="/">
-            <Wordmark size={20} />
+            <Wordmark size={mobile ? 18 : 20} />
           </Link>
-          <div className="w-px h-5 bg-rule" />
-          <div className="font-sans text-xs text-ink-faint tracking-[0.3em]">
+          <div className="h-5 w-px bg-rule" />
+          <div className="font-sans text-xs tracking-eyebrow text-ink-faint">
             SHARED SHELF · /s/{slug}
           </div>
         </div>
-        <div className="flex gap-3 items-center">
+        <div className="flex items-center gap-3">
           {canEdit && (
             <Button variant="secondary" size="sm" onClick={openInEditor}>
               <Icon name="edit" size={12} /> Edit this shelf
@@ -74,10 +76,10 @@ export function SharePageClient({
             </Button>
           </Link>
         </div>
-      </div>
+      </header>
 
-      <div className="max-w-[1400px] mx-auto px-8 py-10 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10">
-        <div className="flex justify-center items-start">
+      <section className="mx-auto grid max-w-page grid-cols-1 gap-10 px-8 py-10 lg:grid-cols-[1fr_22.5rem]">
+        <div className="flex items-start justify-center">
           <ShelfPreview heightOffset={220}>
             <Shelf
               style={style}
@@ -93,28 +95,30 @@ export function SharePageClient({
           <Display size="lg" className="mb-5">
             {userTitle}
           </Display>
-          <div className="font-serif italic text-[18px] text-ink-muted mb-7">
+          <p className="mb-7 font-serif text-lg italic text-ink-muted">
             {books.length} books · curated with{" "}
             <Link href="/" className="underline underline-offset-2">
               Shelved
             </Link>
             .
-          </div>
+          </p>
 
-          <Eyebrow className="!text-[10px] mb-2">Every title</Eyebrow>
+          <Eyebrow className="mb-2 !text-2xs">Every title</Eyebrow>
           <ul className="divide-y divide-rule">
             {books.map((b, i) => (
-              <li key={i} className="py-3 flex items-start gap-3">
+              <li key={i} className="flex items-start gap-3 py-3">
                 <div
-                  className="flex-shrink-0 mt-1 w-3 h-10"
+                  className="mt-1 h-10 w-3 flex-shrink-0"
                   style={{ background: b.spineColor }}
                 />
-                <div className="flex-1 min-w-0">
-                  <div className="text-ink font-medium leading-tight">
+                <div className="min-w-0 flex-1">
+                  <div className="font-medium leading-tight text-ink">
                     {b.title}
                   </div>
-                  <div className="text-ink-muted text-sm italic">{b.author}</div>
-                  <div className="text-ink-faint text-[11px] tracking-[0.08em] mt-[2px]">
+                  <div className="text-sm italic text-ink-muted">
+                    {b.author}
+                  </div>
+                  <div className="mt-0.5 text-xs tracking-wide text-ink-faint">
                     {"★".repeat(b.rating)}
                     <span className="opacity-30">
                       {"★".repeat(5 - b.rating)}
@@ -126,7 +130,7 @@ export function SharePageClient({
             ))}
           </ul>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
