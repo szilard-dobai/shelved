@@ -43,19 +43,14 @@ export function Spine({
   const midBandH = height * 0.22;
   const botBand = height * 0.08;
 
-  // Typography sizing
   const baseTitleFontSize = Math.max(9, Math.min(13, width * 0.45));
   const authorLastName = book.author.split(" ").slice(-1)[0];
   const authorFontSize = Math.max(7, width * 0.28);
   const hasAuthor = width > 26;
-  // Vertical text "height" ≈ character count × roughly 70% of font size.
   const authorReserve = hasAuthor
     ? authorLastName.length * authorFontSize * 0.7 + 8
     : 0;
 
-  // Try fitting the title inside the mid-band panel first. If that works at
-  // the base font in a single row, we use the panel as a decorative title
-  // frame. Otherwise fall back to the full spine height.
   const panelInnerH = midBandH - 12;
   const panelFit = fitTitle(book.title, {
     spineWidth: width - 6,
@@ -116,7 +111,6 @@ export function Spine({
                       1px 0 1px rgba(0,0,0,${tx.shadowOpacity * 0.3})`,
         }}
       >
-        {/* Gloss highlight */}
         <div
           className="absolute top-0 bottom-0 pointer-events-none"
           style={{

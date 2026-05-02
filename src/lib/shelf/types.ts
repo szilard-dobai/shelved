@@ -14,8 +14,6 @@ export interface Book {
   spineColor: string;
   textColor: string;
   accent: "gold" | "silver" | "none";
-  /** cached spine width after packing — set by packIntoRows */
   _spineWidth?: number;
-  /** cached spine width for dense (spines-only) layout */
   _spineWidth2?: number;
 }

@@ -51,7 +51,6 @@ export function MinimalShelf({ books, userTitle, sortMode }: MinimalShelfProps) 
         color: "#1a1410",
       }}
     >
-      {/* Paper grain */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -60,7 +59,6 @@ export function MinimalShelf({ books, userTitle, sortMode }: MinimalShelfProps) 
         }}
       />
 
-      {/* Header */}
       <div className="relative text-center" style={{ padding: "88px 80px 40px" }}>
         <div className="text-[18px] uppercase tracking-[0.6em] opacity-55 font-sans">
           — Shelved —
@@ -84,7 +82,6 @@ export function MinimalShelf({ books, userTitle, sortMode }: MinimalShelfProps) 
         />
       </div>
 
-      {/* Grid */}
       <div
         className="grid"
         style={{
@@ -162,7 +159,6 @@ export function MinimalShelf({ books, userTitle, sortMode }: MinimalShelfProps) 
         })}
       </div>
 
-      {/* Stats */}
       <div className="absolute left-0 right-0" style={{ bottom: 140 }}>
         <div
           className="flex justify-around items-baseline"
@@ -204,7 +200,6 @@ export function MinimalShelf({ books, userTitle, sortMode }: MinimalShelfProps) 
         </div>
       </div>
 
-      {/* Footer */}
       <div
         className="absolute left-0 right-0 bottom-0 flex items-center justify-between"
         style={{ height: 140, padding: "26px 80px" }}

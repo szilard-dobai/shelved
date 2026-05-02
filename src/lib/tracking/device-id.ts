@@ -1,7 +1,3 @@
-/**
- * Anonymous device ID persisted in localStorage. Not personally identifiable.
- */
-
 const DEVICE_ID_KEY = "shelved_device_id";
 
 function generateDeviceId(): string {

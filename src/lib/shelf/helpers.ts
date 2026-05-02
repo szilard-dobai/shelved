@@ -3,7 +3,6 @@ import type { Book } from "./types";
 export const STORY_W = 1080;
 export const STORY_H = 1920;
 
-/** Deterministic 0..1 hash of a string, FNV-1a style. */
 export function hashStr(s: string): number {
   let h = 2166136261;
   for (let i = 0; i < s.length; i++) {
@@ -61,24 +60,14 @@ export function groupByGenre(books: Book[]): GroupedBooks[] {
     .map((g) => ({ label: g, books: byGenre[g] }));
 }
 
-/**
- * Compute a spine width for a book within [minW, maxW] that's primarily
- * driven by page count, with a small seed-derived jitter so identical page
- * counts don't render identical widths. Salt lets callers get a distinct
- * jitter per layout mode (e.g. the dense spines-only shelf vs. the wood one).
- */
 export function spineWidthFor(
   book: Book,
   minW: number,
   maxW: number,
   salt = "w",
 ): number {
-  // Piecewise-linear mapping: most books sit in the 250–400 page band, so
-  // that band is stretched across the middle 50% of the width range while
-  // short/long outliers compress into the extremes. This gives visible
-  // variation where most of the data lives, instead of clustering mid-width.
   const t = pagesToWidthT(book.pages);
-  const jitter = (bookSeed(book, salt) - 0.5) * 0.14; // ±7% of the range
+  const jitter = (bookSeed(book, salt) - 0.5) * 0.14;
   const clamped = Math.max(0, Math.min(1, t + jitter));
   return Math.round(minW + clamped * (maxW - minW));
 }
@@ -103,10 +92,6 @@ function pagesToWidthT(pages: number): number {
   return 1;
 }
 
-/**
- * Pack books into rows targeting ~targetWidth pixels of spine width per row.
- * Mutates `_spineWidth` on each book for stable downstream rendering.
- */
 export function packIntoRows(
   books: Book[],
   targetWidth: number,

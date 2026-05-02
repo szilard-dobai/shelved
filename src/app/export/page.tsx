@@ -82,7 +82,6 @@ export default function ExportPage() {
 
   return (
     <div className="absolute inset-0 bg-bg text-ink overflow-auto">
-      {/* Top bar */}
       <div className="flex items-center justify-between px-4 py-[14px] md:px-8 md:py-[18px] border-b border-rule gap-2">
         <div className="flex items-center gap-[10px] md:gap-5 min-w-0">
           <Link
@@ -102,7 +101,6 @@ export default function ExportPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-[1fr_420px] gap-7 md:gap-10 px-5 py-6 md:p-10 max-w-[1400px] mx-auto">
-        {/* Preview */}
         <div className="flex justify-center items-start">
           <ShelfPreview
             fitMode="viewport"
@@ -119,7 +117,6 @@ export default function ExportPage() {
           </ShelfPreview>
         </div>
 
-        {/* Share panel */}
         <div>
           <Eyebrow className="mb-3">Ready to share</Eyebrow>
           <Display
@@ -172,7 +169,6 @@ export default function ExportPage() {
 
           <Hairline className="my-5" />
 
-          {/* Stats */}
           <div className="grid grid-cols-3 gap-[10px] md:gap-4">
             {[
               { k: String(books.length), l: "books" },
@@ -225,7 +221,6 @@ function SharePanel({
 }) {
   return (
     <div className="space-y-3 mt-2">
-      {/* Public view link */}
       <div className="border border-rule rounded-[2px] p-4 bg-bg-raised">
         <Eyebrow className="!text-[10px] mb-2">Share this publicly</Eyebrow>
         <div className="flex items-center gap-2">
@@ -244,7 +239,6 @@ function SharePanel({
         </div>
       </div>
 
-      {/* Edit link — secret */}
       <div className="border border-gold rounded-[2px] p-4 bg-gold-soft">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0 mt-1 text-gold">
@@ -273,7 +267,6 @@ function SharePanel({
               </Button>
             </div>
 
-            {/* QR for cross-device handoff */}
             <div className="flex items-center gap-3 mt-4 pt-4 border-t border-rule">
               <div className="flex-shrink-0 p-2 bg-[#f4ead4]">
                 <QRCode

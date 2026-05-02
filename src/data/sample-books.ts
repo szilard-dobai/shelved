@@ -1,12 +1,6 @@
 import type { Book } from "@/lib/shelf/types";
 
-/**
- * Sample dataset — 42 plausible books across 2024/2025/2026.
- * Spine colors curated to feel like a real shelf: warm ochres, muted greens,
- * oxblood, ink navy, cream, forest, rust. Avoid pure saturated colors.
- */
 export const SAMPLE_BOOKS: Book[] = [
-  // ── 2026 ──
   { title: "The Wandering Earth", author: "Liu Cixin", year: 2026, month: 4, pages: 442, rating: 5, genre: "Sci-fi", spineColor: "#1a2847", textColor: "#e8d9a8", accent: "gold" },
   { title: "Small Things Like These", author: "Claire Keegan", year: 2026, month: 3, pages: 114, rating: 5, genre: "Fiction", spineColor: "#d4c4a0", textColor: "#3a2818", accent: "none" },
   { title: "Piranesi", author: "Susanna Clarke", year: 2026, month: 3, pages: 272, rating: 4, genre: "Fiction", spineColor: "#6b8e8a", textColor: "#f4ead9", accent: "silver" },
@@ -15,7 +9,6 @@ export const SAMPLE_BOOKS: Book[] = [
   { title: "Tomorrow, and Tomorrow, and Tomorrow", author: "Gabrielle Zevin", year: 2026, month: 1, pages: 416, rating: 4, genre: "Fiction", spineColor: "#2d4a3a", textColor: "#e8d4a0", accent: "gold" },
   { title: "Chip War", author: "Chris Miller", year: 2026, month: 1, pages: 464, rating: 4, genre: "Nonfiction", spineColor: "#1e1e24", textColor: "#d9a84a", accent: "gold" },
 
-  // ── 2025 ──
   { title: "The Overstory", author: "Richard Powers", year: 2025, month: 12, pages: 512, rating: 5, genre: "Fiction", spineColor: "#3d5a3a", textColor: "#e4d8b8", accent: "none" },
   { title: "Demon Copperhead", author: "Barbara Kingsolver", year: 2025, month: 11, pages: 560, rating: 5, genre: "Fiction", spineColor: "#b84a28", textColor: "#f4e8d0", accent: "none" },
   { title: "Trust", author: "Hernan Diaz", year: 2025, month: 11, pages: 416, rating: 4, genre: "Fiction", spineColor: "#0f2a3a", textColor: "#c8a858", accent: "gold" },
@@ -38,7 +31,6 @@ export const SAMPLE_BOOKS: Book[] = [
   { title: "The Midnight Library", author: "Matt Haig", year: 2025, month: 1, pages: 304, rating: 3, genre: "Fiction", spineColor: "#3a3a5a", textColor: "#e8d488", accent: "gold" },
   { title: "Stolen Focus", author: "Johann Hari", year: 2025, month: 1, pages: 368, rating: 4, genre: "Nonfiction", spineColor: "#e84a38", textColor: "#f4e4c8", accent: "none" },
 
-  // ── 2024 ──
   { title: "Station Eleven", author: "Emily St. John Mandel", year: 2024, month: 12, pages: 333, rating: 5, genre: "Sci-fi", spineColor: "#4a3a5a", textColor: "#e8d4a8", accent: "none" },
   { title: "The Goldfinch", author: "Donna Tartt", year: 2024, month: 11, pages: 771, rating: 5, genre: "Fiction", spineColor: "#d9a848", textColor: "#2a1808", accent: "none" },
   { title: "Normal People", author: "Sally Rooney", year: 2024, month: 10, pages: 273, rating: 4, genre: "Fiction", spineColor: "#6b8bd9", textColor: "#f0e4c4", accent: "none" },

@@ -62,9 +62,6 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [ownedShares, setOwnedShares] = useState<Record<string, string>>({});
   const [hydrated, setHydrated] = useState(false);
 
-  // Hydrate persisted state from localStorage after mount. Calling setState
-  // inside the effect is the idiomatic bootstrap pattern here — the alternative
-  // (lazy useState initializer) would cause SSR/client hydration mismatch.
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     try {

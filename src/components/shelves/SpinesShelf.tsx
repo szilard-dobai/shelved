@@ -78,7 +78,6 @@ export function SpinesShelf({ books, userTitle, sortMode }: SpinesShelfProps) {
         color: "#e8d8b4",
       }}
     >
-      {/* Header */}
       <div className="text-center" style={{ padding: "68px 50px 40px" }}>
         <div className="text-[18px] uppercase tracking-[0.5em] opacity-55 font-sans">
           Shelved
@@ -96,7 +95,6 @@ export function SpinesShelf({ books, userTitle, sortMode }: SpinesShelfProps) {
         </div>
       </div>
 
-      {/* Shelf block */}
       <div
         className="absolute flex flex-col"
         style={{
@@ -176,12 +174,10 @@ export function SpinesShelf({ books, userTitle, sortMode }: SpinesShelfProps) {
         ))}
       </div>
 
-      {/* Stats */}
       <div className="absolute left-0 right-0" style={{ bottom: 140 }}>
         <StatsPanel books={books} palette="spines" />
       </div>
 
-      {/* Footer */}
       <div
         className="absolute left-0 right-0 bottom-0 flex items-center justify-between"
         style={{

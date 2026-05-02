@@ -60,7 +60,6 @@ export function WoodShelf({ books, userTitle, sortMode }: WoodShelfProps) {
         color: "#f2e7ce",
       }}
     >
-      {/* Ambient light cone */}
       <div
         className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
         style={{
@@ -72,7 +71,6 @@ export function WoodShelf({ books, userTitle, sortMode }: WoodShelfProps) {
         }}
       />
 
-      {/* Header */}
       <div className="relative z-[2] px-[70px] pt-[70px]">
         <div className="text-[20px] uppercase tracking-[0.4em] opacity-60 font-sans font-normal">
           Shelved
@@ -97,7 +95,6 @@ export function WoodShelf({ books, userTitle, sortMode }: WoodShelfProps) {
         </div>
       </div>
 
-      {/* Shelves */}
       <div
         className="absolute"
         style={{ left: shelfLeft, top: shelfY0, width: shelfInnerW }}
@@ -110,7 +107,6 @@ export function WoodShelf({ books, userTitle, sortMode }: WoodShelfProps) {
               className="absolute left-0 w-full"
               style={{ top: y, height: shelfH }}
             >
-              {/* Back wall shadow */}
               <div
                 className="absolute inset-0"
                 style={{
@@ -119,7 +115,6 @@ export function WoodShelf({ books, userTitle, sortMode }: WoodShelfProps) {
                 }}
               />
 
-              {/* Divider label */}
               {row.label != null && (
                 <div
                   className="absolute italic"
@@ -139,7 +134,6 @@ export function WoodShelf({ books, userTitle, sortMode }: WoodShelfProps) {
                 </div>
               )}
 
-              {/* Books */}
               <div
                 className="absolute flex items-end"
                 style={{
@@ -177,7 +171,6 @@ export function WoodShelf({ books, userTitle, sortMode }: WoodShelfProps) {
                 )}
               </div>
 
-              {/* Plank */}
               <div
                 className="absolute"
                 style={{
@@ -200,7 +193,6 @@ export function WoodShelf({ books, userTitle, sortMode }: WoodShelfProps) {
                 />
               </div>
 
-              {/* Decor anchored to plank top (bottom: 22) */}
               {ri === 0 && <Plant x={shelfInnerW - 160} bottom={22} size={130} />}
               {ri === 1 && <Mug x={shelfInnerW - 130} bottom={22} size={80} />}
               {ri === 1 && (
@@ -214,12 +206,10 @@ export function WoodShelf({ books, userTitle, sortMode }: WoodShelfProps) {
         })}
       </div>
 
-      {/* Stats */}
       <div className="absolute left-0 right-0" style={{ bottom: 140 }}>
         <StatsPanel books={books} palette="warm" />
       </div>
 
-      {/* Footer */}
       <div
         className="absolute left-0 right-0 bottom-0 flex items-center justify-between"
         style={{

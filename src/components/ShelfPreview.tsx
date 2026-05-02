@@ -5,29 +5,14 @@ import { STORY_H, STORY_W } from "@/lib/shelf/helpers";
 
 interface ShelfPreviewProps {
   children: ReactNode;
-  /** Fixed scale. If omitted, scale is computed from viewport. */
   scale?: number;
-  /** Reserved vertical space (header/footer/controls) when auto-scaling. */
   heightOffset?: number;
-  /** Reserved horizontal space (outer page padding) for viewport-fit mode. */
   widthOffset?: number;
-  /** Maximum scale when auto-scaling. */
   maxScale?: number;
-  /**
-   * "height" (default): scale fits viewport height only — appropriate when a
-   * side panel constrains width on desktop.
-   * "viewport": fits both width and height — used when the preview lives in
-   * a stacked single-column layout (mobile, or mobile-style export panels).
-   */
   fitMode?: "height" | "viewport";
   className?: string;
 }
 
-/**
- * Renders a 1080×1920 shelf artboard scaled to fit. The inner wrapper takes
- * full story dimensions; the outer box is scaled down so surrounding layout
- * stays honest about the rendered size.
- */
 export function ShelfPreview({
   children,
   scale,

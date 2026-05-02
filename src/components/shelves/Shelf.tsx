@@ -3,11 +3,6 @@ import { WoodShelf } from "./WoodShelf";
 import { MinimalShelf } from "./MinimalShelf";
 import { SpinesShelf } from "./SpinesShelf";
 
-/**
- * Dispatcher that renders the correct shelf variant without capturing a
- * dynamic component reference at the call site (keeps component identity
- * stable across renders).
- */
 export function Shelf({
   style,
   books,

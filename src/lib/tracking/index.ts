@@ -24,9 +24,6 @@ function getDeviceType(): DeviceType {
   return "desktop";
 }
 
-/**
- * Fire-and-forget event tracking. Never blocks the UI, never throws.
- */
 export function trackEvent(
   type: TrackingEventType,
   metadata?: Record<string, unknown>,

@@ -4,7 +4,6 @@ interface QRCodeProps {
   size?: number;
   bg?: string;
   fg?: string;
-  /** Encoded in the pseudo-random pattern. Keeps per-slug QR visually distinct. */
   seed?: string;
 }
 
@@ -25,11 +24,6 @@ function Finder({ x, y, fg, bg }: FinderProps) {
   );
 }
 
-/**
- * Decorative QR placeholder — not a real encoding, just a plausible-looking
- * grid keyed by `seed`. The real app would emit a scannable QR for the
- * share URL; this is the visual stand-in used in the rendered shelf image.
- */
 export function QRCode({
   size = 110,
   bg = "#fff",

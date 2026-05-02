@@ -48,7 +48,6 @@ export default function EditorPage() {
 
   return (
     <div className="absolute inset-0 bg-bg text-ink flex flex-col overflow-hidden">
-      {/* Top bar */}
       <div className="flex-shrink-0 flex items-center justify-between px-4 py-[14px] md:px-8 md:py-[18px] border-b border-rule gap-2">
         <div className="flex items-center gap-[10px] md:gap-5 min-w-0">
           <Link
@@ -79,7 +78,6 @@ export default function EditorPage() {
         </div>
       </div>
 
-      {/* Mobile tab bar */}
       <div className="md:hidden flex flex-shrink-0 border-b border-rule">
         {(
           [
@@ -104,9 +102,7 @@ export default function EditorPage() {
         })}
       </div>
 
-      {/* Main pane: row on desktop, column on mobile with tab-driven visibility */}
       <div className="flex-1 flex flex-col md:flex-row min-h-0">
-        {/* Gallery */}
         <div
           className={[
             "flex-1 min-w-0 overflow-auto",
@@ -139,7 +135,6 @@ export default function EditorPage() {
                 onClick={() => setSelected(i)}
                 className="bg-transparent border-none cursor-pointer p-0 text-left text-ink group"
               >
-                {/* Mini cover */}
                 <div
                   className={`aspect-[2/3] w-full p-[10px] box-border flex flex-col justify-between transition-transform group-hover:-translate-y-[3px] ${
                     selected === i ? "outline outline-2 outline-gold outline-offset-[3px]" : ""
@@ -197,7 +192,6 @@ export default function EditorPage() {
           </div>
         </div>
 
-        {/* Preview + controls pane */}
         <div
           className={[
             "flex-shrink-0 bg-bg-raised flex-col min-h-0",
@@ -221,7 +215,6 @@ export default function EditorPage() {
             </ShelfPreview>
           </div>
 
-          {/* Controls dock */}
           <div
             className="flex-shrink-0 px-4 pt-[14px] pb-20 md:px-6 md:pt-[18px] md:pb-5 border-t border-rule"
             style={{ background: "var(--color-bg-panel-solid)" }}
@@ -283,7 +276,6 @@ export default function EditorPage() {
         </div>
       </div>
 
-      {/* Book edit modal */}
       {selected !== null && books[selected] && (
         <BookEditModal
           book={books[selected]}
@@ -460,7 +452,6 @@ function Field({
   );
 }
 
-/** Rotation of neutral, readable spine palettes used for newly-added blanks. */
 const BLANK_PALETTE: Array<Pick<Book, "spineColor" | "textColor" | "accent">> = [
   { spineColor: "#3d5a3a", textColor: "#e4d8b8", accent: "none" },
   { spineColor: "#8b3a2f", textColor: "#f0e4c8", accent: "gold" },
