@@ -8,17 +8,10 @@ import {
   useMemo,
   useState,
 } from "react";
-import type {
-  BgVariant,
-  Book,
-  ShelfStyle,
-  SortMode,
-  ThemeMode,
-} from "@/lib/shelf/types";
+import type { BgVariant, Book, ShelfStyle, SortMode } from "@/lib/shelf/types";
 import { SAMPLE_BOOKS } from "@/data/sample-books";
 
 const STORAGE_KEY = "shelved_app_state_v1";
-const THEME_KEY = "shelved_theme";
 const OWNED_KEY = "shelved_owned_shares";
 
 export interface AppState {
@@ -41,24 +34,14 @@ interface AppStateContextValue {
   state: AppState;
   setState: (next: AppState | ((prev: AppState) => AppState)) => void;
   patch: (partial: Partial<AppState>) => void;
-  theme: ThemeMode;
-  setTheme: (t: ThemeMode) => void;
   ownedShares: Record<string, string>;
   rememberShare: (slug: string, editKey: string) => void;
 }
 
 const AppStateContext = createContext<AppStateContextValue | null>(null);
 
-function applyThemeClass(mode: ThemeMode) {
-  if (typeof document === "undefined") return;
-  const root = document.documentElement;
-  root.classList.toggle("light", mode === "light");
-  root.classList.toggle("dark", mode === "dark");
-}
-
 export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [state, setStateRaw] = useState<AppState>(DEFAULT_STATE);
-  const [theme, setThemeState] = useState<ThemeMode>("dark");
   const [ownedShares, setOwnedShares] = useState<Record<string, string>>({});
   const [hydrated, setHydrated] = useState(false);
 
@@ -68,17 +51,6 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setStateRaw({ ...DEFAULT_STATE, ...JSON.parse(raw) });
     } catch {}
-    try {
-      const t = localStorage.getItem(THEME_KEY) as ThemeMode | null;
-      if (t === "dark" || t === "light") {
-        setThemeState(t);
-        applyThemeClass(t);
-      } else {
-        applyThemeClass("dark");
-      }
-    } catch {
-      applyThemeClass("dark");
-    }
     try {
       const raw = localStorage.getItem(OWNED_KEY);
       if (raw) setOwnedShares(JSON.parse(raw));
@@ -107,14 +79,6 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setStateRaw((prev) => ({ ...prev, ...partial }));
   }, []);
 
-  const setTheme = useCallback((t: ThemeMode) => {
-    setThemeState(t);
-    applyThemeClass(t);
-    try {
-      localStorage.setItem(THEME_KEY, t);
-    } catch {}
-  }, []);
-
   const rememberShare = useCallback((slug: string, editKey: string) => {
     setOwnedShares((prev) => {
       const next = { ...prev, [slug]: editKey };
@@ -126,8 +90,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo<AppStateContextValue>(
-    () => ({ state, setState, patch, theme, setTheme, ownedShares, rememberShare }),
-    [state, setState, patch, theme, setTheme, ownedShares, rememberShare],
+    () => ({ state, setState, patch, ownedShares, rememberShare }),
+    [state, setState, patch, ownedShares, rememberShare],
   );
 
   return (

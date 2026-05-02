@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 import { AppStateProvider } from "@/lib/app-state";
-import { ThemeBoot } from "@/components/ThemeBoot";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const inter = Inter({
@@ -31,13 +31,15 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.variable} ${cormorant.variable} antialiased`}
+      suppressHydrationWarning
     >
       <body className="bg-bg text-ink font-sans min-h-screen">
-        <ThemeBoot />
-        <AppStateProvider>
-          {children}
-          <ThemeToggle />
-        </AppStateProvider>
+        <ThemeProvider>
+          <AppStateProvider>
+            {children}
+            <ThemeToggle />
+          </AppStateProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -49,7 +49,7 @@ export interface SortChangedMetadata {
 }
 
 export interface ThemeChangedMetadata {
-  theme: "dark" | "light";
+  theme: "dark" | "light" | "system";
 }
 
 export interface ShareCreatedMetadata {
