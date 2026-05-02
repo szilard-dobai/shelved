@@ -44,7 +44,7 @@ export function ShelfPreview({
 
   return (
     <div
-      className={`relative shadow-[0_20px_60px_rgba(0,0,0,0.6)] ${className}`}
+      className={`relative shadow-[0_20px_60px_rgba(0,0,0,0.6)] select-none ${className}`}
       style={{ width: STORY_W * s, height: STORY_H * s }}
     >
       <div
