@@ -21,7 +21,7 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = {
   title: "Shelved — your bookshelf, beautifully",
   description:
-    "Turn your reading history into a shareable bookshelf. Import from Goodreads, Storygraph, or just your memory.",
+    "Turn your reading history into a shareable bookshelf. Import your books from Goodreads, Storygraph, or just type them in.",
 };
 
 export default function RootLayout({

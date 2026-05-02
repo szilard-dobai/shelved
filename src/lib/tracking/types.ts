@@ -1,20 +1,15 @@
 export type TrackingEventType =
-  // Page views
   | "landing_view"
   | "import_view"
   | "editor_view"
   | "export_view"
   | "share_page_view"
   | "not_found_view"
-  // Landing
   | "landing_cta_click"
-  // Import
   | "import_method_selected"
   | "csv_upload"
-  | "isbn_import"
   | "search_result_added"
   | "skip_with_sample_click"
-  // Editor
   | "shelf_style_changed"
   | "sort_changed"
   | "background_changed"
@@ -22,13 +17,11 @@ export type TrackingEventType =
   | "book_edited"
   | "book_removed"
   | "book_added_manual"
-  // Export / share
   | "export_png_click"
   | "share_link_copied"
   | "edit_link_copied"
   | "share_created"
   | "share_edited"
-  // App chrome
   | "theme_changed";
 
 export type DeviceType = "mobile" | "tablet" | "desktop";
@@ -44,7 +37,7 @@ export interface TrackingEvent {
 }
 
 export interface ImportMethodSelectedMetadata {
-  method: "csv" | "isbn" | "search";
+  method: "csv" | "storygraph" | "search";
 }
 
 export interface ShelfStyleChangedMetadata {

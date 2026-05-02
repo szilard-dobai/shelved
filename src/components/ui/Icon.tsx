@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 export type IconName =
   | "upload"
   | "search"
-  | "hash"
   | "arrowRight"
   | "arrowLeft"
   | "download"
@@ -29,11 +28,6 @@ const paths: Record<IconName, ReactNode> = {
     <>
       <circle cx="11" cy="11" r="7" />
       <path d="M20 20l-4-4" />
-    </>
-  ),
-  hash: (
-    <>
-      <path d="M5 9h14M5 15h14M10 4l-2 16M16 4l-2 16" />
     </>
   ),
   arrowRight: <path d="M5 12h14M13 6l6 6-6 6" />,
