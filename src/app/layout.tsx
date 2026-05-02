@@ -3,7 +3,7 @@ import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 import { AppStateProvider } from "@/lib/app-state";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { Footer } from "@/components/layout/Footer";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -33,11 +33,11 @@ export default function RootLayout({
       className={`${inter.variable} ${cormorant.variable} antialiased`}
       suppressHydrationWarning
     >
-      <body className="bg-bg text-ink font-sans min-h-screen">
+      <body className="bg-bg text-ink font-sans">
         <ThemeProvider>
           <AppStateProvider>
-            {children}
-            <ThemeToggle />
+            <main>{children}</main>
+            <Footer />
           </AppStateProvider>
         </ThemeProvider>
       </body>

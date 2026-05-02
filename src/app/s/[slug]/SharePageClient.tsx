@@ -52,7 +52,7 @@ export function SharePageClient({
 
   return (
     <div className="min-h-screen bg-bg text-ink">
-      <div className="flex items-center justify-between px-8 py-[18px] border-b border-rule">
+      <div className="sticky top-0 z-10 bg-bg flex items-center justify-between px-8 py-[18px] border-b border-rule">
         <div className="flex items-center gap-5">
           <Link href="/">
             <Wordmark size={20} />

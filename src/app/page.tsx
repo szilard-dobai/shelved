@@ -40,7 +40,7 @@ export default function LandingPage() {
 
   return (
     <div
-      className="absolute inset-0 bg-bg overflow-auto"
+      className="min-h-screen bg-bg"
       style={{
         backgroundImage:
           "radial-gradient(ellipse 80% 60% at 80% 50%, rgba(217,184,88,0.06), transparent 60%)",
@@ -48,10 +48,6 @@ export default function LandingPage() {
     >
       <div className="flex items-center justify-between px-5 py-5 md:px-12 md:py-7 relative z-[2]">
         <Wordmark size={22} className="md:!text-[26px]" />
-        <div className="flex gap-7 font-sans text-[13px] text-ink-muted tracking-[0.04em]">
-          <a className="cursor-pointer hover:text-ink">Examples</a>
-          <a className="cursor-pointer hover:text-ink">About</a>
-        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-[1.05fr_1fr] gap-9 md:gap-[60px] items-center px-5 pt-6 pb-[110px] md:px-16 md:pt-8 md:pb-20 max-w-[1320px] mx-auto md:min-h-[calc(100vh-90px)]">
@@ -59,9 +55,7 @@ export default function LandingPage() {
           <Eyebrow className="mb-4 md:mb-6 text-[10px] md:text-[12px]">
             A year in books · visualised
           </Eyebrow>
-          <Display
-            className="mb-5 md:mb-7 !text-[56px] md:!text-[100px]"
-          >
+          <Display className="mb-5 md:mb-7 !text-[56px] md:!text-[100px]">
             Your&nbsp;bookshelf,
             <br />
             beautifully.
@@ -135,16 +129,6 @@ export default function LandingPage() {
                   sortMode="year"
                 />
               </div>
-            </div>
-
-            <div
-              className="absolute -top-[14px] -right-[10px] md:-top-4 md:-right-4 bg-gold px-3 py-[6px] md:px-4 md:py-2 font-sans text-[9px] md:text-[11px] tracking-[0.22em] uppercase font-semibold"
-              style={{
-                color: "#1a0e08",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
-              }}
-            >
-              An example shelf
             </div>
           </div>
         </div>

@@ -3,7 +3,12 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { Display, Eyebrow, Hairline, Wordmark } from "@/components/ui/typography";
+import {
+  Display,
+  Eyebrow,
+  Hairline,
+  Wordmark,
+} from "@/components/ui/typography";
 import { Icon } from "@/components/ui/Icon";
 import { ShelfPreview } from "@/components/ShelfPreview";
 import { Shelf } from "@/components/shelves";
@@ -81,8 +86,8 @@ export default function ExportPage() {
   };
 
   return (
-    <div className="absolute inset-0 bg-bg text-ink overflow-auto">
-      <div className="flex items-center justify-between px-4 py-[14px] md:px-8 md:py-[18px] border-b border-rule gap-2">
+    <div className="min-h-screen bg-bg text-ink">
+      <div className="sticky top-0 z-10 bg-bg flex items-center justify-between px-4 py-[14px] md:px-8 md:py-[18px] border-b border-rule gap-2">
         <div className="flex items-center gap-[10px] md:gap-5 min-w-0">
           <Link
             href="/editor"
@@ -119,16 +124,13 @@ export default function ExportPage() {
 
         <div>
           <Eyebrow className="mb-3">Ready to share</Eyebrow>
-          <Display
-            size="lg"
-            className="mb-[18px] !text-[44px] md:!text-[64px]"
-          >
+          <Display size="lg" className="mb-[18px] !text-[44px] md:!text-[64px]">
             {userTitle}
           </Display>
 
           <div className="font-serif italic text-[16px] md:text-[18px] text-ink-muted mb-[22px] md:mb-7">
-            Your shelf is ready. Download the image, share anywhere, or publish a
-            link to a page where people can browse every title.
+            Your shelf is ready. Download the image, share anywhere, or publish
+            a link to a page where people can browse every title.
           </div>
 
           <div className="grid gap-[10px] mb-7">
@@ -178,7 +180,9 @@ export default function ExportPage() {
               },
               {
                 k: books.length
-                  ? (books.reduce((s, b) => s + b.rating, 0) / books.length).toFixed(1)
+                  ? (
+                      books.reduce((s, b) => s + b.rating, 0) / books.length
+                    ).toFixed(1)
                   : "0.0",
                 l: "avg",
               },

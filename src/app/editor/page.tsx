@@ -47,67 +47,69 @@ export default function EditorPage() {
   };
 
   return (
-    <div className="absolute inset-0 bg-bg text-ink flex flex-col overflow-hidden">
-      <div className="flex-shrink-0 flex items-center justify-between px-4 py-[14px] md:px-8 md:py-[18px] border-b border-rule gap-2">
-        <div className="flex items-center gap-[10px] md:gap-5 min-w-0">
-          <Link
-            href="/import"
-            className="flex items-center gap-2 text-ink-muted hover:text-ink text-[13px] font-sans"
-            aria-label="Back"
-          >
-            <Icon name="arrowLeft" size={16} />
-            <span className="hidden md:inline">Back</span>
-          </Link>
-          <div className="hidden md:block w-px h-5 bg-rule" />
-          <Wordmark size={20} className="!text-[18px] md:!text-[20px]" />
-          <div className="hidden md:block font-sans text-xs text-ink-faint tracking-[0.3em] ml-2">
-            STEP 2 · EDITOR
+    <div className="bg-bg text-ink flex flex-col md:h-[100dvh]">
+      <div className="sticky top-0 z-10 bg-bg flex-shrink-0 md:static">
+        <div className="flex items-center justify-between px-4 py-[14px] md:px-8 md:py-[18px] border-b border-rule gap-2">
+          <div className="flex items-center gap-[10px] md:gap-5 min-w-0">
+            <Link
+              href="/import"
+              className="flex items-center gap-2 text-ink-muted hover:text-ink text-[13px] font-sans"
+              aria-label="Back"
+            >
+              <Icon name="arrowLeft" size={16} />
+              <span className="hidden md:inline">Back</span>
+            </Link>
+            <div className="hidden md:block w-px h-5 bg-rule" />
+            <Wordmark size={20} className="!text-[18px] md:!text-[20px]" />
+            <div className="hidden md:block font-sans text-xs text-ink-faint tracking-[0.3em] ml-2">
+              STEP 2 · EDITOR
+            </div>
+          </div>
+          <div className="flex gap-3 items-center flex-shrink-0">
+            <div className="hidden md:block font-sans text-[13px] text-ink-muted">
+              {books.length} books ·{" "}
+              {books.reduce((s, b) => s + b.pages, 0).toLocaleString()} pages
+            </div>
+            <Link href="/export">
+              <Button variant="gold" size={mobile ? "sm" : "md"}>
+                <Icon name="download" size={14} />
+                Export
+              </Button>
+            </Link>
           </div>
         </div>
-        <div className="flex gap-3 items-center flex-shrink-0">
-          <div className="hidden md:block font-sans text-[13px] text-ink-muted">
-            {books.length} books ·{" "}
-            {books.reduce((s, b) => s + b.pages, 0).toLocaleString()} pages
-          </div>
-          <Link href="/export">
-            <Button variant="gold" size={mobile ? "sm" : "md"}>
-              <Icon name="download" size={14} />
-              Export
-            </Button>
-          </Link>
-        </div>
-      </div>
 
-      <div className="md:hidden flex flex-shrink-0 border-b border-rule">
-        {(
-          [
+        <div className="md:hidden flex border-b border-rule">
+          {[
             { id: "books" as const, label: "Books" },
             { id: "preview" as const, label: "Preview" },
-          ]
-        ).map((tab) => {
-          const active = mobileTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setMobileTab(tab.id)}
-              className={[
-                "flex-1 py-3 bg-transparent border-0 font-sans text-[11px] font-medium uppercase tracking-[0.24em] cursor-pointer",
-                "border-b-2",
-                active ? "border-gold text-ink" : "border-transparent text-ink-muted",
-              ].join(" ")}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
+          ].map((tab) => {
+            const active = mobileTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setMobileTab(tab.id)}
+                className={[
+                  "flex-1 py-3 bg-transparent border-0 font-sans text-[11px] font-medium uppercase tracking-[0.24em] cursor-pointer",
+                  "border-b-2",
+                  active
+                    ? "border-gold text-ink"
+                    : "border-transparent text-ink-muted",
+                ].join(" ")}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="flex-1 flex flex-col md:flex-row min-h-0">
+      <div className="flex flex-col md:flex-1 md:flex-row md:min-h-0">
         <div
           className={[
-            "flex-1 min-w-0 overflow-auto",
+            "min-w-0 md:flex-1 md:overflow-auto",
             "border-b md:border-b-0 md:border-r border-rule",
-            "px-4 pt-[18px] pb-40 md:px-8 md:pt-6 md:pb-28",
+            "px-4 pt-[18px] pb-10 md:px-8 md:pt-6 md:pb-28",
             mobile && mobileTab !== "books" ? "hidden" : "block",
           ].join(" ")}
         >
@@ -126,9 +128,7 @@ export default function EditorPage() {
 
           <Hairline className="mb-5" />
 
-          <div
-            className="grid gap-[14px] md:gap-5 [grid-template-columns:repeat(auto-fill,minmax(100px,1fr))] md:[grid-template-columns:repeat(auto-fill,minmax(130px,1fr))]"
-          >
+          <div className="grid gap-[14px] md:gap-5 [grid-template-columns:repeat(auto-fill,minmax(100px,1fr))] md:[grid-template-columns:repeat(auto-fill,minmax(130px,1fr))]">
             {books.map((b, i) => (
               <button
                 key={i}
@@ -137,7 +137,9 @@ export default function EditorPage() {
               >
                 <div
                   className={`aspect-[2/3] w-full p-[10px] box-border flex flex-col justify-between transition-transform group-hover:-translate-y-[3px] ${
-                    selected === i ? "outline outline-2 outline-gold outline-offset-[3px]" : ""
+                    selected === i
+                      ? "outline outline-2 outline-gold outline-offset-[3px]"
+                      : ""
                   }`}
                   style={{
                     background: b.spineColor,
@@ -194,12 +196,12 @@ export default function EditorPage() {
 
         <div
           className={[
-            "flex-shrink-0 bg-bg-raised flex-col min-h-0",
+            "flex-shrink-0 bg-bg-raised flex-col md:min-h-0",
             "w-full md:w-[min(54%,760px)]",
             mobile && mobileTab !== "preview" ? "hidden" : "flex",
           ].join(" ")}
         >
-          <div className="flex-1 flex items-center justify-center p-4 md:p-8 overflow-hidden min-h-0">
+          <div className="flex items-center justify-center p-4 md:p-8 md:flex-1 md:overflow-hidden md:min-h-0">
             <ShelfPreview
               fitMode={mobile ? "viewport" : "height"}
               heightOffset={mobile ? 280 : 220}
@@ -364,7 +366,9 @@ function BookEditModal({
               className="h-[2px] mb-2"
               style={{
                 background:
-                  book.accent === "gold" ? "#d9b858" : darken(book.spineColor, 0.4),
+                  book.accent === "gold"
+                    ? "#d9b858"
+                    : darken(book.spineColor, 0.4),
               }}
             />
             <div
@@ -452,15 +456,16 @@ function Field({
   );
 }
 
-const BLANK_PALETTE: Array<Pick<Book, "spineColor" | "textColor" | "accent">> = [
-  { spineColor: "#3d5a3a", textColor: "#e4d8b8", accent: "none" },
-  { spineColor: "#8b3a2f", textColor: "#f0e4c8", accent: "gold" },
-  { spineColor: "#1a2847", textColor: "#e8d9a8", accent: "gold" },
-  { spineColor: "#d4c4a0", textColor: "#3a2818", accent: "none" },
-  { spineColor: "#6b8e8a", textColor: "#f4ead9", accent: "silver" },
-  { spineColor: "#7a2838", textColor: "#e8d4a8", accent: "gold" },
-  { spineColor: "#c9b87a", textColor: "#3a3018", accent: "none" },
-];
+const BLANK_PALETTE: Array<Pick<Book, "spineColor" | "textColor" | "accent">> =
+  [
+    { spineColor: "#3d5a3a", textColor: "#e4d8b8", accent: "none" },
+    { spineColor: "#8b3a2f", textColor: "#f0e4c8", accent: "gold" },
+    { spineColor: "#1a2847", textColor: "#e8d9a8", accent: "gold" },
+    { spineColor: "#d4c4a0", textColor: "#3a2818", accent: "none" },
+    { spineColor: "#6b8e8a", textColor: "#f4ead9", accent: "silver" },
+    { spineColor: "#7a2838", textColor: "#e8d4a8", accent: "gold" },
+    { spineColor: "#c9b87a", textColor: "#3a3018", accent: "none" },
+  ];
 
 function makeBlankBook(existingCount: number): Book {
   const now = new Date();

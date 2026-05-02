@@ -2,7 +2,6 @@
 
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { usePathname } from "next/navigation";
 import { useSyncExternalStore } from "react";
 import { trackEvent } from "@/lib/tracking";
 
@@ -27,14 +26,11 @@ function useIsMounted() {
 }
 
 const baseClass =
-  "fixed bottom-[18px] left-6 z-[500] inline-flex items-center gap-2 px-3 h-9 rounded-md border border-rule bg-bg-panel-solid text-ink-muted hover:text-ink hover:bg-bg-raised backdrop-blur-md shadow-[0_8px_24px_rgba(0,0,0,0.4)] font-sans text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed";
+  "inline-flex items-center gap-2 px-3 h-9 rounded-md text-ink-muted hover:text-ink hover:bg-bg-raised font-sans text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer";
 
 export function ThemeToggle() {
-  const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const mounted = useIsMounted();
-
-  if (pathname?.startsWith("/s/")) return null;
 
   if (!mounted) {
     return (

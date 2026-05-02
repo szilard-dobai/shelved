@@ -61,7 +61,7 @@ export default function ImportPage() {
   const sourceLabel = method === "storygraph" ? "Storygraph" : "Goodreads";
 
   return (
-    <div className="absolute inset-0 bg-bg overflow-auto">
+    <div className="min-h-screen bg-bg">
       <div className="sticky top-0 z-[5] flex items-center justify-between px-5 py-4 md:px-12 md:py-6 bg-bg border-b border-rule gap-3">
         <div className="flex items-center gap-3 md:gap-5 min-w-0">
           <Link
@@ -109,7 +109,9 @@ export default function ImportPage() {
                   {m.tag}
                 </div>
               )}
-              <div className={`mb-4 md:mb-5 ${active ? "text-gold" : "text-ink"}`}>
+              <div
+                className={`mb-4 md:mb-5 ${active ? "text-gold" : "text-ink"}`}
+              >
                 <Icon name={m.icon} size={28} />
               </div>
               <div className="font-serif italic text-[22px] md:text-[28px] font-medium mb-2 text-ink">
@@ -138,7 +140,9 @@ export default function ImportPage() {
             }}
             className={[
               "rounded-[2px] p-8 md:p-16 text-center border-2 border-dashed transition-all",
-              dragOver ? "border-gold bg-gold-soft" : "border-rule-strong bg-bg-raised",
+              dragOver
+                ? "border-gold bg-gold-soft"
+                : "border-rule-strong bg-bg-raised",
             ].join(" ")}
           >
             <div className="text-gold flex justify-center">
