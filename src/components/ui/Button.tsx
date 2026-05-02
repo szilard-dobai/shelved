@@ -12,9 +12,9 @@ export interface ButtonProps
 }
 
 const sizeClasses: Record<Size, string> = {
-  sm: "px-[14px] py-2 text-xs tracking-[0.18em]",
-  md: "px-[26px] py-[14px] text-[13px] tracking-[0.22em]",
-  lg: "px-[38px] py-5 text-[15px] tracking-[0.28em]",
+  sm: "px-3.5 py-2 text-xs tracking-widest",
+  md: "px-7 py-3.5 text-md tracking-widest",
+  lg: "px-10 py-5 text-base tracking-eyebrow",
 };
 
 const variantClasses: Record<Variant, string> = {
@@ -22,8 +22,7 @@ const variantClasses: Record<Variant, string> = {
   secondary: "bg-transparent text-ink border border-rule-strong",
   ghost: "bg-transparent text-ink border border-transparent",
   gold: "bg-gold text-bg border border-gold",
-  danger:
-    "bg-[color:var(--color-danger)] text-white border border-[color:var(--color-danger)]",
+  danger: "bg-danger text-white border border-danger",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -46,13 +45,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         type={type}
         disabled={disabled}
         className={[
-          "font-sans font-medium uppercase rounded-[1px] cursor-pointer",
+          "inline-flex items-center justify-center gap-2.5",
+          "font-sans font-medium uppercase rounded-2xs cursor-pointer",
           "transition-transform duration-100 active:translate-y-px",
           "disabled:opacity-40 disabled:cursor-not-allowed",
-          "inline-flex items-center justify-center gap-[10px]",
           sizeClasses[size],
           variantClasses[variant],
-          full ? "w-full" : "",
+          full && "w-full",
           className,
         ]
           .filter(Boolean)

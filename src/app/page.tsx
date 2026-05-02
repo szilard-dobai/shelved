@@ -46,32 +46,32 @@ export default function LandingPage() {
           "radial-gradient(ellipse 80% 60% at 80% 50%, rgba(217,184,88,0.06), transparent 60%)",
       }}
     >
-      <div className="flex items-center justify-between px-5 py-5 md:px-12 md:py-7 relative z-[2]">
-        <Wordmark size={22} className="md:!text-[26px]" />
-      </div>
+      <header className="relative flex items-center justify-between px-5 py-5 md:px-12 md:py-7">
+        <Wordmark size={mobile ? 22 : 26} />
+      </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-[1.05fr_1fr] gap-9 md:gap-[60px] items-center px-5 pt-6 pb-[110px] md:px-16 md:pt-8 md:pb-20 max-w-[1320px] mx-auto md:min-h-[calc(100vh-90px)]">
-        <div className="text-center md:text-left max-w-[560px] mx-auto md:mx-0 md:justify-self-start">
-          <Eyebrow className="mb-4 md:mb-6 text-[10px] md:text-[12px]">
+      <section className="mx-auto grid max-w-page grid-cols-1 items-center gap-9 px-5 pt-6 pb-28 md:min-h-[calc(100vh-5.625rem)] md:grid-cols-[1.05fr_1fr] md:gap-15 md:px-16 md:pt-8 md:pb-20">
+        <div className="mx-auto max-w-xl text-center md:mx-0 md:justify-self-start md:text-left">
+          <Eyebrow className="mb-4 !text-2xs md:mb-6 md:!text-xs">
             A year in books · visualised
           </Eyebrow>
-          <Display className="mb-5 md:mb-7 !text-[56px] md:!text-[100px]">
+          <Display className="mb-5 !text-display md:mb-7 md:!text-display-xl">
             Your&nbsp;bookshelf,
             <br />
             beautifully.
           </Display>
-          <p className="font-serif italic text-[17px] md:text-[21px] leading-[1.55] text-ink-muted max-w-[480px] mx-auto md:mx-0 mb-7 md:mb-9">
+          <p className="mx-auto mb-7 max-w-lg font-serif text-lg italic leading-normal text-ink-muted md:mx-0 md:mb-9 md:text-xl">
             Turn your reading history into a shareable shelf. Import from
             Goodreads, paste a list of ISBNs, or just your memory — we&apos;ll
             do the rest.
           </p>
-          <div className="flex flex-col md:flex-row gap-[10px] md:justify-start">
+          <div className="flex flex-col gap-2.5 md:flex-row md:justify-start">
             <Link
               href="/import"
               onClick={() => trackEvent("landing_cta_click", { cta: "start" })}
               className="contents md:inline-block"
             >
-              <Button size="md" full={mobile} className="md:!w-auto">
+              <Button size="md" className="w-full md:w-auto">
                 Start your shelf
                 <Icon name="arrowRight" size={16} />
               </Button>
@@ -81,41 +81,27 @@ export default function LandingPage() {
               onClick={() => trackEvent("landing_cta_click", { cta: "demo" })}
               className="contents md:inline-block"
             >
-              <Button
-                size="md"
-                variant="secondary"
-                full={mobile}
-                className="md:!w-auto"
-              >
+              <Button size="md" variant="secondary" className="w-full md:w-auto">
                 Try the demo
               </Button>
             </Link>
           </div>
-          <div className="mt-[22px] md:mt-9 font-sans text-[10px] md:text-[12px] text-ink-faint tracking-[0.16em]">
+          <div className="mt-6 font-sans text-2xs tracking-widest text-ink-faint md:mt-9 md:text-xs">
             NO SIGNUP · FREE · YOUR DATA STAYS YOURS
           </div>
         </div>
 
-        <div className="flex justify-center items-center relative pt-2 md:pt-0">
-          <div className="relative">
+        <div className="flex items-center justify-center pt-2 md:pt-0">
+          <div className="relative rounded-xs bg-[#0a0604] p-1.5 shadow-[0_2.5rem_5rem_rgba(0,0,0,0.6),_0_0.875rem_1.875rem_rgba(0,0,0,0.4)]">
             <div
-              className="absolute -inset-[6px] rounded-[2px]"
-              style={{
-                boxShadow:
-                  "0 40px 80px rgba(0,0,0,0.6), 0 14px 30px rgba(0,0,0,0.4)",
-                background: "#0a0604",
-              }}
-            />
-            <div
-              className="relative overflow-hidden border border-black/50 outline-1 outline-ink/[0.08]"
+              className="relative overflow-hidden border border-black/50 outline outline-ink/8"
               style={{
                 width: STORY_W * previewScale,
                 height: STORY_H * previewScale,
-                outline: "1px solid rgba(244,234,212,0.08)",
               }}
             >
               <div
-                className="absolute top-0 left-0"
+                className="absolute left-0 top-0"
                 style={{
                   width: STORY_W,
                   height: STORY_H,
@@ -132,25 +118,25 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="border-t border-rule px-5 pt-8 pb-[110px] md:px-16 md:pt-9 md:pb-[60px] max-w-[1320px] mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-[22px] md:gap-14">
+      <section className="mx-auto max-w-page border-t border-rule px-5 pt-8 pb-28 md:px-16 md:pt-9 md:pb-15">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-14">
           {FEATURES.map((f) => (
             <div key={f.eyebrow}>
-              <div className="font-serif italic text-[32px] text-gold mb-2">
+              <div className="mb-2 font-serif text-3xl italic text-gold">
                 {f.eyebrow}
               </div>
-              <div className="font-serif italic text-[24px] font-medium text-ink mb-[6px]">
+              <div className="mb-1.5 font-serif text-2xl font-medium italic text-ink">
                 {f.title}
               </div>
-              <div className="font-sans text-sm leading-[1.6] text-ink-muted">
+              <div className="font-sans text-sm leading-relaxed text-ink-muted">
                 {f.body}
               </div>
             </div>
           ))}
         </div>
-      </div>
+      </section>
     </div>
   );
 }

@@ -9,18 +9,17 @@ export function Eyebrow({
 }) {
   return (
     <div
-      className={`font-sans text-[12px] font-medium uppercase tracking-[0.4em] text-ink-faint ${className}`}
+      className={`font-sans text-xs font-medium uppercase tracking-eyebrow text-ink-faint ${className}`}
     >
       {children}
     </div>
   );
 }
 
-type DisplaySize = "lg" | "xl" | "xxl";
+type DisplaySize = "lg" | "xl";
 const displaySize: Record<DisplaySize, string> = {
-  lg: "text-[64px]",
-  xl: "text-[88px]",
-  xxl: "text-[128px]",
+  lg: "text-display",
+  xl: "text-display-lg",
 };
 
 export function Display({
@@ -37,7 +36,7 @@ export function Display({
   return (
     <h1
       style={style}
-      className={`font-serif italic font-medium leading-[0.95] tracking-[-0.03em] text-ink m-0 ${displaySize[size]} ${className}`}
+      className={`m-0 font-serif italic font-medium leading-display tracking-tighter text-ink ${displaySize[size]} ${className}`}
     >
       {children}
     </h1>
@@ -54,10 +53,10 @@ export function Wordmark({
   return (
     <div
       style={{ fontSize: size }}
-      className={`font-serif italic font-semibold tracking-[-0.01em] text-ink inline-flex items-baseline ${className}`}
+      className={`inline-flex items-baseline font-serif italic font-semibold tracking-tight text-ink ${className}`}
     >
       <span>Shelved</span>
-      <span className="text-gold ml-[2px]">.</span>
+      <span className="ml-0.5 text-gold">.</span>
     </div>
   );
 }

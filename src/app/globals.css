@@ -54,6 +54,42 @@ html.light {
 
   /* Align Tailwind's `md:` breakpoint with the design's 780px threshold. */
   --breakpoint-md: 780px;
+
+  /* Type scale — Tailwind defaults (xs=12, sm=14, base=16, lg=18, xl=20,
+   * 2xl=24, 3xl=30, 4xl=36, 5xl=48, 6xl=60, 7xl=72, 8xl=96, 9xl=128) plus
+   * editorial extensions below. */
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 1.4;
+  --text-md: 0.8125rem;
+  --text-md--line-height: 1.5;
+  --text-display: 4rem;
+  --text-display--line-height: 1;
+  --text-display-lg: 5.5rem;
+  --text-display-lg--line-height: 0.98;
+  --text-display-xl: 6.25rem;
+  --text-display-xl--line-height: 0.95;
+
+  /* Radii — 1px for spine inner edges; 2px+ inherit Tailwind defaults
+   * (xs=2, sm=4, md=6, lg=8). */
+  --radius-2xs: 0.0625rem;
+
+  /* Letter spacing — overrides Tailwind's narrower defaults to match the
+   * editorial design language. */
+  --tracking-tighter: -0.03em;
+  --tracking-tight: -0.02em;
+  --tracking-wide: 0.06em;
+  --tracking-wider: 0.12em;
+  --tracking-widest: 0.22em;
+  --tracking-eyebrow: 0.3em;
+  --tracking-mega: 0.5em;
+
+  /* Line height — extensions for display and book-cover typography. */
+  --leading-display: 0.95;
+  --leading-cover: 1.15;
+
+  /* Container — the page-level content max-width used across marketing
+   * and app surfaces (snaps 1200/1320/1400 onto one value). */
+  --container-page: 82.5rem;
 }
 
 html,
