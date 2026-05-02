@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Eyebrow, Hairline, Wordmark } from "@/components/ui/typography";
 import { Icon } from "@/components/ui/Icon";
@@ -15,10 +15,14 @@ import { trackEvent } from "@/lib/tracking";
 
 type MobileTab = "books" | "preview";
 
+type EditingState =
+  | { mode: "edit"; index: number; initial: Book }
+  | { mode: "create"; initial: Book };
+
 export default function EditorPage() {
   const { state, patch } = useAppState();
   const { books, userTitle, sortMode, style, bgVariant } = state;
-  const [selected, setSelected] = useState<number | null>(null);
+  const [editing, setEditing] = useState<EditingState | null>(null);
   const [mobileTab, setMobileTab] = useState<MobileTab>("books");
   const mobile = useIsMobile();
 
@@ -26,25 +30,29 @@ export default function EditorPage() {
     trackEvent("editor_view");
   }, []);
 
-  const updateBook = (i: number, bookPatch: Partial<Book>) => {
-    const next = books.slice();
-    next[i] = { ...next[i], ...bookPatch };
-    patch({ books: next });
-    trackEvent("book_edited", { title: next[i].title });
+  const openEdit = (i: number) => {
+    setEditing({ mode: "edit", index: i, initial: books[i] });
   };
 
-  const removeBook = (i: number) => {
-    patch({ books: books.filter((_, j) => j !== i) });
-    trackEvent("book_removed");
-    setSelected(null);
+  const openCreate = () => {
+    setEditing({ mode: "create", initial: makeBlankBook(books.length) });
   };
 
-  const addBook = () => {
-    const newBook = makeBlankBook(books.length);
-    patch({ books: [newBook, ...books] });
-    setSelected(0);
-    trackEvent("book_added_manual");
+  const saveBook = (updated: Book) => {
+    if (!editing) return;
+    if (editing.mode === "create") {
+      patch({ books: [updated, ...books] });
+      trackEvent("book_added_manual");
+    } else {
+      const next = books.slice();
+      next[editing.index] = updated;
+      patch({ books: next });
+      trackEvent("book_edited", { title: updated.title });
+    }
+    setEditing(null);
   };
+
+  const editingIndex = editing?.mode === "edit" ? editing.index : null;
 
   return (
     <div className="bg-bg text-ink flex flex-col md:h-[100dvh]">
@@ -120,7 +128,7 @@ export default function EditorPage() {
                 {books.length} books
               </div>
             </div>
-            <Button variant="secondary" size="sm" onClick={addBook}>
+            <Button variant="secondary" size="sm" onClick={openCreate}>
               <Icon name="plus" size={12} />
               Add book
             </Button>
@@ -132,12 +140,12 @@ export default function EditorPage() {
             {books.map((b, i) => (
               <button
                 key={i}
-                onClick={() => setSelected(i)}
+                onClick={() => openEdit(i)}
                 className="bg-transparent border-none cursor-pointer p-0 text-left text-ink group"
               >
                 <div
                   className={`aspect-[2/3] w-full p-[10px] box-border flex flex-col justify-between transition-transform group-hover:-translate-y-[3px] ${
-                    selected === i
+                    editingIndex === i
                       ? "outline outline-2 outline-gold outline-offset-[3px]"
                       : ""
                   }`}
@@ -278,12 +286,12 @@ export default function EditorPage() {
         </div>
       </div>
 
-      {selected !== null && books[selected] && (
+      {editing && (
         <BookEditModal
-          book={books[selected]}
-          onClose={() => setSelected(null)}
-          onChange={(p) => updateBook(selected, p)}
-          onRemove={() => removeBook(selected)}
+          initial={editing.initial}
+          mode={editing.mode}
+          onClose={() => setEditing(null)}
+          onSave={saveBook}
         />
       )}
     </div>
@@ -329,103 +337,172 @@ function SegControl<T extends string>({
 }
 
 function BookEditModal({
-  book,
+  initial,
+  mode,
   onClose,
-  onChange,
-  onRemove,
+  onSave,
 }: {
-  book: Book;
+  initial: Book;
+  mode: "edit" | "create";
   onClose: () => void;
-  onChange: (p: Partial<Book>) => void;
-  onRemove: () => void;
+  onSave: (book: Book) => void;
 }) {
+  const [draft, setDraft] = useState<Book>(initial);
+  const [confirmingDiscard, setConfirmingDiscard] = useState(false);
+
+  const TITLE_PLACEHOLDER = "Untitled";
+  const AUTHOR_PLACEHOLDER = "Unknown author";
+
+  const isDirty = useMemo(
+    () => JSON.stringify(draft) !== JSON.stringify(initial),
+    [draft, initial],
+  );
+
+  const updateDraft = (partial: Partial<Book>) => {
+    setDraft((prev) => ({ ...prev, ...partial }));
+  };
+
+  const requestClose = () => {
+    if (isDirty) {
+      setConfirmingDiscard(true);
+    } else {
+      onClose();
+    }
+  };
+
   return (
-    <div
-      onClick={onClose}
-      className="fixed inset-0 flex items-end md:items-center justify-center z-[100]"
-      style={{ background: "rgba(0,0,0,0.6)" }}
-    >
+    <>
       <div
-        onClick={(e) => e.stopPropagation()}
-        className="relative border border-rule p-6 md:p-9 w-full md:w-[540px] md:max-w-[calc(100%-40px)] max-h-[92vh] md:max-h-none overflow-y-auto md:overflow-visible text-ink"
-        style={{ background: "var(--color-bg-panel-solid)" }}
+        onClick={requestClose}
+        className="fixed inset-0 flex items-end md:items-center justify-center z-[100]"
+        style={{ background: "rgba(0,0,0,0.6)" }}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 bg-transparent border-0 cursor-pointer text-ink-muted hover:text-ink"
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="relative border border-rule p-6 md:p-9 w-full md:w-[540px] md:max-w-[calc(100%-40px)] max-h-[92vh] md:max-h-none overflow-y-auto md:overflow-visible text-ink"
+          style={{ background: "var(--color-bg-panel-solid)" }}
         >
-          <Icon name="x" size={20} />
-        </button>
-        <Eyebrow>Edit book</Eyebrow>
-        <div className="flex flex-col md:flex-row gap-[18px] md:gap-6 mt-5 items-center md:items-stretch">
-          <div
-            className="w-20 h-[120px] md:w-[100px] md:h-[150px] flex-shrink-0 p-[10px] box-border shadow-[0_6px_20px_rgba(0,0,0,0.4)]"
-            style={{ background: book.spineColor }}
+          <button
+            onClick={requestClose}
+            aria-label="Close"
+            className="absolute top-4 right-4 bg-transparent border-0 cursor-pointer text-ink-muted hover:text-ink"
           >
+            <Icon name="x" size={20} />
+          </button>
+          <Eyebrow>{mode === "create" ? "Add a book" : "Edit book"}</Eyebrow>
+          <div className="flex flex-col md:flex-row gap-[18px] md:gap-6 mt-5 items-center md:items-stretch">
             <div
-              className="h-[2px] mb-2"
-              style={{
-                background:
-                  book.accent === "gold"
-                    ? "#d9b858"
-                    : darken(book.spineColor, 0.4),
-              }}
-            />
-            <div
-              className="font-serif italic font-semibold text-[12px] leading-[1.15]"
-              style={{ color: book.textColor }}
+              className="w-20 h-[120px] md:w-[100px] md:h-[150px] flex-shrink-0 p-[10px] box-border shadow-[0_6px_20px_rgba(0,0,0,0.4)]"
+              style={{ background: draft.spineColor }}
             >
-              {book.title}
+              <div
+                className="h-[2px] mb-2"
+                style={{
+                  background:
+                    draft.accent === "gold"
+                      ? "#d9b858"
+                      : darken(draft.spineColor, 0.4),
+                }}
+              />
+              <div
+                className="font-serif italic font-semibold text-[12px] leading-[1.15]"
+                style={{
+                  color: draft.textColor,
+                  opacity: draft.title.trim() ? 1 : 0.5,
+                }}
+              >
+                {draft.title.trim() || TITLE_PLACEHOLDER}
+              </div>
+            </div>
+            <div className="flex-1 min-w-0">
+              <Field
+                label="Title"
+                value={draft.title}
+                onChange={(v) => updateDraft({ title: v })}
+                placeholder={TITLE_PLACEHOLDER}
+              />
+              <Field
+                label="Author"
+                value={draft.author}
+                onChange={(v) => updateDraft({ author: v })}
+                placeholder={AUTHOR_PLACEHOLDER}
+              />
+              <div className="flex gap-[14px] mt-[10px]">
+                <Field
+                  label="Year"
+                  value={draft.year}
+                  onChange={(v) => updateDraft({ year: +v })}
+                  small
+                />
+                <Field
+                  label="Rating"
+                  value={draft.rating}
+                  onChange={(v) => updateDraft({ rating: +v })}
+                  small
+                />
+                <Field
+                  label="Pages"
+                  value={draft.pages}
+                  onChange={(v) => updateDraft({ pages: +v })}
+                  small
+                />
+              </div>
             </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <Field
-              label="Title"
-              value={book.title}
-              onChange={(v) => onChange({ title: String(v) })}
-            />
-            <Field
-              label="Author"
-              value={book.author}
-              onChange={(v) => onChange({ author: String(v) })}
-            />
-            <div className="flex gap-[14px] mt-[10px]">
-              <Field
-                label="Year"
-                value={book.year}
-                onChange={(v) => onChange({ year: +v })}
-                small
-              />
-              <Field
-                label="Rating"
-                value={book.rating}
-                onChange={(v) => onChange({ rating: +v })}
-                small
-              />
-              <Field
-                label="Pages"
-                value={book.pages}
-                onChange={(v) => onChange({ pages: +v })}
-                small
-              />
-            </div>
+          <Hairline className="my-[18px] mt-7" />
+          <div className="flex justify-end gap-3">
+            <Button variant="secondary" onClick={requestClose}>
+              Cancel
+            </Button>
+            <Button
+              variant="gold"
+              onClick={() =>
+                onSave({
+                  ...draft,
+                  title: draft.title.trim() || TITLE_PLACEHOLDER,
+                  author: draft.author.trim() || AUTHOR_PLACEHOLDER,
+                })
+              }
+            >
+              {mode === "create" ? "Add book" : "Save changes"}
+            </Button>
           </div>
-        </div>
-        <Hairline className="my-[18px] mt-7" />
-        <div className="flex justify-between">
-          <Button
-            variant="ghost"
-            onClick={onRemove}
-            className="!text-[color:var(--color-danger)]"
-          >
-            Remove book
-          </Button>
-          <Button variant="primary" onClick={onClose}>
-            Done
-          </Button>
         </div>
       </div>
-    </div>
+
+      {confirmingDiscard && (
+        <div
+          onClick={() => setConfirmingDiscard(false)}
+          className="fixed inset-0 z-[110] flex items-center justify-center px-4"
+          style={{ background: "rgba(0,0,0,0.55)" }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="border border-rule p-6 md:p-7 w-full max-w-[380px] text-ink text-center"
+            style={{ background: "var(--color-bg-panel-solid)" }}
+          >
+            <Eyebrow className="mb-3">Discard changes?</Eyebrow>
+            <p className="font-serif italic text-[18px] text-ink-muted mb-6 leading-[1.45]">
+              {mode === "create"
+                ? "This book hasn't been added yet. Close anyway?"
+                : "Your edits to this book will be lost."}
+            </p>
+            <div className="flex justify-center gap-3">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setConfirmingDiscard(false)}
+              >
+                Keep editing
+              </Button>
+              <Button variant="danger" size="sm" onClick={onClose}>
+                Discard
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -434,11 +511,13 @@ function Field({
   value,
   onChange,
   small,
+  placeholder,
 }: {
   label: string;
   value: string | number;
   onChange: (v: string) => void;
   small?: boolean;
+  placeholder?: string;
 }) {
   return (
     <div className={`flex-1 min-w-0 ${small ? "" : "mt-[10px]"}`}>
@@ -448,7 +527,8 @@ function Field({
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full box-border bg-transparent border-0 border-b border-rule text-ink font-serif py-1 outline-none ${
+        placeholder={placeholder}
+        className={`w-full box-border bg-transparent border-0 border-b border-rule text-ink font-serif py-1 outline-none placeholder:text-ink-faint placeholder:italic ${
           small ? "text-[16px]" : "text-[18px]"
         }`}
       />
@@ -471,8 +551,8 @@ function makeBlankBook(existingCount: number): Book {
   const now = new Date();
   const palette = BLANK_PALETTE[existingCount % BLANK_PALETTE.length];
   return {
-    title: "Untitled",
-    author: "Unknown author",
+    title: "",
+    author: "",
     year: now.getFullYear(),
     month: now.getMonth() + 1,
     pages: 300,

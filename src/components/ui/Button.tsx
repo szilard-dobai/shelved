@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 
-type Variant = "primary" | "secondary" | "ghost" | "gold";
+type Variant = "primary" | "secondary" | "ghost" | "gold" | "danger";
 type Size = "sm" | "md" | "lg";
 
 export interface ButtonProps
@@ -22,6 +22,8 @@ const variantClasses: Record<Variant, string> = {
   secondary: "bg-transparent text-ink border border-rule-strong",
   ghost: "bg-transparent text-ink border border-transparent",
   gold: "bg-gold text-bg border border-gold",
+  danger:
+    "bg-[color:var(--color-danger)] text-white border border-[color:var(--color-danger)]",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
