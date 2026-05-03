@@ -153,16 +153,37 @@ export default function EditorPage() {
 
           <Hairline className="mb-5" />
 
-          <div className="grid gap-3.5 [grid-template-columns:repeat(auto-fill,minmax(6.25rem,1fr))] md:gap-5 md:[grid-template-columns:repeat(auto-fill,minmax(8.125rem,1fr))]">
-            {books.map((b, i) => (
-              <BookCard
-                key={i}
-                book={b}
-                selected={editingIndex === i}
-                onClick={() => openEdit(i)}
-              />
-            ))}
-          </div>
+          {books.length === 0 ? (
+            <div className="flex flex-col items-center gap-4 py-14 text-center md:py-20">
+              <Eyebrow className="!text-2xs">Empty shelf</Eyebrow>
+              <p className="max-w-sm font-serif text-xl italic leading-snug text-ink-muted md:text-2xl">
+                Start adding the books you&apos;ve read.
+              </p>
+              <div className="mt-2 flex flex-col items-center gap-3.5">
+                <Button variant="gold" onClick={openCreate}>
+                  <Icon name="plus" size={14} />
+                  Add a book
+                </Button>
+                <Link
+                  href="/import"
+                  className="font-sans text-sm text-ink-muted underline underline-offset-4 hover:text-ink"
+                >
+                  or import a list →
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="grid gap-3.5 [grid-template-columns:repeat(auto-fill,minmax(6.25rem,1fr))] md:gap-5 md:[grid-template-columns:repeat(auto-fill,minmax(8.125rem,1fr))]">
+              {books.map((b, i) => (
+                <BookCard
+                  key={i}
+                  book={b}
+                  selected={editingIndex === i}
+                  onClick={() => openEdit(i)}
+                />
+              ))}
+            </div>
+          )}
         </section>
 
         <section
