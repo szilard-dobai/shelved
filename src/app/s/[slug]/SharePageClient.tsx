@@ -61,21 +61,26 @@ export function SharePageClient({
 
   return (
     <div className="min-h-screen bg-bg text-ink">
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-rule bg-bg px-8 py-4">
-        <div className="flex items-center gap-5">
+      <header className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-rule bg-bg px-4 py-3.5 md:px-8 md:py-4">
+        <div className="flex min-w-0 items-center gap-2.5 md:gap-5">
           <Link href="/">
             <Wordmark size={mobile ? 18 : 20} />
           </Link>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-shrink-0 items-center gap-2">
           {canEdit && (
-            <Button variant="secondary" size="sm" onClick={openInEditor}>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="!py-1.5"
+              onClick={openInEditor}
+            >
               <Icon name="edit" size={12} /> Edit
               <span className="hidden sm:inline"> this shelf</span>
             </Button>
           )}
           <Link href="/">
-            <Button variant="gold" size="sm">
+            <Button variant="gold" size="sm" className="!py-1.5">
               {canEdit ? "New" : "Make yours"}
             </Button>
           </Link>
