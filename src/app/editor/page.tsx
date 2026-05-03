@@ -85,7 +85,7 @@ export default function EditorPage() {
               {books.reduce((s, b) => s + b.pages, 0).toLocaleString()} pages
             </div>
             <Link href="/export">
-              <Button variant="gold" size={mobile ? "sm" : "md"}>
+              <Button variant="gold" size="sm" className="!py-1.5">
                 <Icon name="download" size={14} />
                 Export
               </Button>

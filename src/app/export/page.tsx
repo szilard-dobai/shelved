@@ -153,10 +153,10 @@ export default function ExportPage() {
           <Link
             href="/editor"
             className="flex items-center gap-2 font-sans text-md text-ink-muted hover:text-ink"
-            aria-label="Back to editor"
+            aria-label="Back"
           >
             <Icon name="arrowLeft" size={16} />
-            <span className="hidden md:inline">Back to editor</span>
+            <span className="hidden md:inline">Back</span>
           </Link>
           <div className="hidden h-5 w-px bg-rule md:block" />
           <Wordmark size={mobile ? 18 : 20} />

@@ -66,8 +66,8 @@ export default function ImportPage() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-rule bg-bg px-5 py-4 md:px-12 md:py-6">
-        <div className="flex min-w-0 items-center gap-3 md:gap-5">
+      <header className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-rule bg-bg px-4 py-3.5 md:px-8 md:py-4">
+        <div className="flex min-w-0 items-center gap-2.5 md:gap-5">
           <Link
             href="/"
             className="flex items-center gap-2 font-sans text-md text-ink-muted hover:text-ink"
@@ -78,9 +78,9 @@ export default function ImportPage() {
           </Link>
           <div className="hidden h-5 w-px bg-rule md:block" />
           <Wordmark size={mobile ? 18 : 20} />
-        </div>
-        <div className="hidden font-sans text-xs tracking-eyebrow text-ink-faint md:block">
-          STEP 1 OF 3 · IMPORT
+          <div className="ml-2 hidden font-sans text-xs tracking-eyebrow text-ink-faint md:block">
+            STEP 1 · IMPORT
+          </div>
         </div>
       </header>
 
