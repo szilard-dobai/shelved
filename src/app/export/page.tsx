@@ -122,7 +122,7 @@ export default function ExportPage() {
       </header>
 
       <section
-        className="mx-auto grid max-w-page grid-cols-1 gap-7 px-5 py-6 md:grid-cols-[1fr_26.25rem] md:gap-10 md:p-10"
+        className="mx-auto grid max-w-[72rem] grid-cols-1 gap-7 px-5 py-6 md:p-10 lg:grid-cols-[1fr_22rem] lg:gap-10"
         aria-busy={!hydrated}
         style={{ visibility: hydrated ? undefined : "hidden" }}
       >
@@ -142,7 +142,7 @@ export default function ExportPage() {
           </ShelfPreview>
         </div>
 
-        <div>
+        <div className="min-w-0">
           <Eyebrow className="mb-3">Ready to share</Eyebrow>
           <Display size="lg" className="mb-4 !text-5xl md:!text-display">
             {userTitle}
@@ -153,7 +153,7 @@ export default function ExportPage() {
             a link to a page where people can browse every title.
           </p>
 
-          <div className="mb-7 grid gap-2.5">
+          <div className="mb-7 flex flex-col gap-2.5">
             <Button
               variant="gold"
               size={mobile ? "md" : "lg"}
@@ -234,7 +234,7 @@ function SharePanel({
       <div className="rounded-xs border border-rule bg-bg-raised p-4">
         <Eyebrow className="mb-2 !text-2xs">Share this publicly</Eyebrow>
         <div className="flex items-center gap-2">
-          <code className="flex-1 truncate font-mono text-xs text-ink">
+          <code className="min-w-0 flex-1 truncate font-mono text-xs text-ink">
             {share.viewUrl}
           </code>
           <CopyButton copied={copiedView} onClick={onCopyView} />
@@ -255,7 +255,7 @@ function SharePanel({
               can&apos;t recover it for you.
             </p>
             <div className="flex items-center gap-2">
-              <code className="flex-1 truncate font-mono text-xs text-ink">
+              <code className="min-w-0 flex-1 truncate font-mono text-xs text-ink">
                 {share.editUrl}
               </code>
               <CopyButton copied={copiedEdit} onClick={onCopyEdit} />
