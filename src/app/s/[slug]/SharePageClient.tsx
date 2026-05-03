@@ -59,20 +59,17 @@ export function SharePageClient({
           <Link href="/">
             <Wordmark size={mobile ? 18 : 20} />
           </Link>
-          <div className="h-5 w-px bg-rule" />
-          <div className="font-sans text-xs tracking-eyebrow text-ink-faint">
-            SHARED SHELF · /s/{slug}
-          </div>
         </div>
         <div className="flex items-center gap-3">
           {canEdit && (
             <Button variant="secondary" size="sm" onClick={openInEditor}>
-              <Icon name="edit" size={12} /> Edit this shelf
+              <Icon name="edit" size={12} /> Edit
+              <span className="hidden sm:inline"> this shelf</span>
             </Button>
           )}
           <Link href="/">
             <Button variant="gold" size="sm">
-              Make yours
+              {canEdit ? "New" : "Make yours"}
             </Button>
           </Link>
         </div>
