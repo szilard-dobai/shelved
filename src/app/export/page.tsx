@@ -25,21 +25,28 @@ interface ShareInfo {
 }
 
 export default function ExportPage() {
-  const { state, rememberShare, hydrated } = useAppState();
-  const { books, userTitle, sortMode, style } = state;
+  const { state, patch, rememberShare, ownedShares, hydrated } = useAppState();
+  const { books, userTitle, sortMode, style, currentSlug } = state;
   const mobile = useIsMobile();
   const [share, setShare] = useState<ShareInfo | null>(null);
   const [publishing, setPublishing] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const [shareError, setShareError] = useState<string | null>(null);
   const [copiedView, setCopiedView] = useState(false);
   const [copiedEdit, setCopiedEdit] = useState(false);
+
+  const boundEditKey =
+    currentSlug && ownedShares[currentSlug] ? ownedShares[currentSlug] : null;
+  const isBound = Boolean(currentSlug && boundEditKey);
 
   useEffect(() => {
     trackEvent("export_view");
   }, []);
 
   const publish = async () => {
-    if (publishing) return;
+    if (publishing || updating) return;
     setPublishing(true);
+    setShareError(null);
     try {
       const res = await fetch("/api/shares", {
         method: "POST",
@@ -52,7 +59,7 @@ export default function ExportPage() {
           bgVariant: state.bgVariant,
         }),
       });
-      if (!res.ok) throw new Error("Publish failed");
+      if (!res.ok) throw new Error(`Publish failed (${res.status})`);
       const data = (await res.json()) as {
         slug: string;
         editKey: string;
@@ -61,6 +68,7 @@ export default function ExportPage() {
       const viewUrl = `${origin}/s/${data.slug}`;
       const editUrl = `${origin}/s/${data.slug}?edit=${data.editKey}`;
       rememberShare(data.slug, data.editKey);
+      patch({ currentSlug: data.slug });
       setShare({ slug: data.slug, editKey: data.editKey, viewUrl, editUrl });
       trackEvent("share_created", {
         slug: data.slug,
@@ -68,9 +76,46 @@ export default function ExportPage() {
         style,
       });
     } catch (err) {
-      console.error(err);
+      setShareError(err instanceof Error ? err.message : "Publish failed");
     } finally {
       setPublishing(false);
+    }
+  };
+
+  const update = async () => {
+    if (publishing || updating || !currentSlug || !boundEditKey) return;
+    setUpdating(true);
+    setShareError(null);
+    try {
+      const res = await fetch(
+        `/api/shares/${currentSlug}?edit=${encodeURIComponent(boundEditKey)}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            books,
+            userTitle,
+            sortMode,
+            style,
+            bgVariant: state.bgVariant,
+          }),
+        },
+      );
+      if (!res.ok) {
+        const data = (await res.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        throw new Error(data?.error ?? `Update failed (${res.status})`);
+      }
+      const origin = window.location.origin;
+      const viewUrl = `${origin}/s/${currentSlug}`;
+      const editUrl = `${origin}/s/${currentSlug}?edit=${boundEditKey}`;
+      setShare({ slug: currentSlug, editKey: boundEditKey, viewUrl, editUrl });
+      trackEvent("share_edited");
+    } catch (err) {
+      setShareError(err instanceof Error ? err.message : "Update failed");
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -165,15 +210,37 @@ export default function ExportPage() {
             </Button>
 
             {!share ? (
-              <Button
-                variant="secondary"
-                full
-                onClick={publish}
-                disabled={publishing}
-              >
-                <Icon name="share" size={14} />
-                {publishing ? "Publishing…" : "Publish share link"}
-              </Button>
+              isBound ? (
+                <>
+                  <Button
+                    variant="secondary"
+                    full
+                    onClick={update}
+                    disabled={publishing || updating}
+                  >
+                    <Icon name="share" size={14} />
+                    {updating ? "Updating…" : "Update share"}
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={publish}
+                    disabled={publishing || updating}
+                    className="cursor-pointer self-center border-0 bg-transparent font-sans text-xs uppercase tracking-widest text-ink-muted hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    {publishing ? "Publishing…" : "or publish as new"}
+                  </button>
+                </>
+              ) : (
+                <Button
+                  variant="secondary"
+                  full
+                  onClick={publish}
+                  disabled={publishing}
+                >
+                  <Icon name="share" size={14} />
+                  {publishing ? "Publishing…" : "Publish share link"}
+                </Button>
+              )
             ) : (
               <SharePanel
                 share={share}
@@ -186,6 +253,10 @@ export default function ExportPage() {
                   copy(share.editUrl, setCopiedEdit, "edit_link_copied")
                 }
               />
+            )}
+
+            {shareError && (
+              <p className="font-sans text-xs text-danger">{shareError}</p>
             )}
           </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Eyebrow, Hairline, Wordmark } from "@/components/ui/typography";
@@ -257,7 +258,7 @@ export default function EditorPage() {
         <SettingsModal
           onClose={() => setSettingsOpen(false)}
           onClearLibrary={() => {
-            patch({ books: [] });
+            patch({ books: [], currentSlug: null });
             trackEvent("library_cleared");
             setSettingsOpen(false);
           }}
@@ -267,7 +268,11 @@ export default function EditorPage() {
             setSettingsOpen(false);
           }}
           ownedShares={ownedShares}
-          onForgetShare={forgetShare}
+          currentSlug={state.currentSlug}
+          onForgetShare={(slug) => {
+            if (state.currentSlug === slug) patch({ currentSlug: null });
+            forgetShare(slug);
+          }}
         />
       )}
     </div>
@@ -592,14 +597,17 @@ function SettingsModal({
   onClearLibrary,
   onStartNew,
   ownedShares,
+  currentSlug,
   onForgetShare,
 }: {
   onClose: () => void;
   onClearLibrary: () => void;
   onStartNew: () => void;
   ownedShares: Record<string, string>;
+  currentSlug: string | null;
   onForgetShare: (slug: string) => void;
 }) {
+  const router = useRouter();
   const [confirmingClear, setConfirmingClear] = useState(false);
   const [confirmingStartNew, setConfirmingStartNew] = useState(false);
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
@@ -756,6 +764,7 @@ function SettingsModal({
                 const editKey = ownedShares[slug];
                 const copied = copiedSlug === slug;
                 const confirming = deletingSlug === slug;
+                const isCurrent = currentSlug === slug;
                 return (
                   <li
                     key={slug}
@@ -790,6 +799,23 @@ function SettingsModal({
                         </>
                       ) : (
                         <>
+                          {isCurrent ? (
+                            <span className="font-sans text-2xs uppercase tracking-eyebrow text-gold">
+                              Editing
+                            </span>
+                          ) : (
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onClick={() =>
+                                router.push(
+                                  `/s/${slug}?edit=${encodeURIComponent(editKey)}`,
+                                )
+                              }
+                            >
+                              Open
+                            </Button>
+                          )}
                           <Button
                             variant="secondary"
                             size="sm"

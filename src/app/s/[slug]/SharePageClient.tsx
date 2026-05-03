@@ -48,7 +48,14 @@ export function SharePageClient({
   }, [incomingEditKey, rememberShare, slug]);
 
   const openInEditor = () => {
-    setState({ books, userTitle, sortMode, style, bgVariant });
+    setState({
+      books,
+      userTitle,
+      sortMode,
+      style,
+      bgVariant,
+      currentSlug: canEdit ? slug : null,
+    });
     router.push("/editor");
   };
 

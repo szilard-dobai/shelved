@@ -20,6 +20,7 @@ export interface AppState {
   sortMode: SortMode;
   style: ShelfStyle;
   bgVariant: BgVariant;
+  currentSlug: string | null;
 }
 
 const DEFAULT_STATE: AppState = {
@@ -28,6 +29,7 @@ const DEFAULT_STATE: AppState = {
   sortMode: "year",
   style: "wood",
   bgVariant: "warm",
+  currentSlug: null,
 };
 
 interface AppStateContextValue {
