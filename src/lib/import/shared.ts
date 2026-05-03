@@ -53,6 +53,11 @@ export function parseIntOr(s: string | undefined, fallback: number): number {
   return Number.isFinite(n) && n > 0 ? n : fallback;
 }
 
+export function parseOptionalInt(s: string | undefined): number | null {
+  const n = parseInt(s ?? "", 10);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
 export function clampRating(raw: string | number | undefined): number {
   const n = typeof raw === "number" ? raw : parseFloat(raw ?? "");
   if (!Number.isFinite(n)) return 0;

@@ -81,8 +81,19 @@ export default function EditorPage() {
               className="hidden font-sans text-md text-ink-muted md:block"
               style={{ visibility: hydrated ? undefined : "hidden" }}
             >
-              {books.length} books ·{" "}
-              {books.reduce((s, b) => s + b.pages, 0).toLocaleString()} pages
+              {books.length} books
+              {state.showPages &&
+                books.length > 0 &&
+                books.every((b) => b.pages != null) && (
+                  <>
+                    {" "}
+                    ·{" "}
+                    {books
+                      .reduce((s, b) => s + (b.pages ?? 0), 0)
+                      .toLocaleString()}{" "}
+                    pages
+                  </>
+                )}
             </div>
             <Link href="/export">
               <Button variant="gold" size="sm" className="!py-1.5">
@@ -204,6 +215,7 @@ export default function EditorPage() {
                 books={books}
                 userTitle={userTitle}
                 sortMode={sortMode}
+                showPages={state.showPages}
               />
             </ShelfPreview>
           </div>
@@ -288,6 +300,11 @@ export default function EditorPage() {
             trackEvent("shelf_reset");
             setSettingsOpen(false);
           }}
+          showPages={state.showPages}
+          everyHasPages={
+            books.length > 0 && books.every((b) => b.pages != null)
+          }
+          onToggleShowPages={(next) => patch({ showPages: next })}
           ownedShares={ownedShares}
           currentSlug={state.currentSlug}
           onForgetShare={(slug) => {
@@ -510,9 +527,15 @@ function BookEditModal({
                 />
                 <Field
                   label="Pages"
-                  value={draft.pages}
-                  onChange={(v) => updateDraft({ pages: +v })}
+                  value={draft.pages ?? ""}
+                  onChange={(v) => {
+                    const n = parseInt(v, 10);
+                    updateDraft({
+                      pages: Number.isFinite(n) && n > 0 ? n : undefined,
+                    });
+                  }}
                   small
+                  placeholder="—"
                 />
               </div>
             </div>
@@ -617,6 +640,9 @@ function SettingsModal({
   onClose,
   onClearLibrary,
   onStartNew,
+  showPages,
+  everyHasPages,
+  onToggleShowPages,
   ownedShares,
   currentSlug,
   onForgetShare,
@@ -624,6 +650,9 @@ function SettingsModal({
   onClose: () => void;
   onClearLibrary: () => void;
   onStartNew: () => void;
+  showPages: boolean;
+  everyHasPages: boolean;
+  onToggleShowPages: (next: boolean) => void;
   ownedShares: Record<string, string>;
   currentSlug: string | null;
   onForgetShare: (slug: string) => void;
@@ -766,6 +795,48 @@ function SettingsModal({
                   </Button>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+
+        <Hairline className="my-6" />
+
+        <div>
+          <Eyebrow className="mb-2 !text-2xs">Display</Eyebrow>
+          <div className="flex items-center justify-between gap-4">
+            <p className="font-serif text-base italic leading-snug text-ink-muted">
+              Show the page count in your shelf stats.
+              {!everyHasPages && (
+                <span className="block text-sm not-italic text-ink-faint">
+                  Some books are missing page counts, so the stat is hidden
+                  until every book has one.
+                </span>
+              )}
+            </p>
+            <div className="flex flex-shrink-0 rounded-xs border border-rule">
+              {(
+                [
+                  { id: true, label: "Show" },
+                  { id: false, label: "Hide" },
+                ] as const
+              ).map((opt, i) => {
+                const active = showPages === opt.id;
+                return (
+                  <button
+                    key={opt.label}
+                    onClick={() => onToggleShowPages(opt.id)}
+                    className={[
+                      "min-w-[4.5rem] cursor-pointer border-0 px-3 py-2 font-sans text-xs font-medium uppercase tracking-wider",
+                      i === 0 ? "" : "border-l border-rule",
+                      active
+                        ? "bg-ink text-bg"
+                        : "bg-transparent text-ink-muted hover:text-ink",
+                    ].join(" ")}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

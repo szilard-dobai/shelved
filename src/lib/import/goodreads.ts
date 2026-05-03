@@ -5,7 +5,7 @@ import {
   clampRating,
   paletteFor,
   parseDateYM,
-  parseIntOr,
+  parseOptionalInt,
   sortAndCap,
 } from "./shared";
 
@@ -33,12 +33,13 @@ export function parseGoodreadsCsv(text: string): ImportResult {
       continue;
     }
 
+    const pages = parseOptionalInt(r["Number of Pages"]);
     books.push({
       title,
       author,
       year: parsed.year,
       month: parsed.month,
-      pages: parseIntOr(r["Number of Pages"], 300),
+      ...(pages != null ? { pages } : {}),
       rating: clampRating(r["My Rating"]),
       genre: "Fiction",
       ...paletteFor(title, author),

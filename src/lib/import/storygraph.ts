@@ -37,7 +37,6 @@ export function parseStorygraphCsv(text: string): ImportResult {
       author,
       year: parsed.year,
       month: parsed.month,
-      pages: 300,
       rating: clampRating(r["Star Rating"]),
       genre: "Fiction",
       ...paletteFor(title, author),

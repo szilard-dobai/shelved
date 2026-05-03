@@ -9,6 +9,7 @@ export interface ShareDoc {
   sortMode: SortMode;
   style: ShelfStyle;
   bgVariant: BgVariant;
+  showPages: boolean;
   createdAt: Date;
   updatedAt: Date;
   views?: number;
@@ -20,6 +21,7 @@ export interface SharePayload {
   sortMode: SortMode;
   style: ShelfStyle;
   bgVariant: BgVariant;
+  showPages: boolean;
 }
 
 export function hashEditKey(key: string): string {
@@ -50,7 +52,7 @@ export function sanitizePayload(input: unknown): SharePayload | null {
       typeof b.author !== "string" ||
       typeof b.year !== "number" ||
       typeof b.month !== "number" ||
-      typeof b.pages !== "number" ||
+      (b.pages !== undefined && typeof b.pages !== "number") ||
       typeof b.rating !== "number" ||
       typeof b.genre !== "string" ||
       typeof b.spineColor !== "string" ||
@@ -64,7 +66,7 @@ export function sanitizePayload(input: unknown): SharePayload | null {
       author: b.author.slice(0, 200),
       year: b.year,
       month: b.month,
-      pages: b.pages,
+      ...(typeof b.pages === "number" ? { pages: b.pages } : {}),
       rating: b.rating,
       genre: b.genre.slice(0, 50),
       spineColor: b.spineColor.slice(0, 20),
@@ -79,6 +81,7 @@ export function sanitizePayload(input: unknown): SharePayload | null {
     sortMode: o.sortMode,
     style: o.style,
     bgVariant: o.bgVariant,
+    showPages: o.showPages !== false,
   };
 }
 

@@ -20,6 +20,7 @@ interface Props {
   sortMode: SortMode;
   style: ShelfStyle;
   bgVariant: BgVariant;
+  showPages: boolean;
 }
 
 export function SharePageClient({
@@ -29,6 +30,7 @@ export function SharePageClient({
   sortMode,
   style,
   bgVariant,
+  showPages,
 }: Props) {
   const router = useRouter();
   const params = useSearchParams();
@@ -54,6 +56,7 @@ export function SharePageClient({
       sortMode,
       style,
       bgVariant,
+      showPages,
       currentSlug: canEdit ? slug : null,
     });
     router.push("/editor");
@@ -95,6 +98,7 @@ export function SharePageClient({
               books={books}
               userTitle={userTitle}
               sortMode={sortMode}
+              showPages={showPages}
             />
           </ShelfPreview>
         </div>
@@ -132,7 +136,8 @@ export function SharePageClient({
                     <span className="opacity-30">
                       {"★".repeat(5 - b.rating)}
                     </span>{" "}
-                    · {b.year} · {b.pages}p
+                    · {b.year}
+                    {showPages && b.pages != null ? ` · ${b.pages}p` : ""}
                   </div>
                 </div>
               </li>

@@ -57,6 +57,7 @@ export default function ExportPage() {
           sortMode,
           style,
           bgVariant: state.bgVariant,
+          showPages: state.showPages,
         }),
       });
       if (!res.ok) throw new Error(`Publish failed (${res.status})`);
@@ -132,12 +133,21 @@ export default function ExportPage() {
     } catch {}
   };
 
+  const everyHasPages =
+    books.length > 0 && books.every((b) => b.pages != null);
+  const showPagesStat = state.showPages && everyHasPages;
   const stats = [
     { label: "books", value: String(books.length) },
-    {
-      label: "pages",
-      value: books.reduce((s, b) => s + b.pages, 0).toLocaleString(),
-    },
+    ...(showPagesStat
+      ? [
+          {
+            label: "pages",
+            value: books
+              .reduce((s, b) => s + (b.pages ?? 0), 0)
+              .toLocaleString(),
+          },
+        ]
+      : []),
     {
       label: "avg",
       value: books.length
@@ -183,6 +193,7 @@ export default function ExportPage() {
               books={books}
               userTitle={userTitle}
               sortMode={sortMode}
+              showPages={state.showPages}
             />
           </ShelfPreview>
         </div>
@@ -262,7 +273,12 @@ export default function ExportPage() {
 
           <Hairline className="my-5" />
 
-          <div className="grid grid-cols-3 gap-2.5 md:gap-4">
+          <div
+            className="grid gap-2.5 md:gap-4"
+            style={{
+              gridTemplateColumns: `repeat(${stats.length}, minmax(0, 1fr))`,
+            }}
+          >
             {stats.map((stat) => (
               <div key={stat.label}>
                 <div className="font-serif text-3xl font-medium italic leading-none text-ink md:text-4xl">

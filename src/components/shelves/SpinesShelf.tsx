@@ -18,6 +18,7 @@ interface SpinesShelfProps {
   books: Book[];
   userTitle: string;
   sortMode: SortMode;
+  showPages?: boolean;
 }
 
 type FlatItem =
@@ -30,7 +31,12 @@ interface Row {
   totalW: number;
 }
 
-export function SpinesShelf({ books, userTitle, sortMode }: SpinesShelfProps) {
+export function SpinesShelf({
+  books,
+  userTitle,
+  sortMode,
+  showPages = true,
+}: SpinesShelfProps) {
   const groups =
     sortMode === "year"
       ? groupByYear(books)
@@ -175,7 +181,7 @@ export function SpinesShelf({ books, userTitle, sortMode }: SpinesShelfProps) {
       </div>
 
       <div className="absolute left-0 right-0" style={{ bottom: 140 }}>
-        <StatsPanel books={books} palette="spines" />
+        <StatsPanel books={books} palette="spines" showPages={showPages} />
       </div>
 
       <div

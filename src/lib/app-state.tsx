@@ -20,6 +20,7 @@ export interface AppState {
   sortMode: SortMode;
   style: ShelfStyle;
   bgVariant: BgVariant;
+  showPages: boolean;
   currentSlug: string | null;
 }
 
@@ -29,6 +30,7 @@ const DEFAULT_STATE: AppState = {
   sortMode: "year",
   style: "wood",
   bgVariant: "warm",
+  showPages: true,
   currentSlug: null,
 };
 

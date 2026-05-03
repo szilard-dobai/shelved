@@ -8,17 +8,40 @@ export function Shelf({
   books,
   userTitle,
   sortMode,
+  showPages = true,
 }: {
   style: ShelfStyle;
   books: Book[];
   userTitle: string;
   sortMode: SortMode;
+  showPages?: boolean;
 }) {
   if (style === "minimal") {
-    return <MinimalShelf books={books} userTitle={userTitle} sortMode={sortMode} />;
+    return (
+      <MinimalShelf
+        books={books}
+        userTitle={userTitle}
+        sortMode={sortMode}
+        showPages={showPages}
+      />
+    );
   }
   if (style === "spines") {
-    return <SpinesShelf books={books} userTitle={userTitle} sortMode={sortMode} />;
+    return (
+      <SpinesShelf
+        books={books}
+        userTitle={userTitle}
+        sortMode={sortMode}
+        showPages={showPages}
+      />
+    );
   }
-  return <WoodShelf books={books} userTitle={userTitle} sortMode={sortMode} />;
+  return (
+    <WoodShelf
+      books={books}
+      userTitle={userTitle}
+      sortMode={sortMode}
+      showPages={showPages}
+    />
+  );
 }

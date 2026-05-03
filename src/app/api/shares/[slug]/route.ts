@@ -29,6 +29,7 @@ export async function GET(
       sortMode: doc.sortMode,
       style: doc.style,
       bgVariant: doc.bgVariant,
+      showPages: doc.showPages !== false,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });
@@ -72,6 +73,7 @@ export async function PUT(
           sortMode: payload.sortMode,
           style: payload.style,
           bgVariant: payload.bgVariant,
+          showPages: payload.showPages,
           updatedAt: new Date(),
         },
       },

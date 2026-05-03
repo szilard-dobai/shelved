@@ -66,7 +66,7 @@ export function spineWidthFor(
   maxW: number,
   salt = "w",
 ): number {
-  const t = pagesToWidthT(book.pages);
+  const t = pagesToWidthT(book.pages ?? 300);
   const jitter = (bookSeed(book, salt) - 0.5) * 0.14;
   const clamped = Math.max(0, Math.min(1, t + jitter));
   return Math.round(minW + clamped * (maxW - minW));

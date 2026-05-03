@@ -7,7 +7,7 @@ export interface Book {
   author: string;
   year: number;
   month: number;
-  pages: number;
+  pages?: number;
   rating: number;
   genre: string;
   spineColor: string;

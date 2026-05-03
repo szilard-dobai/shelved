@@ -13,13 +13,19 @@ interface MinimalShelfProps {
   books: Book[];
   userTitle: string;
   sortMode: SortMode;
+  showPages?: boolean;
 }
 
 type Rendered =
   | { kind: "label"; text: string | number }
   | { kind: "book"; book: Book };
 
-export function MinimalShelf({ books, userTitle, sortMode }: MinimalShelfProps) {
+export function MinimalShelf({
+  books,
+  userTitle,
+  sortMode,
+  showPages = true,
+}: MinimalShelfProps) {
   const groups =
     sortMode === "year"
       ? groupByYear(books)
@@ -36,7 +42,9 @@ export function MinimalShelf({ books, userTitle, sortMode }: MinimalShelfProps) 
     g.books.forEach((b) => rendered.push({ kind: "book", book: b }));
   });
 
-  const pages = books.reduce((s, b) => s + b.pages, 0);
+  const everyHasPages = books.length > 0 && books.every((b) => b.pages != null);
+  const showPagesStat = showPages && everyHasPages;
+  const pages = books.reduce((s, b) => s + (b.pages ?? 0), 0);
   const avg = books.length
     ? (books.reduce((s, b) => s + b.rating, 0) / books.length).toFixed(1)
     : "0.0";
@@ -151,7 +159,9 @@ export function MinimalShelf({ books, userTitle, sortMode }: MinimalShelfProps) 
                 <div className="mt-1 flex items-center gap-[6px] text-[11px] font-sans opacity-55 tracking-[0.12em]">
                   {"★".repeat(b.rating)}
                   <span className="opacity-30">{"★".repeat(5 - b.rating)}</span>
-                  <span className="ml-[6px]">· {b.pages}p</span>
+                  {showPages && b.pages != null && (
+                    <span className="ml-[6px]">· {b.pages}p</span>
+                  )}
                 </div>
               </div>
             </div>
@@ -170,7 +180,9 @@ export function MinimalShelf({ books, userTitle, sortMode }: MinimalShelfProps) 
         >
           {[
             { k: String(books.length), l: "books" },
-            { k: pages.toLocaleString(), l: "pages" },
+            ...(showPagesStat
+              ? [{ k: pages.toLocaleString(), l: "pages" }]
+              : []),
             { k: avg, l: "avg rating" },
           ].map((it, i, arr) => (
             <Fragment key={it.l}>
