@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Display, Eyebrow, Wordmark } from "@/components/ui/typography";
 import { Icon, type IconName } from "@/components/ui/Icon";
+import { useAppState } from "@/lib/app-state";
 import { useIsMobile } from "@/lib/use-media";
 import { trackEvent } from "@/lib/tracking";
 
@@ -46,6 +47,7 @@ const METHODS: MethodCard[] = [
 export default function ImportPage() {
   const router = useRouter();
   const mobile = useIsMobile();
+  const { loadDemo } = useAppState();
   const [method, setMethod] = useState<Method>(null);
   const [dragOver, setDragOver] = useState(false);
   const [title, setTitle] = useState("");
@@ -214,7 +216,10 @@ export default function ImportPage() {
             <div className="mt-4">
               <Link
                 href="/editor"
-                onClick={() => trackEvent("skip_with_sample_click")}
+                onClick={() => {
+                  loadDemo();
+                  trackEvent("skip_with_sample_click");
+                }}
                 className="font-serif text-2xl italic text-ink underline underline-offset-8 decoration-rule-strong"
               >
                 skip & try with sample books

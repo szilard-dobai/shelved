@@ -30,9 +30,12 @@ const FEATURES = [
 ];
 
 export default function LandingPage() {
-  const { state } = useAppState();
+  const { state, ownedShares, hydrated, loadDemo } = useAppState();
   const mobile = useIsMobile();
   const previewScale = mobile ? 0.18 : 0.32;
+  const isReturning =
+    hydrated &&
+    (Object.keys(ownedShares).length > 0 || state.currentSlug !== null);
 
   useEffect(() => {
     trackEvent("landing_view");
@@ -65,26 +68,55 @@ export default function LandingPage() {
             Goodreads, paste a list of ISBNs, or just your memory — we&apos;ll
             do the rest.
           </p>
-          <div className="flex flex-col gap-2.5 sm:flex-row sm:justify-center lg:justify-start">
-            <Link
-              href="/import"
-              onClick={() => trackEvent("landing_cta_click", { cta: "start" })}
-              className="contents sm:inline-block"
-            >
-              <Button size="md" className="w-full sm:w-auto">
-                Start your shelf
-                <Icon name="arrowRight" size={16} />
-              </Button>
-            </Link>
-            <Link
-              href="/editor"
-              onClick={() => trackEvent("landing_cta_click", { cta: "demo" })}
-              className="contents sm:inline-block"
-            >
-              <Button size="md" variant="secondary" className="w-full sm:w-auto">
-                Try the demo
-              </Button>
-            </Link>
+          <div
+            className="flex flex-col gap-2.5 sm:flex-row sm:justify-center lg:justify-start"
+            style={{ visibility: hydrated ? undefined : "hidden" }}
+          >
+            {isReturning ? (
+              <Link
+                href="/editor"
+                onClick={() =>
+                  trackEvent("landing_cta_click", { cta: "continue" })
+                }
+                className="contents sm:inline-block"
+              >
+                <Button size="md" className="w-full sm:w-auto">
+                  Continue your shelf
+                  <Icon name="arrowRight" size={16} />
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/import"
+                  onClick={() =>
+                    trackEvent("landing_cta_click", { cta: "start" })
+                  }
+                  className="contents sm:inline-block"
+                >
+                  <Button size="md" className="w-full sm:w-auto">
+                    Start your shelf
+                    <Icon name="arrowRight" size={16} />
+                  </Button>
+                </Link>
+                <Link
+                  href="/editor"
+                  onClick={() => {
+                    loadDemo();
+                    trackEvent("landing_cta_click", { cta: "demo" });
+                  }}
+                  className="contents sm:inline-block"
+                >
+                  <Button
+                    size="md"
+                    variant="secondary"
+                    className="w-full sm:w-auto"
+                  >
+                    Try the demo
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
           <div className="mt-6 font-sans text-2xs tracking-widest text-ink-faint md:mt-9 md:text-xs">
             NO SIGNUP · FREE · YOUR DATA STAYS YOURS

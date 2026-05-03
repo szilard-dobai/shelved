@@ -37,6 +37,7 @@ interface AppStateContextValue {
   setState: (next: AppState | ((prev: AppState) => AppState)) => void;
   patch: (partial: Partial<AppState>) => void;
   resetEditor: () => void;
+  loadDemo: () => void;
   ownedShares: Record<string, string>;
   rememberShare: (slug: string, editKey: string) => void;
   forgetShare: (slug: string) => void;
@@ -88,6 +89,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setStateRaw({ ...DEFAULT_STATE, books: [] });
   }, []);
 
+  const loadDemo = useCallback(() => {
+    setStateRaw({ ...DEFAULT_STATE });
+  }, []);
+
   const rememberShare = useCallback((slug: string, editKey: string) => {
     setOwnedShares((prev) => {
       const next = { ...prev, [slug]: editKey };
@@ -115,6 +120,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setState,
       patch,
       resetEditor,
+      loadDemo,
       ownedShares,
       rememberShare,
       forgetShare,
@@ -125,6 +131,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setState,
       patch,
       resetEditor,
+      loadDemo,
       ownedShares,
       rememberShare,
       forgetShare,
