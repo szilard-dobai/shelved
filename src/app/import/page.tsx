@@ -47,18 +47,22 @@ const METHODS: MethodCard[] = [
 export default function ImportPage() {
   const router = useRouter();
   const mobile = useIsMobile();
-  const { loadDemo } = useAppState();
+  const { loadDemo, resetEditor } = useAppState();
   const [method, setMethod] = useState<Method>(null);
   const [dragOver, setDragOver] = useState(false);
-  const [title, setTitle] = useState("");
 
   useEffect(() => {
     trackEvent("import_view");
   }, []);
 
   const selectMethod = (m: "csv" | "storygraph" | "search") => {
-    setMethod(m);
     trackEvent("import_method_selected", { method: m });
+    if (m === "search") {
+      resetEditor();
+      router.push("/editor");
+      return;
+    }
+    setMethod(m);
   };
 
   const isCsv = method === "csv" || method === "storygraph";
@@ -172,42 +176,6 @@ export default function ImportPage() {
           </div>
         )}
 
-        {method === "search" && (
-          <div className="rounded-xs border border-rule bg-bg-raised p-6 md:p-8">
-            <Eyebrow className="mb-4">Type a book to add</Eyebrow>
-            <div className="grid grid-cols-1 items-end gap-3 md:grid-cols-[1.4fr_1fr_5rem]">
-              <SearchField
-                label="Title"
-                placeholder="e.g. The Name of the Wind"
-                value={title}
-                onChange={setTitle}
-              />
-              <SearchField label="Author" placeholder="Patrick Rothfuss" />
-              <SearchField label="Year" placeholder="2007" />
-            </div>
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-              <div className="font-sans text-md text-ink-muted">
-                You can edit covers, ratings &amp; dates next.
-              </div>
-              <div className="flex gap-2.5">
-                <Button variant="secondary" size="sm">
-                  + Add another
-                </Button>
-                <Button
-                  variant="gold"
-                  size="sm"
-                  onClick={() => {
-                    trackEvent("book_added_manual", { source: "import" });
-                    router.push("/editor");
-                  }}
-                >
-                  Done
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {!method && (
           <div className="py-8 text-center">
             <div className="font-sans text-md uppercase tracking-widest text-ink-faint">
@@ -228,32 +196,6 @@ export default function ImportPage() {
           </div>
         )}
       </section>
-    </div>
-  );
-}
-
-function SearchField({
-  label,
-  placeholder,
-  value,
-  onChange,
-}: {
-  label: string;
-  placeholder: string;
-  value?: string;
-  onChange?: (v: string) => void;
-}) {
-  return (
-    <div>
-      <div className="mb-1 font-sans text-2xs uppercase tracking-widest text-ink-faint">
-        {label}
-      </div>
-      <input
-        value={value}
-        onChange={onChange ? (e) => onChange(e.target.value) : undefined}
-        placeholder={placeholder}
-        className="box-border w-full border-0 border-b border-rule bg-transparent py-1 font-serif text-2xl italic text-ink outline-none focus:border-rule-strong"
-      />
     </div>
   );
 }
