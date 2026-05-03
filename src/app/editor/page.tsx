@@ -273,6 +273,15 @@ export default function EditorPage() {
                   trackEvent("background_changed", { background: v });
                 }}
               />
+              <SegControl<"show" | "hide">
+                label="Pages"
+                options={[
+                  { id: "show", label: "Show" },
+                  { id: "hide", label: "Hide" },
+                ]}
+                value={state.showPages ? "show" : "hide"}
+                onChange={(v) => patch({ showPages: v === "show" })}
+              />
             </div>
           </div>
         </section>
@@ -300,11 +309,6 @@ export default function EditorPage() {
             trackEvent("shelf_reset");
             setSettingsOpen(false);
           }}
-          showPages={state.showPages}
-          everyHasPages={
-            books.length > 0 && books.every((b) => b.pages != null)
-          }
-          onToggleShowPages={(next) => patch({ showPages: next })}
           ownedShares={ownedShares}
           currentSlug={state.currentSlug}
           onForgetShare={(slug) => {
@@ -640,9 +644,6 @@ function SettingsModal({
   onClose,
   onClearLibrary,
   onStartNew,
-  showPages,
-  everyHasPages,
-  onToggleShowPages,
   ownedShares,
   currentSlug,
   onForgetShare,
@@ -650,9 +651,6 @@ function SettingsModal({
   onClose: () => void;
   onClearLibrary: () => void;
   onStartNew: () => void;
-  showPages: boolean;
-  everyHasPages: boolean;
-  onToggleShowPages: (next: boolean) => void;
   ownedShares: Record<string, string>;
   currentSlug: string | null;
   onForgetShare: (slug: string) => void;
@@ -795,48 +793,6 @@ function SettingsModal({
                   </Button>
                 </div>
               )}
-            </div>
-          </div>
-        </div>
-
-        <Hairline className="my-6" />
-
-        <div>
-          <Eyebrow className="mb-2 !text-2xs">Display</Eyebrow>
-          <div className="flex items-center justify-between gap-4">
-            <p className="font-serif text-base italic leading-snug text-ink-muted">
-              Show the page count in your shelf stats.
-              {!everyHasPages && (
-                <span className="block text-sm not-italic text-ink-faint">
-                  Some books are missing page counts, so the stat is hidden
-                  until every book has one.
-                </span>
-              )}
-            </p>
-            <div className="flex flex-shrink-0 rounded-xs border border-rule">
-              {(
-                [
-                  { id: true, label: "Show" },
-                  { id: false, label: "Hide" },
-                ] as const
-              ).map((opt, i) => {
-                const active = showPages === opt.id;
-                return (
-                  <button
-                    key={opt.label}
-                    onClick={() => onToggleShowPages(opt.id)}
-                    className={[
-                      "min-w-[4.5rem] cursor-pointer border-0 px-3 py-2 font-sans text-xs font-medium uppercase tracking-wider",
-                      i === 0 ? "" : "border-l border-rule",
-                      active
-                        ? "bg-ink text-bg"
-                        : "bg-transparent text-ink-muted hover:text-ink",
-                    ].join(" ")}
-                  >
-                    {opt.label}
-                  </button>
-                );
-              })}
             </div>
           </div>
         </div>
