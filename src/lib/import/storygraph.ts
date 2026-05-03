@@ -5,11 +5,10 @@ import {
   clampRating,
   paletteFor,
   parseDateYM,
-  parseIntOr,
   sortAndCap,
 } from "./shared";
 
-export function parseGoodreadsCsv(text: string): ImportResult {
+export function parseStorygraphCsv(text: string): ImportResult {
   const records = parse(text, {
     columns: true,
     skip_empty_lines: true,
@@ -22,12 +21,12 @@ export function parseGoodreadsCsv(text: string): ImportResult {
   const books: Book[] = [];
 
   for (const r of records) {
-    if (r["Exclusive Shelf"] !== "read") continue;
+    if (r["Read Status"] !== "read") continue;
     totalRead++;
 
-    const parsed = parseDateYM(r["Date Read"] || r["Date Added"]);
+    const parsed = parseDateYM(r["Last Date Read"] || r["Date Added"]);
     const title = r["Title"]?.trim();
-    const author = r["Author"]?.trim();
+    const author = firstAuthor(r["Authors"]);
     if (!parsed || !title || !author) {
       skipped++;
       continue;
@@ -38,8 +37,8 @@ export function parseGoodreadsCsv(text: string): ImportResult {
       author,
       year: parsed.year,
       month: parsed.month,
-      pages: parseIntOr(r["Number of Pages"], 300),
-      rating: clampRating(r["My Rating"]),
+      pages: 300,
+      rating: clampRating(r["Star Rating"]),
       genre: "Fiction",
       ...paletteFor(title, author),
     });
@@ -47,4 +46,11 @@ export function parseGoodreadsCsv(text: string): ImportResult {
 
   const { books: sorted, capped } = sortAndCap(books);
   return { books: sorted, totalRead, skipped: skipped + capped };
+}
+
+function firstAuthor(raw: string | undefined): string {
+  if (!raw) return "";
+  const trimmed = raw.trim();
+  const comma = trimmed.indexOf(",");
+  return (comma === -1 ? trimmed : trimmed.slice(0, comma)).trim();
 }

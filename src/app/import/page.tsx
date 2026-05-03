@@ -10,6 +10,7 @@ import { useAppState } from "@/lib/app-state";
 import { useIsMobile } from "@/lib/use-media";
 import { trackEvent } from "@/lib/tracking";
 import { parseGoodreadsCsv } from "@/lib/import/goodreads";
+import { parseStorygraphCsv } from "@/lib/import/storygraph";
 
 type Method = "csv" | "storygraph" | "search" | null;
 
@@ -77,12 +78,13 @@ export default function ImportPage() {
     setParsing(true);
     try {
       const text = await file.text();
-      const result = parseGoodreadsCsv(text);
+      const result =
+        method === "storygraph"
+          ? parseStorygraphCsv(text)
+          : parseGoodreadsCsv(text);
       if (result.books.length === 0) {
         throw new Error(
-          method === "storygraph"
-            ? "Storygraph format isn't supported yet — for now, please use a Goodreads CSV export."
-            : "We couldn't find any read books in this file. Make sure it's a Goodreads library export.",
+          `We couldn't find any read books in this file. Make sure it's a ${method === "storygraph" ? "Storygraph" : "Goodreads"} library export.`,
         );
       }
       setState({
