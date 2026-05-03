@@ -34,8 +34,10 @@ interface AppStateContextValue {
   state: AppState;
   setState: (next: AppState | ((prev: AppState) => AppState)) => void;
   patch: (partial: Partial<AppState>) => void;
+  resetEditor: () => void;
   ownedShares: Record<string, string>;
   rememberShare: (slug: string, editKey: string) => void;
+  forgetShare: (slug: string) => void;
   hydrated: boolean;
 }
 
@@ -80,6 +82,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setStateRaw((prev) => ({ ...prev, ...partial }));
   }, []);
 
+  const resetEditor = useCallback(() => {
+    setStateRaw({ ...DEFAULT_STATE, books: [] });
+  }, []);
+
   const rememberShare = useCallback((slug: string, editKey: string) => {
     setOwnedShares((prev) => {
       const next = { ...prev, [slug]: editKey };
@@ -90,9 +96,38 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const forgetShare = useCallback((slug: string) => {
+    setOwnedShares((prev) => {
+      const next = { ...prev };
+      delete next[slug];
+      try {
+        localStorage.setItem(OWNED_KEY, JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  }, []);
+
   const value = useMemo<AppStateContextValue>(
-    () => ({ state, setState, patch, ownedShares, rememberShare, hydrated }),
-    [state, setState, patch, ownedShares, rememberShare, hydrated],
+    () => ({
+      state,
+      setState,
+      patch,
+      resetEditor,
+      ownedShares,
+      rememberShare,
+      forgetShare,
+      hydrated,
+    }),
+    [
+      state,
+      setState,
+      patch,
+      resetEditor,
+      ownedShares,
+      rememberShare,
+      forgetShare,
+      hydrated,
+    ],
   );
 
   return (

@@ -20,10 +20,12 @@ type EditingState =
   | { mode: "create"; initial: Book };
 
 export default function EditorPage() {
-  const { state, patch, hydrated } = useAppState();
+  const { state, patch, resetEditor, hydrated, ownedShares, forgetShare } =
+    useAppState();
   const { books, userTitle, sortMode, style, bgVariant } = state;
   const [editing, setEditing] = useState<EditingState | null>(null);
   const [mobileTab, setMobileTab] = useState<MobileTab>("books");
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const mobile = useIsMobile();
 
   useEffect(() => {
@@ -133,10 +135,19 @@ export default function EditorPage() {
                 {books.length} books
               </div>
             </div>
-            <Button variant="secondary" size="sm" onClick={openCreate}>
-              <Icon name="plus" size={12} />
-              Add book
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="secondary" size="sm" onClick={openCreate}>
+                <Icon name="plus" size={12} />
+                Add book
+              </Button>
+              <button
+                onClick={() => setSettingsOpen(true)}
+                aria-label="Library settings"
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-2xs border border-rule-strong bg-transparent text-ink-muted hover:text-ink"
+              >
+                <Icon name="settings" size={14} />
+              </button>
+            </div>
           </div>
 
           <Hairline className="mb-5" />
@@ -239,6 +250,24 @@ export default function EditorPage() {
           mode={editing.mode}
           onClose={() => setEditing(null)}
           onSave={saveBook}
+        />
+      )}
+
+      {settingsOpen && (
+        <SettingsModal
+          onClose={() => setSettingsOpen(false)}
+          onClearLibrary={() => {
+            patch({ books: [] });
+            trackEvent("library_cleared");
+            setSettingsOpen(false);
+          }}
+          onStartNew={() => {
+            resetEditor();
+            trackEvent("shelf_reset");
+            setSettingsOpen(false);
+          }}
+          ownedShares={ownedShares}
+          onForgetShare={forgetShare}
         />
       )}
     </div>
@@ -557,6 +586,252 @@ const BLANK_PALETTE: Array<Pick<Book, "spineColor" | "textColor" | "accent">> =
     { spineColor: "#7a2838", textColor: "#e8d4a8", accent: "gold" },
     { spineColor: "#c9b87a", textColor: "#3a3018", accent: "none" },
   ];
+
+function SettingsModal({
+  onClose,
+  onClearLibrary,
+  onStartNew,
+  ownedShares,
+  onForgetShare,
+}: {
+  onClose: () => void;
+  onClearLibrary: () => void;
+  onStartNew: () => void;
+  ownedShares: Record<string, string>;
+  onForgetShare: (slug: string) => void;
+}) {
+  const [confirmingClear, setConfirmingClear] = useState(false);
+  const [confirmingStartNew, setConfirmingStartNew] = useState(false);
+  const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
+  const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const slugs = Object.keys(ownedShares);
+
+  const copyEditLink = async (slug: string, editKey: string) => {
+    try {
+      const url = `${window.location.origin}/s/${slug}?edit=${editKey}`;
+      await navigator.clipboard.writeText(url);
+      setCopiedSlug(slug);
+      setTimeout(
+        () => setCopiedSlug((current) => (current === slug ? null : current)),
+        1500,
+      );
+      trackEvent("edit_link_copied");
+    } catch {}
+  };
+
+  const handleDelete = async (slug: string, editKey: string) => {
+    if (deleteBusy) return;
+    setDeleteBusy(true);
+    setDeleteError(null);
+    try {
+      const res = await fetch(
+        `/api/shares/${slug}?edit=${encodeURIComponent(editKey)}`,
+        { method: "DELETE" },
+      );
+      if (!res.ok && res.status !== 404) {
+        const data = (await res.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        throw new Error(data?.error ?? `Delete failed (${res.status})`);
+      }
+      onForgetShare(slug);
+      trackEvent("share_deleted");
+      setDeletingSlug(null);
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : "Delete failed");
+    } finally {
+      setDeleteBusy(false);
+    }
+  };
+
+  const cancelDelete = () => {
+    setDeletingSlug(null);
+    setDeleteError(null);
+  };
+
+  return (
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 md:items-center"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative max-h-[92vh] w-full overflow-y-auto border border-rule bg-bg-panel-solid p-6 text-ink md:max-h-none md:w-[33.75rem] md:max-w-[calc(100%-2.5rem)] md:overflow-visible md:p-9"
+      >
+        <button
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute right-4 top-4 cursor-pointer border-0 bg-transparent text-ink-muted hover:text-ink"
+        >
+          <Icon name="x" size={20} />
+        </button>
+        <Eyebrow>Library settings</Eyebrow>
+
+        <div className="mt-6">
+          <Eyebrow className="mb-2 !text-2xs">Library</Eyebrow>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between gap-4">
+              <p className="font-serif text-base italic leading-snug text-ink-muted">
+                Remove every book from this library. Style, sort and title stay
+                put.
+              </p>
+              {!confirmingClear ? (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => {
+                    setConfirmingClear(true);
+                    setConfirmingStartNew(false);
+                  }}
+                  className="flex-shrink-0 whitespace-nowrap"
+                >
+                  <Icon name="trash" size={12} />
+                  Clear all
+                </Button>
+              ) : (
+                <div className="flex flex-shrink-0 gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setConfirmingClear(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button variant="danger" size="sm" onClick={onClearLibrary}>
+                    Confirm
+                  </Button>
+                </div>
+              )}
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <p className="font-serif text-base italic leading-snug text-ink-muted">
+                Start a brand new shelf — wipes books, title and style and
+                unbinds any published share.
+              </p>
+              {!confirmingStartNew ? (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => {
+                    setConfirmingStartNew(true);
+                    setConfirmingClear(false);
+                  }}
+                  className="flex-shrink-0 whitespace-nowrap"
+                >
+                  <Icon name="sparkle" size={12} />
+                  Start new
+                </Button>
+              ) : (
+                <div className="flex flex-shrink-0 gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setConfirmingStartNew(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button variant="danger" size="sm" onClick={onStartNew}>
+                    Confirm
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <Hairline className="my-6" />
+
+        <div>
+          <Eyebrow className="mb-2 !text-2xs">Published shelves</Eyebrow>
+          {slugs.length === 0 ? (
+            <p className="font-serif text-base italic leading-snug text-ink-muted">
+              You haven&apos;t published a shelf yet. Once you do, the edit
+              links will live here.
+            </p>
+          ) : (
+            <ul className="divide-y divide-rule">
+              {slugs.map((slug) => {
+                const editKey = ownedShares[slug];
+                const copied = copiedSlug === slug;
+                const confirming = deletingSlug === slug;
+                return (
+                  <li
+                    key={slug}
+                    className="flex flex-col gap-1.5 py-3 first:pt-0 last:pb-0"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Link
+                        href={`/s/${slug}`}
+                        target="_blank"
+                        className="min-w-0 flex-1 truncate font-mono text-xs text-ink underline-offset-2 hover:underline"
+                      >
+                        /s/{slug}
+                      </Link>
+                      {confirming ? (
+                        <>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={cancelDelete}
+                            disabled={deleteBusy}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => handleDelete(slug, editKey)}
+                            disabled={deleteBusy}
+                          >
+                            {deleteBusy ? "Deleting…" : "Delete"}
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => copyEditLink(slug, editKey)}
+                          >
+                            {copied ? (
+                              <>
+                                <Icon name="check" size={12} /> Copied
+                              </>
+                            ) : (
+                              <>Copy edit link</>
+                            )}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setDeletingSlug(slug);
+                              setDeleteError(null);
+                            }}
+                            aria-label={`Delete ${slug}`}
+                          >
+                            <Icon name="trash" size={14} />
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                    {confirming && deleteError && (
+                      <p className="font-sans text-xs text-danger">
+                        {deleteError}
+                      </p>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function makeBlankBook(existingCount: number): Book {
   const now = new Date();

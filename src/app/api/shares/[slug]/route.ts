@@ -89,3 +89,34 @@ export async function PUT(
 
   return NextResponse.json({ success: true });
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ slug: string }> },
+) {
+  const { slug } = await params;
+  const url = new URL(request.url);
+  const editKey = url.searchParams.get("edit");
+  if (!editKey) {
+    return NextResponse.json({ error: "Missing edit key" }, { status: 401 });
+  }
+
+  try {
+    const collection = await getSharesCollection();
+    const result = await collection.deleteOne({
+      slug,
+      editKeyHash: hashEditKey(editKey),
+    });
+    if (result.deletedCount === 0) {
+      return NextResponse.json(
+        { error: "Unauthorized or not found" },
+        { status: 403 },
+      );
+    }
+  } catch (error) {
+    console.error("Share delete failed:", error);
+    return NextResponse.json({ error: "Failed to delete" }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true });
+}

@@ -22,6 +22,9 @@ export type TrackingEventType =
   | "edit_link_copied"
   | "share_created"
   | "share_edited"
+  | "library_cleared"
+  | "shelf_reset"
+  | "share_deleted"
   | "theme_changed";
 
 export type DeviceType = "mobile" | "tablet" | "desktop";
