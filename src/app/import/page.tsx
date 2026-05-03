@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Display, Eyebrow, Wordmark } from "@/components/ui/typography";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { useAppState } from "@/lib/app-state";
 import { useIsMobile } from "@/lib/use-media";
 import { trackEvent } from "@/lib/tracking";
+import { parseGoodreadsCsv } from "@/lib/import/goodreads";
 
 type Method = "csv" | "storygraph" | "search" | null;
 
@@ -47,9 +48,12 @@ const METHODS: MethodCard[] = [
 export default function ImportPage() {
   const router = useRouter();
   const mobile = useIsMobile();
-  const { loadDemo, resetEditor } = useAppState();
+  const { state, setState, loadDemo, resetEditor } = useAppState();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [method, setMethod] = useState<Method>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [parsing, setParsing] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
 
   useEffect(() => {
     trackEvent("import_view");
@@ -62,7 +66,43 @@ export default function ImportPage() {
       router.push("/editor");
       return;
     }
+    setImportError(null);
     setMethod(m);
+  };
+
+  const handleFile = async (file: File, source: "drop" | "button") => {
+    if (parsing) return;
+    trackEvent("csv_upload", { source, from: method });
+    setImportError(null);
+    setParsing(true);
+    try {
+      const text = await file.text();
+      const result = parseGoodreadsCsv(text);
+      if (result.books.length === 0) {
+        throw new Error(
+          method === "storygraph"
+            ? "Storygraph format isn't supported yet — for now, please use a Goodreads CSV export."
+            : "We couldn't find any read books in this file. Make sure it's a Goodreads library export.",
+        );
+      }
+      setState({
+        ...state,
+        books: result.books,
+        currentSlug: null,
+      });
+      router.push("/editor");
+    } catch (err) {
+      setImportError(
+        err instanceof Error ? err.message : "Couldn't parse this file.",
+      );
+      setParsing(false);
+    }
+  };
+
+  const onFilePicked = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (file) handleFile(file, "button");
   };
 
   const isCsv = method === "csv" || method === "storygraph";
@@ -135,6 +175,7 @@ export default function ImportPage() {
         {isCsv && (
           <div
             onDragOver={(e) => {
+              if (parsing) return;
               e.preventDefault();
               setDragOver(true);
             }}
@@ -142,32 +183,45 @@ export default function ImportPage() {
             onDrop={(e) => {
               e.preventDefault();
               setDragOver(false);
-              trackEvent("csv_upload", { source: "drop", from: method });
+              const file = e.dataTransfer.files?.[0];
+              if (file) handleFile(file, "drop");
             }}
             className={[
               "rounded-xs border-2 border-dashed p-8 text-center transition-all md:p-16",
               dragOver
                 ? "border-gold bg-gold-soft"
                 : "border-rule-strong bg-bg-raised",
+              parsing ? "opacity-60" : "",
             ].join(" ")}
           >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".csv,text/csv"
+              className="hidden"
+              onChange={onFilePicked}
+            />
             <div className="flex justify-center text-gold">
               <Icon name="upload" size={40} />
             </div>
             <div className="mt-4 font-serif text-2xl italic text-ink md:mt-5 md:text-3xl">
-              Drop your export here
+              {parsing ? "Reading your shelf…" : "Drop your export here"}
             </div>
             <div className="mt-2 mb-6 text-sm text-ink-muted md:mb-7">
-              .csv from {sourceLabel} · up to 5,000 books
+              .csv from {sourceLabel} · up to 1,500 books
             </div>
             <Button
               variant="gold"
-              onClick={() =>
-                trackEvent("csv_upload", { source: "button", from: method })
-              }
+              onClick={() => fileInputRef.current?.click()}
+              disabled={parsing}
             >
               Choose a file
             </Button>
+            {importError && (
+              <p className="mt-5 font-sans text-sm text-danger">
+                {importError}
+              </p>
+            )}
             <div className="mt-8 font-sans text-xs text-ink-faint">
               <a className="cursor-pointer text-ink-muted underline underline-offset-2">
                 How to export from {sourceLabel} →
