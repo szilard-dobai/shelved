@@ -20,7 +20,7 @@ type EditingState =
   | { mode: "create"; initial: Book };
 
 export default function EditorPage() {
-  const { state, patch } = useAppState();
+  const { state, patch, hydrated } = useAppState();
   const { books, userTitle, sortMode, style, bgVariant } = state;
   const [editing, setEditing] = useState<EditingState | null>(null);
   const [mobileTab, setMobileTab] = useState<MobileTab>("books");
@@ -74,7 +74,10 @@ export default function EditorPage() {
             </div>
           </div>
           <div className="flex flex-shrink-0 items-center gap-3">
-            <div className="hidden font-sans text-md text-ink-muted md:block">
+            <div
+              className="hidden font-sans text-md text-ink-muted md:block"
+              style={{ visibility: hydrated ? undefined : "hidden" }}
+            >
               {books.length} books ·{" "}
               {books.reduce((s, b) => s + b.pages, 0).toLocaleString()} pages
             </div>
@@ -111,7 +114,11 @@ export default function EditorPage() {
         </div>
       </header>
 
-      <div className="flex flex-col md:flex-1 md:flex-row md:min-h-0">
+      <div
+        className="flex flex-col md:flex-1 md:flex-row md:min-h-0"
+        aria-busy={!hydrated}
+        style={{ visibility: hydrated ? undefined : "hidden" }}
+      >
         <section
           className={[
             "border-b border-rule px-4 pt-4 pb-10 md:border-b-0 md:border-r md:flex-1 md:overflow-auto md:px-8 md:pt-6 md:pb-28",

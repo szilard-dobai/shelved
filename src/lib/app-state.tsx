@@ -36,6 +36,7 @@ interface AppStateContextValue {
   patch: (partial: Partial<AppState>) => void;
   ownedShares: Record<string, string>;
   rememberShare: (slug: string, editKey: string) => void;
+  hydrated: boolean;
 }
 
 const AppStateContext = createContext<AppStateContextValue | null>(null);
@@ -90,8 +91,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo<AppStateContextValue>(
-    () => ({ state, setState, patch, ownedShares, rememberShare }),
-    [state, setState, patch, ownedShares, rememberShare],
+    () => ({ state, setState, patch, ownedShares, rememberShare, hydrated }),
+    [state, setState, patch, ownedShares, rememberShare, hydrated],
   );
 
   return (

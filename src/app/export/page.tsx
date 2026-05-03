@@ -25,7 +25,7 @@ interface ShareInfo {
 }
 
 export default function ExportPage() {
-  const { state, rememberShare } = useAppState();
+  const { state, rememberShare, hydrated } = useAppState();
   const { books, userTitle, sortMode, style } = state;
   const mobile = useIsMobile();
   const [share, setShare] = useState<ShareInfo | null>(null);
@@ -121,7 +121,11 @@ export default function ExportPage() {
         </div>
       </header>
 
-      <section className="mx-auto grid max-w-page grid-cols-1 gap-7 px-5 py-6 md:grid-cols-[1fr_26.25rem] md:gap-10 md:p-10">
+      <section
+        className="mx-auto grid max-w-page grid-cols-1 gap-7 px-5 py-6 md:grid-cols-[1fr_26.25rem] md:gap-10 md:p-10"
+        aria-busy={!hydrated}
+        style={{ visibility: hydrated ? undefined : "hidden" }}
+      >
         <div className="flex items-start justify-center">
           <ShelfPreview
             fitMode="viewport"
