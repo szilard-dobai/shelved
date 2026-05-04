@@ -20,7 +20,9 @@ interface Props {
   sortMode: SortMode;
   style: ShelfStyle;
   bgVariant: BgVariant;
+  showBookCount: boolean;
   showPages: boolean;
+  showRating: boolean;
 }
 
 export function SharePageClient({
@@ -30,7 +32,9 @@ export function SharePageClient({
   sortMode,
   style,
   bgVariant,
+  showBookCount,
   showPages,
+  showRating,
 }: Props) {
   const router = useRouter();
   const params = useSearchParams();
@@ -56,7 +60,9 @@ export function SharePageClient({
       sortMode,
       style,
       bgVariant,
+      showBookCount,
       showPages,
+      showRating,
       currentSlug: canEdit ? slug : null,
     });
     router.push("/editor");
@@ -98,7 +104,9 @@ export function SharePageClient({
               books={books}
               userTitle={userTitle}
               sortMode={sortMode}
+              showBookCount={showBookCount}
               showPages={showPages}
+              showRating={showRating}
             />
           </ShelfPreview>
         </div>

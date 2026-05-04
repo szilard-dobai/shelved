@@ -9,7 +9,9 @@ export interface ShareDoc {
   sortMode: SortMode;
   style: ShelfStyle;
   bgVariant: BgVariant;
+  showBookCount: boolean;
   showPages: boolean;
+  showRating: boolean;
   createdAt: Date;
   updatedAt: Date;
   views?: number;
@@ -21,7 +23,9 @@ export interface SharePayload {
   sortMode: SortMode;
   style: ShelfStyle;
   bgVariant: BgVariant;
+  showBookCount: boolean;
   showPages: boolean;
+  showRating: boolean;
 }
 
 export function hashEditKey(key: string): string {
@@ -81,7 +85,9 @@ export function sanitizePayload(input: unknown): SharePayload | null {
     sortMode: o.sortMode,
     style: o.style,
     bgVariant: o.bgVariant,
+    showBookCount: o.showBookCount !== false,
     showPages: o.showPages !== false,
+    showRating: o.showRating !== false,
   };
 }
 

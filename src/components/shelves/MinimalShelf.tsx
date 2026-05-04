@@ -13,7 +13,9 @@ interface MinimalShelfProps {
   books: Book[];
   userTitle: string;
   sortMode: SortMode;
+  showBookCount?: boolean;
   showPages?: boolean;
+  showRating?: boolean;
 }
 
 type Rendered =
@@ -24,7 +26,9 @@ export function MinimalShelf({
   books,
   userTitle,
   sortMode,
+  showBookCount = true,
   showPages = true,
+  showRating = true,
 }: MinimalShelfProps) {
   const groups =
     sortMode === "year"
@@ -43,11 +47,17 @@ export function MinimalShelf({
   });
 
   const everyHasPages = books.length > 0 && books.every((b) => b.pages != null);
+  const everyHasRating = books.length > 0 && books.every((b) => b.rating > 0);
   const showPagesStat = showPages && everyHasPages;
+  const showRatingStat = showRating && everyHasRating;
   const pages = books.reduce((s, b) => s + (b.pages ?? 0), 0);
   const avg = books.length
     ? (books.reduce((s, b) => s + b.rating, 0) / books.length).toFixed(1)
     : "0.0";
+  const stats: { k: string; l: string }[] = [];
+  if (showBookCount) stats.push({ k: String(books.length), l: "books" });
+  if (showPagesStat) stats.push({ k: pages.toLocaleString(), l: "pages" });
+  if (showRatingStat) stats.push({ k: avg, l: "avg rating" });
 
   return (
     <div
@@ -169,22 +179,17 @@ export function MinimalShelf({
         })}
       </div>
 
-      <div className="absolute left-0 right-0" style={{ bottom: 140 }}>
-        <div
-          className="flex justify-around items-baseline"
-          style={{
-            padding: "36px 80px 32px",
-            borderTop: "1px solid rgba(26,20,16,0.2)",
-            borderBottom: "1px solid rgba(26,20,16,0.2)",
-          }}
-        >
-          {[
-            { k: String(books.length), l: "books" },
-            ...(showPagesStat
-              ? [{ k: pages.toLocaleString(), l: "pages" }]
-              : []),
-            { k: avg, l: "avg rating" },
-          ].map((it, i, arr) => (
+      {stats.length > 0 && (
+        <div className="absolute left-0 right-0" style={{ bottom: 140 }}>
+          <div
+            className="flex justify-around items-baseline"
+            style={{
+              padding: "36px 80px 32px",
+              borderTop: "1px solid rgba(26,20,16,0.2)",
+              borderBottom: "1px solid rgba(26,20,16,0.2)",
+            }}
+          >
+            {stats.map((it, i, arr) => (
             <Fragment key={it.l}>
               <div className="text-center">
                 <div
@@ -209,8 +214,9 @@ export function MinimalShelf({
               )}
             </Fragment>
           ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <div
         className="absolute left-0 right-0 bottom-0 flex items-center justify-between"

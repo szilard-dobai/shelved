@@ -20,14 +20,18 @@ interface WoodShelfProps {
   books: Book[];
   userTitle: string;
   sortMode: SortMode;
+  showBookCount?: boolean;
   showPages?: boolean;
+  showRating?: boolean;
 }
 
 export function WoodShelf({
   books,
   userTitle,
   sortMode,
+  showBookCount = true,
   showPages = true,
+  showRating = true,
 }: WoodShelfProps) {
   const groups =
     sortMode === "year"
@@ -213,7 +217,13 @@ export function WoodShelf({
       </div>
 
       <div className="absolute left-0 right-0" style={{ bottom: 140 }}>
-        <StatsPanel books={books} palette="warm" showPages={showPages} />
+        <StatsPanel
+          books={books}
+          palette="warm"
+          showBookCount={showBookCount}
+          showPages={showPages}
+          showRating={showRating}
+        />
       </div>
 
       <div

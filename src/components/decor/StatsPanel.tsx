@@ -27,22 +27,29 @@ const palettes: Record<
 export function StatsPanel({
   books,
   palette = "warm",
+  showBookCount = true,
   showPages = true,
+  showRating = true,
 }: {
   books: Book[];
   palette?: Palette;
+  showBookCount?: boolean;
   showPages?: boolean;
+  showRating?: boolean;
 }) {
   const total = books.length;
   const everyHasPages = total > 0 && books.every((b) => b.pages != null);
+  const everyHasRating = total > 0 && books.every((b) => b.rating > 0);
   const pages = books.reduce((s, b) => s + (b.pages ?? 0), 0);
   const avg = total ? (books.reduce((s, b) => s + b.rating, 0) / total).toFixed(1) : "0.0";
   const p = palettes[palette];
-  const items: { k: string; l: string }[] = [{ k: String(total), l: "books" }];
+  const items: { k: string; l: string }[] = [];
+  if (showBookCount) items.push({ k: String(total), l: "books" });
   if (showPages && everyHasPages) {
     items.push({ k: pages.toLocaleString(), l: "pages" });
   }
-  items.push({ k: avg, l: "avg rating" });
+  if (showRating && everyHasRating) items.push({ k: avg, l: "avg rating" });
+  if (items.length === 0) return null;
   return (
     <div
       className="flex justify-between items-center px-12 py-7 font-serif"

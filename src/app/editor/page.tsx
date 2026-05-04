@@ -81,19 +81,20 @@ export default function EditorPage() {
               className="hidden font-sans text-md text-ink-muted md:block"
               style={{ visibility: hydrated ? undefined : "hidden" }}
             >
-              {books.length} books
-              {state.showPages &&
-                books.length > 0 &&
-                books.every((b) => b.pages != null) && (
-                  <>
-                    {" "}
-                    ·{" "}
-                    {books
-                      .reduce((s, b) => s + (b.pages ?? 0), 0)
-                      .toLocaleString()}{" "}
-                    pages
-                  </>
-                )}
+              {(() => {
+                const parts: string[] = [];
+                if (state.showBookCount) parts.push(`${books.length} books`);
+                if (
+                  state.showPages &&
+                  books.length > 0 &&
+                  books.every((b) => b.pages != null)
+                ) {
+                  parts.push(
+                    `${books.reduce((s, b) => s + (b.pages ?? 0), 0).toLocaleString()} pages`,
+                  );
+                }
+                return parts.join(" · ");
+              })()}
             </div>
             <Link href="/export">
               <Button variant="gold" size="sm" className="!py-1.5">
@@ -215,7 +216,9 @@ export default function EditorPage() {
                 books={books}
                 userTitle={userTitle}
                 sortMode={sortMode}
+                showBookCount={state.showBookCount}
                 showPages={state.showPages}
+                showRating={state.showRating}
               />
             </ShelfPreview>
           </div>
@@ -274,6 +277,15 @@ export default function EditorPage() {
                 }}
               />
               <SegControl<"show" | "hide">
+                label="Books stat"
+                options={[
+                  { id: "show", label: "Show" },
+                  { id: "hide", label: "Hide" },
+                ]}
+                value={state.showBookCount ? "show" : "hide"}
+                onChange={(v) => patch({ showBookCount: v === "show" })}
+              />
+              <SegControl<"show" | "hide">
                 label="Pages"
                 options={[
                   { id: "show", label: "Show" },
@@ -281,6 +293,15 @@ export default function EditorPage() {
                 ]}
                 value={state.showPages ? "show" : "hide"}
                 onChange={(v) => patch({ showPages: v === "show" })}
+              />
+              <SegControl<"show" | "hide">
+                label="Rating"
+                options={[
+                  { id: "show", label: "Show" },
+                  { id: "hide", label: "Hide" },
+                ]}
+                value={state.showRating ? "show" : "hide"}
+                onChange={(v) => patch({ showRating: v === "show" })}
               />
             </div>
           </div>

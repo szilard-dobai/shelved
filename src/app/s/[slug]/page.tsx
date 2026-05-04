@@ -31,7 +31,9 @@ export default async function SharePage({
       sortMode={doc.sortMode}
       style={doc.style}
       bgVariant={doc.bgVariant}
+      showBookCount={doc.showBookCount !== false}
       showPages={doc.showPages !== false}
+      showRating={doc.showRating !== false}
     />
   );
 }

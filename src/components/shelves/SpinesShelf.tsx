@@ -18,7 +18,9 @@ interface SpinesShelfProps {
   books: Book[];
   userTitle: string;
   sortMode: SortMode;
+  showBookCount?: boolean;
   showPages?: boolean;
+  showRating?: boolean;
 }
 
 type FlatItem =
@@ -35,7 +37,9 @@ export function SpinesShelf({
   books,
   userTitle,
   sortMode,
+  showBookCount = true,
   showPages = true,
+  showRating = true,
 }: SpinesShelfProps) {
   const groups =
     sortMode === "year"
@@ -181,7 +185,13 @@ export function SpinesShelf({
       </div>
 
       <div className="absolute left-0 right-0" style={{ bottom: 140 }}>
-        <StatsPanel books={books} palette="spines" showPages={showPages} />
+        <StatsPanel
+          books={books}
+          palette="spines"
+          showBookCount={showBookCount}
+          showPages={showPages}
+          showRating={showRating}
+        />
       </div>
 
       <div

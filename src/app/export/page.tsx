@@ -57,7 +57,9 @@ export default function ExportPage() {
           sortMode,
           style,
           bgVariant: state.bgVariant,
+          showBookCount: state.showBookCount,
           showPages: state.showPages,
+          showRating: state.showRating,
         }),
       });
       if (!res.ok) throw new Error(`Publish failed (${res.status})`);
@@ -135,26 +137,26 @@ export default function ExportPage() {
 
   const everyHasPages =
     books.length > 0 && books.every((b) => b.pages != null);
-  const showPagesStat = state.showPages && everyHasPages;
-  const stats = [
-    { label: "books", value: String(books.length) },
-    ...(showPagesStat
-      ? [
-          {
-            label: "pages",
-            value: books
-              .reduce((s, b) => s + (b.pages ?? 0), 0)
-              .toLocaleString(),
-          },
-        ]
-      : []),
-    {
+  const everyHasRating =
+    books.length > 0 && books.every((b) => b.rating > 0);
+  const stats: { label: string; value: string }[] = [];
+  if (state.showBookCount) {
+    stats.push({ label: "books", value: String(books.length) });
+  }
+  if (state.showPages && everyHasPages) {
+    stats.push({
+      label: "pages",
+      value: books.reduce((s, b) => s + (b.pages ?? 0), 0).toLocaleString(),
+    });
+  }
+  if (state.showRating && everyHasRating) {
+    stats.push({
       label: "avg",
-      value: books.length
-        ? (books.reduce((s, b) => s + b.rating, 0) / books.length).toFixed(1)
-        : "0.0",
-    },
-  ];
+      value: (books.reduce((s, b) => s + b.rating, 0) / books.length).toFixed(
+        1,
+      ),
+    });
+  }
 
   return (
     <div className="min-h-screen bg-bg text-ink">
@@ -193,7 +195,9 @@ export default function ExportPage() {
               books={books}
               userTitle={userTitle}
               sortMode={sortMode}
+              showBookCount={state.showBookCount}
               showPages={state.showPages}
+              showRating={state.showRating}
             />
           </ShelfPreview>
         </div>
@@ -271,25 +275,29 @@ export default function ExportPage() {
             )}
           </div>
 
-          <Hairline className="my-5" />
+          {stats.length > 0 && (
+            <>
+              <Hairline className="my-5" />
 
-          <div
-            className="grid gap-2.5 md:gap-4"
-            style={{
-              gridTemplateColumns: `repeat(${stats.length}, minmax(0, 1fr))`,
-            }}
-          >
-            {stats.map((stat) => (
-              <div key={stat.label}>
-                <div className="font-serif text-3xl font-medium italic leading-none text-ink md:text-4xl">
-                  {stat.value}
-                </div>
-                <div className="mt-1 font-sans text-xs uppercase tracking-widest text-ink-faint">
-                  {stat.label}
-                </div>
+              <div
+                className="grid gap-2.5 md:gap-4"
+                style={{
+                  gridTemplateColumns: `repeat(${stats.length}, minmax(0, 1fr))`,
+                }}
+              >
+                {stats.map((stat) => (
+                  <div key={stat.label}>
+                    <div className="font-serif text-3xl font-medium italic leading-none text-ink md:text-4xl">
+                      {stat.value}
+                    </div>
+                    <div className="mt-1 font-sans text-xs uppercase tracking-widest text-ink-faint">
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          )}
 
           <Hairline className="my-5" />
 
