@@ -12,6 +12,50 @@ const textures: Record<
   minimal: { glossOpacity: 0.06, shadowOpacity: 0.12, grain: false },
 };
 
+interface AuthorVariant {
+  fontFamily: string;
+  fontStyle: "italic" | "normal";
+  fontWeight: number;
+  textTransform: "none" | "uppercase";
+  letterSpacing: string;
+  sizeScale: number;
+  opacity: number;
+  charFactor: number;
+}
+
+const AUTHOR_VARIANTS: AuthorVariant[] = [
+  {
+    fontFamily: "var(--font-cormorant), Georgia, serif",
+    fontStyle: "italic",
+    fontWeight: 400,
+    textTransform: "none",
+    letterSpacing: "0.02em",
+    sizeScale: 1,
+    opacity: 0.78,
+    charFactor: 0.62,
+  },
+  {
+    fontFamily: "var(--font-inter), system-ui, sans-serif",
+    fontStyle: "normal",
+    fontWeight: 500,
+    textTransform: "uppercase",
+    letterSpacing: "0.18em",
+    sizeScale: 0.82,
+    opacity: 0.7,
+    charFactor: 0.85,
+  },
+  {
+    fontFamily: "var(--font-cormorant), Georgia, serif",
+    fontStyle: "normal",
+    fontWeight: 500,
+    textTransform: "none",
+    letterSpacing: "0.04em",
+    sizeScale: 0.95,
+    opacity: 0.78,
+    charFactor: 0.66,
+  },
+];
+
 export function Spine({
   book,
   height,
@@ -43,12 +87,34 @@ export function Spine({
   const botBand = height * 0.08;
 
   const baseTitleFontSize = Math.max(9, Math.min(13, width * 0.45));
-  const authorLastName = book.author.split(" ").slice(-1)[0];
-  const authorFontSize = Math.max(7, width * 0.28);
+  const nameParts = book.author.split(/\s+/).filter(Boolean);
+  const lastName = nameParts[nameParts.length - 1] ?? book.author;
+  const initialsLabel =
+    nameParts.length > 1
+      ? nameParts
+          .slice(0, -1)
+          .map((p) => p[0] + ".")
+          .join(" ") +
+        " " +
+        lastName
+      : lastName;
+  const aSeed = bookSeed(book, "a");
+  const authorVariantIdx = Math.floor(aSeed * AUTHOR_VARIANTS.length);
+  const authorVariant = AUTHOR_VARIANTS[authorVariantIdx];
+  const baseAuthorFontSize = Math.max(7, width * 0.28);
+  const authorFontSize = baseAuthorFontSize * authorVariant.sizeScale;
   const hasAuthor = width > 26;
-  const authorReserve = hasAuthor
-    ? authorLastName.length * authorFontSize * 0.7 + 8
-    : 0;
+  const labelH = (s: string) =>
+    s.length * authorFontSize * authorVariant.charFactor + 8;
+  const maxAuthorH = (height - 28) * 0.5;
+  const authorLabel = !hasAuthor
+    ? ""
+    : labelH(book.author) <= maxAuthorH
+      ? book.author
+      : labelH(initialsLabel) <= maxAuthorH
+        ? initialsLabel
+        : lastName;
+  const authorReserve = hasAuthor ? labelH(authorLabel) : 0;
 
   const panelInnerH = midBandH - 12;
   const panelFit = fitTitle(book.title, {
@@ -205,16 +271,21 @@ export function Spine({
 
         {hasAuthor && (
           <div
-            className="absolute left-1/2 writing-vertical font-serif italic whitespace-nowrap"
+            className="absolute left-1/2 writing-vertical whitespace-nowrap"
             style={{
               bottom: botBand + 14,
               transform: "translateX(-50%) rotate(180deg)",
+              fontFamily: authorVariant.fontFamily,
+              fontStyle: authorVariant.fontStyle,
+              fontWeight: authorVariant.fontWeight,
               fontSize: authorFontSize,
+              letterSpacing: authorVariant.letterSpacing,
+              textTransform: authorVariant.textTransform,
               color: book.textColor,
-              opacity: 0.75,
+              opacity: authorVariant.opacity,
             }}
           >
-            {authorLastName}
+            {authorLabel}
           </div>
         )}
       </div>
