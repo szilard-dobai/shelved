@@ -66,8 +66,14 @@ export function ShelfPreview({
       return () => ro.disconnect();
     }
 
-    window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
+    let lastWidth = window.innerWidth;
+    const onResize = () => {
+      if (window.innerWidth === lastWidth) return;
+      lastWidth = window.innerWidth;
+      resize();
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, [scale, heightOffset, widthOffset, maxScale, fitMode]);
 
   const s = scale ?? auto;
