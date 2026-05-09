@@ -126,6 +126,7 @@ export function SharePageClient({
               books={books}
               userTitle={userTitle}
               sortMode={sortMode}
+              bgVariant={bgVariant}
               showBookCount={showBookCount}
               showPages={showPages}
               showRating={showRating}

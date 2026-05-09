@@ -1,12 +1,12 @@
-import type { Book, SortMode } from "@/lib/shelf/types";
+import type { BgVariant, Book, SortMode } from "@/lib/shelf/types";
 import {
   STORY_H,
   STORY_W,
   bookSeed,
+  flowGroups,
   groupByAuthor,
-  groupByGenre,
+  groupByTitle,
   groupByYear,
-  spineWidthFor,
 } from "@/lib/shelf/helpers";
 import { Spine } from "./Spine";
 import { Cat } from "@/components/decor/Cat";
@@ -18,66 +18,76 @@ interface SpinesShelfProps {
   books: Book[];
   userTitle: string;
   sortMode: SortMode;
+  bgVariant?: BgVariant;
   showBookCount?: boolean;
   showPages?: boolean;
   showRating?: boolean;
   shareUrl?: string;
 }
 
-type FlatItem =
-  | { kind: "divider"; text: string | number }
-  | { kind: "book"; book: Book };
-
-interface Row {
-  books: Book[];
-  label: string | number | null;
-  totalW: number;
-}
+const SPINES_TONES: Record<
+  BgVariant,
+  {
+    frame: string;
+    ink: string;
+    title: string;
+    rowLabel: string;
+    cabinet: string;
+    plank: string;
+    statsPalette: "warm" | "minimal" | "spines";
+  }
+> = {
+  warm: {
+    frame: "#241510",
+    ink: "#e8d8b4",
+    title: "#f2e2b4",
+    rowLabel: "#d9a848",
+    cabinet: "linear-gradient(180deg, #140a06 0%, #1e100a 100%)",
+    plank:
+      "linear-gradient(180deg, #4a2818 0%, #6a3a1e 40%, #8b4e28 60%, #3a1e10 100%)",
+    statsPalette: "warm",
+  },
+  ink: {
+    frame: "#0a0e18",
+    ink: "#e0e6f4",
+    title: "#f2e2b4",
+    rowLabel: "#d9a848",
+    cabinet: "linear-gradient(180deg, #06080f 0%, #0e1422 100%)",
+    plank:
+      "linear-gradient(180deg, #1c1410 0%, #2a1e16 40%, #3a2a1e 60%, #14080a 100%)",
+    statsPalette: "spines",
+  },
+  paper: {
+    frame: "#e4d3a8",
+    ink: "#2a1810",
+    title: "#2a1810",
+    rowLabel: "#7a4a1a",
+    cabinet: "linear-gradient(180deg, #c8b890 0%, #b8a880 100%)",
+    plank:
+      "linear-gradient(180deg, #8c6238 0%, #b08358 40%, #c89868 60%, #6a4828 100%)",
+    statsPalette: "minimal",
+  },
+};
 
 export function SpinesShelf({
   books,
   userTitle,
   sortMode,
+  bgVariant = "warm",
   showBookCount = true,
   showPages = true,
   showRating = true,
   shareUrl,
 }: SpinesShelfProps) {
+  const tone = SPINES_TONES[bgVariant];
   const groups =
     sortMode === "year"
       ? groupByYear(books)
-      : sortMode === "author"
-        ? groupByAuthor(books)
-        : groupByGenre(books);
+      : sortMode === "title"
+        ? groupByTitle(books)
+        : groupByAuthor(books);
 
-  const flat: FlatItem[] = [];
-  groups.forEach((g) => {
-    flat.push({
-      kind: "divider",
-      text: sortMode === "year" ? (g.year ?? "") : (g.label ?? ""),
-    });
-    g.books.forEach((b) => flat.push({ kind: "book", book: b }));
-  });
-
-  const rowW = 980;
-  const rows: Row[] = [];
-  let cur: Row = { books: [], label: null, totalW: 0 };
-  for (const item of flat) {
-    if (item.kind === "divider") {
-      if (cur.books.length) rows.push(cur);
-      cur = { books: [], label: item.text, totalW: 0 };
-    } else {
-      const w = spineWidthFor(item.book, 22, 44, "w2");
-      item.book._spineWidth2 = w;
-      if (cur.totalW + w > rowW && cur.books.length > 0) {
-        rows.push(cur);
-        cur = { books: [], label: null, totalW: 0 };
-      }
-      cur.books.push(item.book);
-      cur.totalW += w;
-    }
-  }
-  if (cur.books.length) rows.push(cur);
+  const rows = flowGroups(groups, sortMode, 980, 22, 44, "w2");
   const shelfRows = rows.slice(0, 5);
 
   return (
@@ -86,8 +96,8 @@ export function SpinesShelf({
       style={{
         width: STORY_W,
         height: STORY_H,
-        background: "#1a0e08",
-        color: "#e8d8b4",
+        background: tone.frame,
+        color: tone.ink,
       }}
     >
       <div className="text-center" style={{ padding: "68px 50px 40px" }}>
@@ -100,7 +110,7 @@ export function SpinesShelf({
             fontSize: 72,
             lineHeight: 1,
             letterSpacing: "-0.025em",
-            color: "#f2e2b4",
+            color: tone.title,
           }}
         >
           {userTitle}
@@ -114,29 +124,26 @@ export function SpinesShelf({
           right: 50,
           top: 260,
           bottom: 360,
-          background: "linear-gradient(180deg, #140a06 0%, #1e100a 100%)",
+          background: tone.cabinet,
           boxShadow:
             "inset 0 4px 30px rgba(0,0,0,0.8), 0 0 80px rgba(0,0,0,0.5)",
         }}
       >
         {shelfRows.map((row, ri) => (
           <div key={ri} className="relative flex-1 min-h-0">
-            {row.label != null && (
+            {row.yearLabel != null && (
               <div
                 className="absolute italic z-[3]"
                 style={{
                   top: 6,
                   left: 14,
                   fontSize: 22,
-                  color: "#d9a848",
+                  color: tone.rowLabel,
                   letterSpacing: "0.03em",
                   textShadow: "0 1px 3px rgba(0,0,0,0.8)",
                 }}
               >
-                <span className="not-italic font-sans opacity-55 mr-[10px] text-[11px] uppercase tracking-[0.3em]">
-                  {sortMode === "year" ? "·" : ""}
-                </span>
-                {row.label}
+                {row.yearLabel}
               </div>
             )}
             <div
@@ -175,8 +182,7 @@ export function SpinesShelf({
               style={{
                 bottom: 0,
                 height: 12,
-                background:
-                  "linear-gradient(180deg, #4a2818 0%, #6a3a1e 40%, #8b4e28 60%, #3a1e10 100%)",
+                background: tone.plank,
                 boxShadow: "0 4px 10px rgba(0,0,0,0.7)",
               }}
             />
@@ -189,7 +195,7 @@ export function SpinesShelf({
       <div className="absolute left-0 right-0" style={{ bottom: 140 }}>
         <StatsPanel
           books={books}
-          palette="spines"
+          palette={tone.statsPalette}
           showBookCount={showBookCount}
           showPages={showPages}
           showRating={showRating}
@@ -201,17 +207,16 @@ export function SpinesShelf({
         style={{
           height: 140,
           padding: "26px 70px",
-          background: "rgba(0,0,0,0.4)",
+          background:
+            bgVariant === "paper" ? "rgba(0,0,0,0.55)" : "rgba(0,0,0,0.4)",
+          color: "#f2e2b4",
         }}
       >
         <div>
           <div className="font-sans text-[13px] uppercase tracking-[0.3em] opacity-55">
             Make yours
           </div>
-          <div
-            className="italic mt-1"
-            style={{ fontSize: 32, color: "#f2e2b4" }}
-          >
+          <div className="italic mt-1" style={{ fontSize: 32 }}>
             shelved.app
           </div>
         </div>

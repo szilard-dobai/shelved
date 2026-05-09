@@ -1,10 +1,10 @@
 import { Fragment } from "react";
-import type { Book, SortMode } from "@/lib/shelf/types";
+import type { BgVariant, Book, SortMode } from "@/lib/shelf/types";
 import {
   STORY_H,
   STORY_W,
   groupByAuthor,
-  groupByGenre,
+  groupByTitle,
   groupByYear,
 } from "@/lib/shelf/helpers";
 import { QRCode } from "@/components/decor/QRCode";
@@ -13,6 +13,7 @@ interface MinimalShelfProps {
   books: Book[];
   userTitle: string;
   sortMode: SortMode;
+  bgVariant?: BgVariant;
   showBookCount?: boolean;
   showPages?: boolean;
   showRating?: boolean;
@@ -23,28 +24,61 @@ type Rendered =
   | { kind: "label"; text: string | number }
   | { kind: "book"; book: Book };
 
+const MINIMAL_TONES: Record<
+  BgVariant,
+  {
+    bg: string;
+    overlay: string;
+    ink: string;
+    inkRgba: string;
+  }
+> = {
+  warm: {
+    bg: "#f4ead4",
+    overlay:
+      "radial-gradient(ellipse at 30% 20%, rgba(232,216,180,0.6), transparent 60%), radial-gradient(ellipse at 70% 80%, rgba(180,160,120,0.25), transparent 60%)",
+    ink: "#1a1410",
+    inkRgba: "26,20,16",
+  },
+  ink: {
+    bg: "#15110d",
+    overlay:
+      "radial-gradient(ellipse at 30% 20%, rgba(70,52,34,0.4), transparent 60%), radial-gradient(ellipse at 70% 80%, rgba(40,30,20,0.5), transparent 60%)",
+    ink: "#f0e4c4",
+    inkRgba: "240,228,196",
+  },
+  paper: {
+    bg: "#fafaf6",
+    overlay:
+      "radial-gradient(ellipse at 30% 20%, rgba(220,212,194,0.4), transparent 60%), radial-gradient(ellipse at 70% 80%, rgba(200,190,170,0.2), transparent 60%)",
+    ink: "#1a1410",
+    inkRgba: "26,20,16",
+  },
+};
+
 export function MinimalShelf({
   books,
   userTitle,
   sortMode,
+  bgVariant = "warm",
   showBookCount = true,
   showPages = true,
   showRating = true,
   shareUrl,
 }: MinimalShelfProps) {
+  const tone = MINIMAL_TONES[bgVariant];
   const groups =
     sortMode === "year"
       ? groupByYear(books)
-      : sortMode === "author"
-        ? groupByAuthor(books)
-        : groupByGenre(books);
+      : sortMode === "title"
+        ? groupByTitle(books)
+        : groupByAuthor(books);
 
   const rendered: Rendered[] = [];
   groups.forEach((g) => {
-    rendered.push({
-      kind: "label",
-      text: sortMode === "year" ? (g.year ?? "") : (g.label ?? ""),
-    });
+    if (sortMode === "year") {
+      rendered.push({ kind: "label", text: g.year ?? "" });
+    }
     g.books.forEach((b) => rendered.push({ kind: "book", book: b }));
   });
 
@@ -67,16 +101,13 @@ export function MinimalShelf({
       style={{
         width: STORY_W,
         height: STORY_H,
-        background: "#f4ead4",
-        color: "#1a1410",
+        background: tone.bg,
+        color: tone.ink,
       }}
     >
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse at 30% 20%, rgba(232,216,180,0.6), transparent 60%), radial-gradient(ellipse at 70% 80%, rgba(180,160,120,0.25), transparent 60%)",
-        }}
+        style={{ background: tone.overlay }}
       />
 
       <div className="relative text-center" style={{ padding: "88px 80px 40px" }}>
@@ -92,13 +123,13 @@ export function MinimalShelf({
         <div className="mt-[18px] text-[22px] opacity-[0.62] font-sans uppercase tracking-[0.18em]">
           {sortMode === "year"
             ? "by date read"
-            : sortMode === "author"
-              ? "by author"
-              : "by genre"}
+            : sortMode === "title"
+              ? "by title"
+              : "by author"}
         </div>
         <div
           className="mx-auto mt-[38px] h-px opacity-40"
-          style={{ width: 60, background: "#1a1410" }}
+          style={{ width: 60, background: tone.ink }}
         />
       </div>
 
@@ -131,7 +162,7 @@ export function MinimalShelf({
                 </div>
                 <div
                   className="flex-1 h-px opacity-[0.25]"
-                  style={{ background: "#1a1410" }}
+                  style={{ background: tone.ink }}
                 />
               </div>
             );
@@ -187,8 +218,8 @@ export function MinimalShelf({
             className="flex justify-around items-baseline"
             style={{
               padding: "36px 80px 32px",
-              borderTop: "1px solid rgba(26,20,16,0.2)",
-              borderBottom: "1px solid rgba(26,20,16,0.2)",
+              borderTop: `1px solid rgba(${tone.inkRgba},0.2)`,
+              borderBottom: `1px solid rgba(${tone.inkRgba},0.2)`,
             }}
           >
             {stats.map((it, i, arr) => (
@@ -211,7 +242,7 @@ export function MinimalShelf({
               {i < arr.length - 1 && (
                 <div
                   className="w-px h-[50px]"
-                  style={{ background: "rgba(26,20,16,0.25)" }}
+                  style={{ background: `rgba(${tone.inkRgba},0.25)` }}
                 />
               )}
             </Fragment>
@@ -232,7 +263,7 @@ export function MinimalShelf({
             shelved.app
           </div>
         </div>
-        <QRCode size={84} bg="#f4ead4" fg="#1a1410" value={shareUrl} />
+        <QRCode size={84} bg={tone.bg} fg={tone.ink} value={shareUrl} />
       </div>
     </div>
   );

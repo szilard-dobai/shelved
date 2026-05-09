@@ -48,7 +48,7 @@ export interface ShelfStyleChangedMetadata {
 }
 
 export interface SortChangedMetadata {
-  sort: "year" | "author" | "genre";
+  sort: "year" | "author" | "title";
 }
 
 export interface ThemeChangedMetadata {

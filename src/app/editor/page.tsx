@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Eyebrow, Hairline, Wordmark } from "@/components/ui/typography";
 import { Icon } from "@/components/ui/Icon";
@@ -28,6 +28,7 @@ export default function EditorPage() {
   const [mobileTab, setMobileTab] = useState<MobileTab>("books");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const mobile = useIsMobile();
+  const titleFocusValue = useRef<string | null>(null);
 
   const shareUrl =
     hydrated && currentSlug
@@ -223,6 +224,7 @@ export default function EditorPage() {
                 books={books}
                 userTitle={userTitle}
                 sortMode={sortMode}
+                bgVariant={bgVariant}
                 showBookCount={state.showBookCount}
                 showPages={state.showPages}
                 showRating={state.showRating}
@@ -234,14 +236,31 @@ export default function EditorPage() {
           <div className="flex-shrink-0 border-t border-rule bg-bg-panel-solid px-4 pt-3.5 pb-20 md:px-6 md:pt-4 md:pb-5">
             <div className="mb-3.5">
               <Eyebrow className="mb-1.5 !text-2xs">Title</Eyebrow>
-              <input
-                value={userTitle}
-                onChange={(e) => {
-                  patch({ userTitle: e.target.value });
-                  trackEvent("title_edited");
-                }}
-                className="box-border w-full border-0 border-b border-rule bg-transparent py-1 font-serif text-xl italic text-ink outline-none md:text-2xl"
-              />
+              <label className="flex items-center gap-2 border-b border-rule py-1 transition-colors focus-within:border-rule-strong hover:border-rule-strong">
+                <input
+                  aria-label="Shelf title"
+                  value={userTitle}
+                  onChange={(e) => patch({ userTitle: e.target.value })}
+                  onFocus={(e) => {
+                    titleFocusValue.current = e.target.value;
+                  }}
+                  onBlur={(e) => {
+                    if (
+                      titleFocusValue.current !== null &&
+                      e.target.value !== titleFocusValue.current
+                    ) {
+                      trackEvent("title_edited");
+                    }
+                    titleFocusValue.current = null;
+                  }}
+                  className="box-border min-w-0 flex-1 border-0 bg-transparent font-serif text-xl italic text-ink outline-none md:text-2xl"
+                />
+                <Icon
+                  name="edit"
+                  size={16}
+                  className="flex-shrink-0 text-ink-muted"
+                />
+              </label>
             </div>
 
             <div className="grid gap-2.5 [grid-template-columns:repeat(auto-fit,minmax(6.875rem,1fr))] md:gap-3.5 md:[grid-template-columns:repeat(auto-fit,minmax(9.375rem,1fr))]">
@@ -263,7 +282,7 @@ export default function EditorPage() {
                 options={[
                   { id: "year", label: "Date" },
                   { id: "author", label: "Author" },
-                  { id: "genre", label: "Genre" },
+                  { id: "title", label: "Title" },
                 ]}
                 value={sortMode}
                 onChange={(v) => {

@@ -1,4 +1,4 @@
-import type { Book } from "./types";
+import type { Book, SortMode } from "./types";
 
 export const STORY_W = 1080;
 export const STORY_H = 1920;
@@ -36,6 +36,14 @@ export function groupByYear(books: Book[]): GroupedBooks[] {
   }));
 }
 
+export function groupByTitle(books: Book[]): GroupedBooks[] {
+  const key = (t: string) => t.replace(/^(the|a|an)\s+/i, "").toLowerCase();
+  const sorted = books
+    .slice()
+    .sort((a, b) => key(a.title).localeCompare(key(b.title)));
+  return sorted.length ? [{ books: sorted }] : [];
+}
+
 export function groupByAuthor(books: Book[]): GroupedBooks[] {
   const byAuthor: Record<string, Book[]> = {};
   for (const b of books) {
@@ -47,17 +55,6 @@ export function groupByAuthor(books: Book[]): GroupedBooks[] {
     label: byAuthor[k][0].author,
     books: byAuthor[k],
   }));
-}
-
-export function groupByGenre(books: Book[]): GroupedBooks[] {
-  const byGenre: Record<string, Book[]> = {};
-  for (const b of books) {
-    (byGenre[b.genre] ||= []).push(b);
-  }
-  const order = ["Fiction", "Sci-fi", "Nonfiction", "Memoir"];
-  return order
-    .filter((g) => byGenre[g])
-    .map((g) => ({ label: g, books: byGenre[g] }));
 }
 
 export function spineWidthFor(
@@ -113,6 +110,80 @@ export function packIntoRows(
     curW += w;
   }
   if (cur.length) rows.push(cur);
+  return rows;
+}
+
+export interface FlowRow {
+  books: Book[];
+  yearLabel: string | number | null;
+}
+
+export function flowGroups(
+  groups: GroupedBooks[],
+  sortMode: SortMode,
+  rowWidth: number,
+  spineMin: number,
+  spineMax: number,
+  spineSalt: "w" | "w2" = "w",
+): FlowRow[] {
+  const setW = (b: Book, w: number) => {
+    if (spineSalt === "w") b._spineWidth = w;
+    else b._spineWidth2 = w;
+  };
+
+  const rows: FlowRow[] = [];
+
+  if (sortMode === "year") {
+    for (const g of groups) {
+      const bookRows: Book[][] = [];
+      let cur: Book[] = [];
+      let curW = 0;
+      for (const b of g.books) {
+        const w = spineWidthFor(b, spineMin, spineMax, spineSalt);
+        setW(b, w);
+        if (curW + w > rowWidth && cur.length > 0) {
+          bookRows.push(cur);
+          cur = [];
+          curW = 0;
+        }
+        cur.push(b);
+        curW += w;
+      }
+      if (cur.length) bookRows.push(cur);
+
+      bookRows.forEach((rb, i) =>
+        rows.push({
+          books: rb,
+          yearLabel: i === 0 ? (g.year ?? null) : null,
+        }),
+      );
+    }
+    return rows;
+  }
+
+  const flat: Book[] = [];
+  groups.forEach((g) => {
+    g.books.forEach((b) => {
+      const w = spineWidthFor(b, spineMin, spineMax, spineSalt);
+      setW(b, w);
+      flat.push(b);
+    });
+  });
+
+  let cur: Book[] = [];
+  let curW = 0;
+  for (const b of flat) {
+    const w = spineSalt === "w" ? b._spineWidth! : b._spineWidth2!;
+    if (curW + w > rowWidth && cur.length > 0) {
+      rows.push({ books: cur, yearLabel: null });
+      cur = [];
+      curW = 0;
+    }
+    cur.push(b);
+    curW += w;
+  }
+  if (cur.length) rows.push({ books: cur, yearLabel: null });
+
   return rows;
 }
 

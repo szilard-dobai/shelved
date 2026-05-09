@@ -44,7 +44,8 @@ export function sanitizePayload(input: unknown): SharePayload | null {
     return null;
   }
   if (typeof o.userTitle !== "string" || o.userTitle.length > 200) return null;
-  if (!isSortMode(o.sortMode)) return null;
+  const sortMode = o.sortMode === "genre" ? "year" : o.sortMode;
+  if (!isSortMode(sortMode)) return null;
   if (!isShelfStyle(o.style)) return null;
   if (!isBgVariant(o.bgVariant)) return null;
 
@@ -82,7 +83,7 @@ export function sanitizePayload(input: unknown): SharePayload | null {
   return {
     books,
     userTitle: o.userTitle,
-    sortMode: o.sortMode,
+    sortMode,
     style: o.style,
     bgVariant: o.bgVariant,
     showBookCount: o.showBookCount !== false,
@@ -92,7 +93,7 @@ export function sanitizePayload(input: unknown): SharePayload | null {
 }
 
 function isSortMode(v: unknown): v is SortMode {
-  return v === "year" || v === "author" || v === "genre";
+  return v === "year" || v === "author" || v === "title";
 }
 function isShelfStyle(v: unknown): v is ShelfStyle {
   return v === "wood" || v === "minimal" || v === "spines";

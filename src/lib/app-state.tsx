@@ -61,7 +61,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setStateRaw({ ...DEFAULT_STATE, ...JSON.parse(raw) });
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.sortMode === "genre") parsed.sortMode = "year";
+        setStateRaw({ ...DEFAULT_STATE, ...parsed });
+      }
     } catch {}
     try {
       const raw = localStorage.getItem(OWNED_KEY);

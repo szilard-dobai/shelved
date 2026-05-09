@@ -1,5 +1,5 @@
 export type ShelfStyle = "wood" | "minimal" | "spines";
-export type SortMode = "year" | "author" | "genre";
+export type SortMode = "year" | "author" | "title";
 export type BgVariant = "warm" | "ink" | "paper";
 
 export interface Book {
