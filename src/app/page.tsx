@@ -20,7 +20,7 @@ const FEATURES = [
   {
     eyebrow: "02",
     title: "Tweak the look",
-    body: "Pick a shelf style, sort by date or genre, and add your own title.",
+    body: "Pick a shelf style, sort by date, author, or title, and add your own headline.",
   },
   {
     eyebrow: "03",
@@ -56,7 +56,7 @@ export default function LandingPage() {
       <section className="mx-auto grid max-w-page grid-cols-1 items-center gap-9 px-5 pt-6 pb-20 md:px-16 md:pt-8 md:pb-24 lg:min-h-[calc(100vh-5.625rem)] lg:grid-cols-[1.05fr_1fr] lg:gap-15 lg:pb-20">
         <div className="mx-auto max-w-xl text-center lg:mx-0 lg:justify-self-start lg:text-left">
           <Eyebrow className="mb-4 !text-2xs md:mb-6 md:!text-xs">
-            A year in books · visualised
+            Your reading log · visualised
           </Eyebrow>
           <Display className="mb-5 !text-display md:mb-7 lg:!text-display-xl">
             Your&nbsp;bookshelf,

@@ -28,7 +28,7 @@ export interface AppState {
 
 const DEFAULT_STATE: AppState = {
   books: SAMPLE_BOOKS,
-  userTitle: "Sarah's year in books",
+  userTitle: "Sarah's reading log",
   sortMode: "year",
   style: "wood",
   bgVariant: "warm",

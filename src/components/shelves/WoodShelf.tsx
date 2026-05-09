@@ -131,10 +131,10 @@ export function WoodShelf({
         </div>
         <div className="mt-5 text-[22px] opacity-[0.72] font-sans tracking-[0.06em]">
           {sortMode === "year"
-            ? "A year in books · sorted by date read"
+            ? "Sorted by date read"
             : sortMode === "title"
-              ? "A year in books · sorted by title"
-              : "A year in books · sorted by author"}
+              ? "Sorted by title"
+              : "Sorted by author"}
         </div>
       </div>
 
