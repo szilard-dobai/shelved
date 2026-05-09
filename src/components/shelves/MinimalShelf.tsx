@@ -376,7 +376,7 @@ export function MinimalShelf({
             Make yours
           </div>
           <div className="italic mt-1" style={{ fontSize: 32 }}>
-            shelved.app
+            shelved.ink
           </div>
         </div>
         <QRCode size={84} bg={tone.bg} fg={tone.ink} value={shareUrl} />
