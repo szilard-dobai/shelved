@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode, type Ref } from "react";
 import { STORY_H, STORY_W } from "@/lib/shelf/helpers";
 
 interface ShelfPreviewProps {
@@ -11,6 +11,7 @@ interface ShelfPreviewProps {
   maxScale?: number;
   fitMode?: "height" | "viewport" | "container";
   className?: string;
+  innerRef?: Ref<HTMLDivElement>;
 }
 
 export function ShelfPreview({
@@ -21,6 +22,7 @@ export function ShelfPreview({
   maxScale = 0.5,
   fitMode = "height",
   className = "",
+  innerRef,
 }: ShelfPreviewProps) {
   const [auto, setAuto] = useState(scale ?? 0.4);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -77,6 +79,7 @@ export function ShelfPreview({
       style={{ width: STORY_W * s, height: STORY_H * s }}
     >
       <div
+        ref={innerRef}
         className="absolute top-0 left-0"
         style={{
           width: STORY_W,

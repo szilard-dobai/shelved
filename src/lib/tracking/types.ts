@@ -18,7 +18,7 @@ export type TrackingEventType =
   | "book_edited"
   | "book_removed"
   | "book_added_manual"
-  | "export_png_click"
+  | "export_jpeg_click"
   | "share_link_copied"
   | "edit_link_copied"
   | "share_created"

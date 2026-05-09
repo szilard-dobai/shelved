@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import {
   Display,
@@ -16,12 +16,21 @@ import { QRCode } from "@/components/decor/QRCode";
 import { useAppState } from "@/lib/app-state";
 import { useIsMobile } from "@/lib/use-media";
 import { trackEvent } from "@/lib/tracking";
+import { STORY_H, STORY_W } from "@/lib/shelf/helpers";
 
 interface ShareInfo {
   slug: string;
   editKey: string;
   viewUrl: string;
   editUrl: string;
+}
+
+function filenameFor(title: string): string {
+  const slug = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return slug ? `shelved-${slug}` : "shelved";
 }
 
 export default function ExportPage() {
@@ -39,6 +48,9 @@ export default function ExportPage() {
   const [shareError, setShareError] = useState<string | null>(null);
   const [copiedView, setCopiedView] = useState(false);
   const [copiedEdit, setCopiedEdit] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+  const exportRef = useRef<HTMLDivElement>(null);
 
   const boundEditKey =
     currentSlug && ownedShares[currentSlug] ? ownedShares[currentSlug] : null;
@@ -138,6 +150,39 @@ export default function ExportPage() {
     }
   };
 
+  const download = async () => {
+    if (downloading || !exportRef.current) return;
+    setDownloading(true);
+    setDownloadError(null);
+    try {
+      await document.fonts.ready;
+      const { toJpeg } = await import("html-to-image");
+      const dataUrl = await toJpeg(exportRef.current, {
+        width: STORY_W,
+        height: STORY_H,
+        pixelRatio: 2,
+        quality: 0.92,
+        cacheBust: true,
+        backgroundColor: "#000",
+        style: { transform: "scale(1)", transformOrigin: "0 0" },
+      });
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      a.download = `${filenameFor(userTitle)}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      trackEvent("export_jpeg_click", {
+        bookCount: visibleBooks.length,
+        style,
+      });
+    } catch (err) {
+      setDownloadError(err instanceof Error ? err.message : "Download failed");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   const copy = async (
     text: string,
     setFlag: (b: boolean) => void,
@@ -207,6 +252,7 @@ export default function ExportPage() {
             heightOffset={240}
             widthOffset={40}
             maxScale={mobile ? 0.25 : 0.5}
+            innerRef={exportRef}
           >
             <Shelf
               style={style}
@@ -238,10 +284,11 @@ export default function ExportPage() {
               variant="gold"
               size={mobile ? "md" : "lg"}
               full
-              onClick={() => trackEvent("export_png_click")}
+              onClick={download}
+              disabled={downloading}
             >
-              <Icon name="download" size={16} />
-              Download PNG · 2160×3840
+              <Icon name="download" size={mobile ? 14 : 18} />
+              {downloading ? "Rendering…" : "Download"}
             </Button>
 
             {!share ? (
@@ -290,8 +337,10 @@ export default function ExportPage() {
               />
             )}
 
-            {shareError && (
-              <p className="font-sans text-xs text-danger">{shareError}</p>
+            {(shareError || downloadError) && (
+              <p className="font-sans text-xs text-danger">
+                {shareError ?? downloadError}
+              </p>
             )}
           </div>
 
