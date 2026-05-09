@@ -44,7 +44,7 @@ export interface ImportMethodSelectedMetadata {
 }
 
 export interface ShelfStyleChangedMetadata {
-  style: "wood" | "minimal" | "spines";
+  style: "wood" | "minimal";
 }
 
 export interface SortChangedMetadata {

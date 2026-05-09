@@ -46,7 +46,8 @@ export function sanitizePayload(input: unknown): SharePayload | null {
   if (typeof o.userTitle !== "string" || o.userTitle.length > 200) return null;
   const sortMode = o.sortMode === "genre" ? "year" : o.sortMode;
   if (!isSortMode(sortMode)) return null;
-  if (!isShelfStyle(o.style)) return null;
+  const style = o.style === "spines" ? "wood" : o.style;
+  if (!isShelfStyle(style)) return null;
   if (!isBgVariant(o.bgVariant)) return null;
 
   const books: Book[] = [];
@@ -84,7 +85,7 @@ export function sanitizePayload(input: unknown): SharePayload | null {
     books,
     userTitle: o.userTitle,
     sortMode,
-    style: o.style,
+    style,
     bgVariant: o.bgVariant,
     showBookCount: o.showBookCount !== false,
     showPages: o.showPages !== false,
@@ -96,7 +97,7 @@ function isSortMode(v: unknown): v is SortMode {
   return v === "year" || v === "author" || v === "title";
 }
 function isShelfStyle(v: unknown): v is ShelfStyle {
-  return v === "wood" || v === "minimal" || v === "spines";
+  return v === "wood" || v === "minimal";
 }
 function isBgVariant(v: unknown): v is BgVariant {
   return v === "warm" || v === "ink" || v === "paper";

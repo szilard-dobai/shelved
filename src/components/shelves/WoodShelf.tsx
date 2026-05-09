@@ -86,10 +86,10 @@ export function WoodShelf({
         : groupByAuthor(books);
 
   const rows = flowGroups(groups, sortMode, 880, 28, 56, "w");
-  const shelfRows = rows.slice(0, 4);
+  const shelfRows = rows.slice(0, 5);
 
-  const shelfY0 = 260;
-  const shelfH = 320;
+  const shelfY0 = 240;
+  const shelfH = 260;
   const shelfGap = 20;
   const shelfInnerW = 940;
   const shelfLeft = 70;
@@ -162,15 +162,15 @@ export function WoodShelf({
                 <div
                   className="absolute italic"
                   style={{
-                    top: -30,
-                    right: 0,
+                    top: 8,
+                    right: 4,
                     fontFamily: "var(--font-cormorant), Georgia, serif",
-                    fontSize: 32,
+                    fontSize: 22,
                     color: tone.inkAccent,
                     letterSpacing: "0.04em",
                   }}
                 >
-                  <span className="not-italic font-sans opacity-60 mr-[14px] text-[14px] uppercase tracking-[0.3em]">
+                  <span className="not-italic font-sans opacity-60 mr-[10px] text-[11px] uppercase tracking-[0.3em]">
                     Read in
                   </span>
                   {row.yearLabel}
@@ -205,7 +205,7 @@ export function WoodShelf({
                     className="ml-2 rounded-[1px]"
                     style={{
                       width: 14,
-                      height: 200,
+                      height: 150,
                       background: tone.bookend,
                       boxShadow: "inset 0 2px 0 rgba(255,220,160,0.15)",
                     }}

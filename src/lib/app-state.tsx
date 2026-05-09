@@ -64,6 +64,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       if (raw) {
         const parsed = JSON.parse(raw);
         if (parsed.sortMode === "genre") parsed.sortMode = "year";
+        if (parsed.style === "spines") parsed.style = "wood";
         setStateRaw({ ...DEFAULT_STATE, ...parsed });
       }
     } catch {}

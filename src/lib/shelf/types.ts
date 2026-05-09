@@ -1,4 +1,4 @@
-export type ShelfStyle = "wood" | "minimal" | "spines";
+export type ShelfStyle = "wood" | "minimal";
 export type SortMode = "year" | "author" | "title";
 export type BgVariant = "warm" | "ink" | "paper";
 

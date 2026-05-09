@@ -269,7 +269,6 @@ export default function EditorPage() {
                 options={[
                   { id: "wood", label: "Wood" },
                   { id: "minimal", label: "Minimal" },
-                  { id: "spines", label: "Spines" },
                 ]}
                 value={style}
                 onChange={(v) => {

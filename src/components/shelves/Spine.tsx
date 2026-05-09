@@ -2,7 +2,7 @@ import type { Book } from "@/lib/shelf/types";
 import { bookSeed, darken, lighten } from "@/lib/shelf/helpers";
 import { fitTitle, type TitleFit } from "@/lib/shelf/fit-title";
 
-type SpineStyle = "wood" | "minimal" | "spines";
+type SpineStyle = "wood" | "minimal";
 
 const textures: Record<
   SpineStyle,
@@ -10,7 +10,6 @@ const textures: Record<
 > = {
   wood: { glossOpacity: 0.18, shadowOpacity: 0.4, grain: true },
   minimal: { glossOpacity: 0.06, shadowOpacity: 0.12, grain: false },
-  spines: { glossOpacity: 0.22, shadowOpacity: 0.45, grain: true },
 };
 
 export function Spine({
@@ -94,7 +93,7 @@ export function Spine({
         height,
         transform: `rotate(${tilt}deg) translateY(${Math.round(seed * 3)}px)`,
         transformOrigin: "bottom center",
-        marginRight: style === "spines" ? -1 : 2,
+        marginRight: 2,
       }}
     >
       <div
