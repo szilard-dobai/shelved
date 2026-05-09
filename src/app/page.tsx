@@ -10,6 +10,7 @@ import { STORY_H, STORY_W } from "@/lib/shelf/helpers";
 import { useAppState } from "@/lib/app-state";
 import { useIsMobile } from "@/lib/use-media";
 import { trackEvent } from "@/lib/tracking";
+import { ShelfPreview } from "@/components/ShelfPreview";
 
 const FEATURES = [
   {
@@ -141,11 +142,13 @@ export default function LandingPage() {
                   transformOrigin: "0 0",
                 }}
               >
-                <WoodShelf
-                  books={state.books}
-                  userTitle={state.userTitle}
-                  sortMode="year"
-                />
+                <ShelfPreview>
+                  <WoodShelf
+                    books={state.books}
+                    userTitle={state.userTitle}
+                    sortMode="year"
+                  />
+                </ShelfPreview>
               </div>
             </div>
           </div>

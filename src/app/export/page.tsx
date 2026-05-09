@@ -262,7 +262,7 @@ export default function ExportPage() {
       </header>
 
       <section
-        className="mx-auto grid max-w-[72rem] grid-cols-1 gap-7 px-5 py-6 md:p-10 lg:grid-cols-[1fr_22rem] lg:gap-10"
+        className="mx-auto grid max-w-[72rem] grid-cols-1 gap-7 px-5 py-6 md:p-10 lg:grid-cols-[1fr_30rem] lg:gap-10"
         aria-busy={!hydrated}
         style={{ visibility: hydrated ? undefined : "hidden" }}
       >
@@ -334,7 +334,7 @@ export default function ExportPage() {
                   disabled={publishing || updating}
                 >
                   <Icon name="share" size={14} />
-                  {updating ? "Updating…" : "Update share"}
+                  {updating ? "Updating…" : "Update link"}
                 </Button>
                 <button
                   type="button"
@@ -365,30 +365,6 @@ export default function ExportPage() {
               </p>
             )}
           </div>
-
-          {stats.length > 0 && (
-            <>
-              <Hairline className="my-5" />
-
-              <div
-                className="grid gap-2.5 md:gap-4"
-                style={{
-                  gridTemplateColumns: `repeat(${stats.length}, minmax(0, 1fr))`,
-                }}
-              >
-                {stats.map((stat) => (
-                  <div key={stat.label}>
-                    <div className="font-serif text-3xl font-medium italic leading-none text-ink md:text-4xl">
-                      {stat.value}
-                    </div>
-                    <div className="mt-1 font-sans text-xs uppercase tracking-widest text-ink-faint">
-                      {stat.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
 
           <Hairline className="my-5" />
 
