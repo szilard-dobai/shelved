@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { AppStateProvider } from "@/lib/app-state";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -42,6 +43,7 @@ export default function RootLayout({
             <Footer />
           </AppStateProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
