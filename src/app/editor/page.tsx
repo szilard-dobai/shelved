@@ -276,33 +276,28 @@ export default function EditorPage() {
                   trackEvent("background_changed", { background: v });
                 }}
               />
-              <SegControl<"show" | "hide">
-                label="Books"
-                options={[
-                  { id: "show", label: "Show" },
-                  { id: "hide", label: "Hide" },
-                ]}
-                value={state.showBookCount ? "show" : "hide"}
-                onChange={(v) => patch({ showBookCount: v === "show" })}
-              />
-              <SegControl<"show" | "hide">
-                label="Pages"
-                options={[
-                  { id: "show", label: "Show" },
-                  { id: "hide", label: "Hide" },
-                ]}
-                value={state.showPages ? "show" : "hide"}
-                onChange={(v) => patch({ showPages: v === "show" })}
-              />
-              <SegControl<"show" | "hide">
-                label="Rating"
-                options={[
-                  { id: "show", label: "Show" },
-                  { id: "hide", label: "Hide" },
-                ]}
-                value={state.showRating ? "show" : "hide"}
-                onChange={(v) => patch({ showRating: v === "show" })}
-              />
+              <div>
+                <Eyebrow className="mb-1.5 !text-2xs">Stats</Eyebrow>
+                <div className="flex flex-wrap gap-1.5">
+                  <StatChip
+                    label="Books"
+                    active={state.showBookCount}
+                    onToggle={() =>
+                      patch({ showBookCount: !state.showBookCount })
+                    }
+                  />
+                  <StatChip
+                    label="Pages"
+                    active={state.showPages}
+                    onToggle={() => patch({ showPages: !state.showPages })}
+                  />
+                  <StatChip
+                    label="Rating"
+                    active={state.showRating}
+                    onToggle={() => patch({ showRating: !state.showRating })}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -446,6 +441,31 @@ function SegControl<T extends string>({
         })}
       </div>
     </div>
+  );
+}
+
+function StatChip({
+  label,
+  active,
+  onToggle,
+}: {
+  label: string;
+  active: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      onClick={onToggle}
+      aria-pressed={active}
+      className={[
+        "cursor-pointer rounded-2xs border px-3 py-1.5 font-sans text-2xs uppercase tracking-widest transition-colors",
+        active
+          ? "border-ink bg-ink text-bg"
+          : "border-rule bg-transparent text-ink-muted hover:border-rule-strong hover:text-ink",
+      ].join(" ")}
+    >
+      {label}
+    </button>
   );
 }
 
