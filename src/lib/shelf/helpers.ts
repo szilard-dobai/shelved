@@ -3,6 +3,13 @@ import type { Book, SortMode } from "./types";
 export const STORY_W = 1080;
 export const STORY_H = 1920;
 
+export function titleFontSize(title: string, base: number): number {
+  const len = title.length;
+  if (len > 50) return Math.round(base * 0.45);
+  if (len > 25) return Math.round(base * 0.55);
+  return base;
+}
+
 export function hashStr(s: string): number {
   let h = 2166136261;
   for (let i = 0; i < s.length; i++) {

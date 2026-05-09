@@ -7,6 +7,7 @@ import {
   groupByAuthor,
   groupByTitle,
   groupByYear,
+  titleFontSize,
 } from "@/lib/shelf/helpers";
 import { Spine } from "./Spine";
 import { QRCode } from "@/components/decor/QRCode";
@@ -123,7 +124,7 @@ export function WoodShelf({
         <div
           className="mt-4 italic font-medium"
           style={{
-            fontSize: 76,
+            fontSize: titleFontSize(userTitle, 76),
             lineHeight: 1,
             letterSpacing: "-0.02em",
             color: tone.ink,

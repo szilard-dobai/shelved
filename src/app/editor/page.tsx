@@ -23,11 +23,17 @@ type EditingState =
 export default function EditorPage() {
   const { state, patch, resetEditor, hydrated, ownedShares, forgetShare } =
     useAppState();
-  const { books, userTitle, sortMode, style, bgVariant, yearFilter, currentSlug } =
-    state;
+  const {
+    books,
+    userTitle,
+    sortMode,
+    style,
+    bgVariant,
+    yearFilter,
+    currentSlug,
+  } = state;
   const availableYears = useMemo(
-    () =>
-      Array.from(new Set(books.map((b) => b.year))).sort((a, b) => b - a),
+    () => Array.from(new Set(books.map((b) => b.year))).sort((a, b) => b - a),
     [books],
   );
   const effectiveYearFilter =
@@ -75,6 +81,16 @@ export default function EditorPage() {
       patch({ books: next });
       trackEvent("book_edited", { title: updated.title });
     }
+    setEditing(null);
+  };
+
+  const deleteBook = () => {
+    if (!editing || editing.mode !== "edit") return;
+    const removed = books[editing.index];
+    const next = books.slice();
+    next.splice(editing.index, 1);
+    patch({ books: next });
+    trackEvent("book_removed", { title: removed.title });
     setEditing(null);
   };
 
@@ -257,6 +273,7 @@ export default function EditorPage() {
                 <input
                   aria-label="Shelf title"
                   value={userTitle}
+                  maxLength={80}
                   onChange={(e) => patch({ userTitle: e.target.value })}
                   onFocus={(e) => {
                     titleFocusValue.current = e.target.value;
@@ -386,6 +403,7 @@ export default function EditorPage() {
           mode={editing.mode}
           onClose={() => setEditing(null)}
           onSave={saveBook}
+          onDelete={editing.mode === "edit" ? deleteBook : undefined}
         />
       )}
 
@@ -473,9 +491,7 @@ function BookCard({
         <div className="italic opacity-70">{book.author}</div>
         <div className="mt-0.5 text-2xs tracking-wide">
           <span className="text-gold">{"★".repeat(book.rating)}</span>
-          <span className="text-ink/15">
-            {"★".repeat(5 - book.rating)}
-          </span>
+          <span className="text-ink/15">{"★".repeat(5 - book.rating)}</span>
           <span className="opacity-55"> · {book.year}</span>
         </div>
       </div>
@@ -554,14 +570,17 @@ function BookEditModal({
   mode,
   onClose,
   onSave,
+  onDelete,
 }: {
   initial: Book;
   mode: "edit" | "create";
   onClose: () => void;
   onSave: (book: Book) => void;
+  onDelete?: () => void;
 }) {
   const [draft, setDraft] = useState<Book>(initial);
   const [confirmingDiscard, setConfirmingDiscard] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const isDirty = useMemo(
     () => JSON.stringify(draft) !== JSON.stringify(initial),
@@ -661,12 +680,27 @@ function BookEditModal({
             </div>
           </div>
           <Hairline className="my-4 mt-7" />
-          <div className="flex justify-end gap-3">
-            <Button variant="secondary" onClick={requestClose}>
+          <div className="flex items-center gap-3">
+            {onDelete && (
+              <button
+                type="button"
+                onClick={() => setConfirmingDelete(true)}
+                className="mr-auto cursor-pointer border-0 bg-transparent p-0 font-sans text-xs uppercase tracking-widest text-danger hover:underline"
+              >
+                Delete
+              </button>
+            )}
+            <Button
+              variant="secondary"
+              size="sm"
+              className={onDelete ? "" : "ml-auto"}
+              onClick={requestClose}
+            >
               Cancel
             </Button>
             <Button
               variant="gold"
+              size="sm"
               onClick={() =>
                 onSave({
                   ...draft,
@@ -706,6 +740,36 @@ function BookEditModal({
               </Button>
               <Button variant="danger" size="sm" onClick={onClose}>
                 Discard
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmingDelete && onDelete && (
+        <div
+          onClick={() => setConfirmingDelete(false)}
+          className="fixed inset-0 z-[110] flex items-center justify-center bg-black/55 px-4"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-sm border border-rule bg-bg-panel-solid p-6 text-center text-ink md:p-7"
+          >
+            <Eyebrow className="mb-3">Delete book?</Eyebrow>
+            <p className="mb-6 font-serif text-lg italic leading-snug text-ink-muted">
+              {(initial.title.trim() || TITLE_PLACEHOLDER) +
+                " will be removed from your shelf."}
+            </p>
+            <div className="flex justify-center gap-3">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setConfirmingDelete(false)}
+              >
+                Keep
+              </Button>
+              <Button variant="danger" size="sm" onClick={onDelete}>
+                Delete
               </Button>
             </div>
           </div>

@@ -6,6 +6,7 @@ import {
   groupByAuthor,
   groupByTitle,
   groupByYear,
+  titleFontSize,
 } from "@/lib/shelf/helpers";
 import { QRCode } from "@/components/decor/QRCode";
 
@@ -220,7 +221,11 @@ export function MinimalShelf({
         </div>
         <div
           className="mt-6 italic font-medium"
-          style={{ fontSize: 80, lineHeight: 1, letterSpacing: "-0.035em" }}
+          style={{
+            fontSize: titleFontSize(userTitle, 80),
+            lineHeight: 1,
+            letterSpacing: "-0.035em",
+          }}
         >
           {userTitle}
         </div>
