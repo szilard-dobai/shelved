@@ -51,6 +51,7 @@ export default function ExportPage() {
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
   const exportRef = useRef<HTMLDivElement>(null);
+  const autoTriggered = useRef(false);
 
   const boundEditKey =
     currentSlug && ownedShares[currentSlug] ? ownedShares[currentSlug] : null;
@@ -149,6 +150,25 @@ export default function ExportPage() {
       setUpdating(false);
     }
   };
+
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (!hydrated || autoTriggered.current) return;
+    autoTriggered.current = true;
+    if (currentSlug && boundEditKey) {
+      const origin = window.location.origin;
+      setShare({
+        slug: currentSlug,
+        editKey: boundEditKey,
+        viewUrl: `${origin}/s/${currentSlug}`,
+        editUrl: `${origin}/s/${currentSlug}?edit=${boundEditKey}`,
+      });
+    } else if (!currentSlug) {
+      publish();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const download = async () => {
     if (downloading || !exportRef.current) return;
@@ -291,39 +311,7 @@ export default function ExportPage() {
               {downloading ? "Rendering…" : "Download"}
             </Button>
 
-            {!share ? (
-              isBound ? (
-                <>
-                  <Button
-                    variant="secondary"
-                    full
-                    onClick={update}
-                    disabled={publishing || updating}
-                  >
-                    <Icon name="share" size={14} />
-                    {updating ? "Updating…" : "Update share"}
-                  </Button>
-                  <button
-                    type="button"
-                    onClick={publish}
-                    disabled={publishing || updating}
-                    className="cursor-pointer self-center border-0 bg-transparent font-sans text-xs uppercase tracking-widest text-ink-muted hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    {publishing ? "Publishing…" : "or publish as new"}
-                  </button>
-                </>
-              ) : (
-                <Button
-                  variant="secondary"
-                  full
-                  onClick={publish}
-                  disabled={publishing}
-                >
-                  <Icon name="share" size={14} />
-                  {publishing ? "Publishing…" : "Publish share link"}
-                </Button>
-              )
-            ) : (
+            {share && (
               <SharePanel
                 share={share}
                 copiedView={copiedView}
@@ -335,6 +323,40 @@ export default function ExportPage() {
                   copy(share.editUrl, setCopiedEdit, "edit_link_copied")
                 }
               />
+            )}
+
+            {isBound ? (
+              <>
+                <Button
+                  variant="secondary"
+                  full
+                  onClick={update}
+                  disabled={publishing || updating}
+                >
+                  <Icon name="share" size={14} />
+                  {updating ? "Updating…" : "Update share"}
+                </Button>
+                <button
+                  type="button"
+                  onClick={publish}
+                  disabled={publishing || updating}
+                  className="cursor-pointer self-center border-0 bg-transparent font-sans text-xs uppercase tracking-widest text-ink-muted hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {publishing ? "Publishing…" : "or publish as new"}
+                </button>
+              </>
+            ) : (
+              !share && (
+                <Button
+                  variant="secondary"
+                  full
+                  onClick={publish}
+                  disabled={publishing}
+                >
+                  <Icon name="share" size={14} />
+                  {publishing ? "Publishing…" : "Publish share link"}
+                </Button>
+              )
             )}
 
             {(shareError || downloadError) && (
