@@ -49,9 +49,10 @@ export function ShelfPreview({
         return;
       }
 
-      const hFit = (window.innerHeight - heightOffset) / STORY_H;
+      const docEl = document.documentElement;
+      const hFit = (docEl.clientHeight - heightOffset) / STORY_H;
       if (fitMode === "viewport") {
-        const wFit = (window.innerWidth - widthOffset) / STORY_W;
+        const wFit = (docEl.clientWidth - widthOffset) / STORY_W;
         setAuto(Math.min(maxScale, wFit, hFit));
       } else {
         setAuto(Math.min(maxScale, hFit));
@@ -66,10 +67,11 @@ export function ShelfPreview({
       return () => ro.disconnect();
     }
 
-    let lastWidth = window.innerWidth;
+    let lastWidth = document.documentElement.clientWidth;
     const onResize = () => {
-      if (window.innerWidth === lastWidth) return;
-      lastWidth = window.innerWidth;
+      const width = document.documentElement.clientWidth;
+      if (width === lastWidth) return;
+      lastWidth = width;
       resize();
     };
     window.addEventListener("resize", onResize);
