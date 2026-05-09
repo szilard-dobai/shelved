@@ -9,10 +9,6 @@ import {
   groupByYear,
 } from "@/lib/shelf/helpers";
 import { Spine } from "./Spine";
-import { Cat } from "@/components/decor/Cat";
-import { Plant } from "@/components/decor/Plant";
-import { Mug } from "@/components/decor/Mug";
-import { Glasses } from "@/components/decor/Glasses";
 import { QRCode } from "@/components/decor/QRCode";
 import { StatsPanel } from "@/components/decor/StatsPanel";
 
@@ -238,14 +234,6 @@ export function WoodShelf({
                 />
               </div>
 
-              {ri === 0 && <Plant x={shelfInnerW - 160} bottom={22} size={130} />}
-              {ri === 1 && <Mug x={shelfInnerW - 130} bottom={22} size={80} />}
-              {ri === 1 && (
-                <Glasses x={12} bottom={22} size={92} color="#2a1e18" />
-              )}
-              {ri === 2 && (
-                <Cat x={shelfInnerW - 200} bottom={22} size={140} fill="#1a0e08" />
-              )}
             </div>
           );
         })}

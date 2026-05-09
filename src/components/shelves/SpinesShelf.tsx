@@ -9,8 +9,6 @@ import {
   groupByYear,
 } from "@/lib/shelf/helpers";
 import { Spine } from "./Spine";
-import { Cat } from "@/components/decor/Cat";
-import { Mug } from "@/components/decor/Mug";
 import { QRCode } from "@/components/decor/QRCode";
 import { StatsPanel } from "@/components/decor/StatsPanel";
 
@@ -186,8 +184,6 @@ export function SpinesShelf({
                 boxShadow: "0 4px 10px rgba(0,0,0,0.7)",
               }}
             />
-            {ri === 1 && <Cat x={60} bottom={12} size={96} fill="#0a0604" />}
-            {ri === 3 && <Mug x={780} bottom={12} size={64} />}
           </div>
         ))}
       </div>
