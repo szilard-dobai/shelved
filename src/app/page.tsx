@@ -1,16 +1,15 @@
 "use client";
 
+import { WoodShelf } from "@/components/shelves";
+import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
+import { Display, Eyebrow, Wordmark } from "@/components/ui/typography";
+import { useAppState } from "@/lib/app-state";
+import { STORY_H, STORY_W } from "@/lib/shelf/helpers";
+import { trackEvent } from "@/lib/tracking";
+import { useIsMobile } from "@/lib/use-media";
 import Link from "next/link";
 import { useEffect } from "react";
-import { Button } from "@/components/ui/Button";
-import { Display, Eyebrow, Wordmark } from "@/components/ui/typography";
-import { Icon } from "@/components/ui/Icon";
-import { WoodShelf } from "@/components/shelves";
-import { STORY_H, STORY_W } from "@/lib/shelf/helpers";
-import { useAppState } from "@/lib/app-state";
-import { useIsMobile } from "@/lib/use-media";
-import { trackEvent } from "@/lib/tracking";
-import { ShelfPreview } from "@/components/ShelfPreview";
 
 const FEATURES = [
   {
@@ -134,7 +133,7 @@ export default function LandingPage() {
               }}
             >
               <div
-                className="absolute left-0 top-0"
+                className="absolute left-0 top-0 select-none"
                 style={{
                   width: STORY_W,
                   height: STORY_H,
@@ -142,13 +141,11 @@ export default function LandingPage() {
                   transformOrigin: "0 0",
                 }}
               >
-                <ShelfPreview>
-                  <WoodShelf
-                    books={state.books}
-                    userTitle={state.userTitle}
-                    sortMode="year"
-                  />
-                </ShelfPreview>
+                <WoodShelf
+                  books={state.books}
+                  userTitle={state.userTitle}
+                  sortMode="year"
+                />
               </div>
             </div>
           </div>
