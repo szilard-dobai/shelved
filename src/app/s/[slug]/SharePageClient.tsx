@@ -104,9 +104,23 @@ export function SharePageClient({
         </div>
       </header>
 
-      <section className="mx-auto grid max-w-page grid-cols-1 gap-10 px-8 py-10 lg:grid-cols-[1fr_22.5rem]">
+      <section className="mx-auto max-w-page px-5 py-10 md:px-8">
+        <div className="mx-auto mb-10 max-w-2xl text-center">
+          <Eyebrow className="mb-3">A shared Shelved shelf</Eyebrow>
+          <Display size="lg" className="mb-5">
+            {userTitle}
+          </Display>
+          <p className="font-serif text-lg italic text-ink-muted">
+            {books.length} books · curated with{" "}
+            <Link href="/" className="underline underline-offset-2">
+              Shelved
+            </Link>
+            .
+          </p>
+        </div>
+
         <div className="flex items-start justify-center">
-          <ShelfPreview heightOffset={220}>
+          <ShelfPreview heightOffset={380}>
             <Shelf
               style={style}
               books={books}
@@ -120,23 +134,14 @@ export function SharePageClient({
           </ShelfPreview>
         </div>
 
-        <div>
-          <Eyebrow className="mb-3">A shared Shelved shelf</Eyebrow>
-          <Display size="lg" className="mb-5">
-            {userTitle}
-          </Display>
-          <p className="mb-7 font-serif text-lg italic text-ink-muted">
-            {books.length} books · curated with{" "}
-            <Link href="/" className="underline underline-offset-2">
-              Shelved
-            </Link>
-            .
-          </p>
-
-          <Eyebrow className="mb-2 !text-2xs">Every title</Eyebrow>
-          <ul className="divide-y divide-rule">
+        <div className="mt-14 border-t border-rule pt-8">
+          <Eyebrow className="mb-5 text-center !text-2xs">Every title</Eyebrow>
+          <ul className="columns-1 gap-x-10 md:columns-2 lg:columns-3">
             {books.map((b, i) => (
-              <li key={i} className="flex items-start gap-3 py-3">
+              <li
+                key={i}
+                className="flex break-inside-avoid items-start gap-3 border-t border-rule py-3 first:border-t-0"
+              >
                 <div
                   className="mt-1 h-10 w-3 flex-shrink-0"
                   style={{ background: b.spineColor }}
