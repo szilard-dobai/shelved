@@ -8,6 +8,7 @@ import { useAppState } from "@/lib/app-state";
 import { STORY_H, STORY_W } from "@/lib/shelf/helpers";
 import { trackEvent } from "@/lib/tracking";
 import { useIsMobile } from "@/lib/use-media";
+import { motion } from "motion/react";
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -28,6 +29,15 @@ const FEATURES = [
     body: "Download a high-res image. The QR code links to a public page with every title.",
   },
 ];
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 32 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 1.5, ease: [0.22, 1, 0.36, 1] as const },
+  },
+};
 
 export default function LandingPage() {
   const { state, ownedShares, hydrated, loadDemo } = useAppState();
@@ -54,21 +64,37 @@ export default function LandingPage() {
       </header>
 
       <section className="mx-auto grid max-w-page grid-cols-1 items-center gap-9 px-5 pt-6 pb-20 md:px-16 md:pt-8 md:pb-24 lg:min-h-[calc(100vh-5.625rem)] lg:grid-cols-[1.05fr_1fr] lg:gap-15 lg:pb-20">
-        <div className="mx-auto max-w-xl text-center lg:mx-0 lg:justify-self-start lg:text-left">
-          <Eyebrow className="mb-4 !text-2xs md:mb-6 md:!text-xs">
-            Your reading log · visualised
-          </Eyebrow>
-          <Display className="mb-5 !text-display md:mb-7 lg:!text-display-xl">
-            Your&nbsp;bookshelf,
-            <br />
-            beautifully.
-          </Display>
-          <p className="mx-auto mb-7 max-w-lg font-serif text-lg italic leading-normal text-ink-muted md:mb-9 md:text-xl lg:mx-0">
+        <motion.div
+          className="mx-auto max-w-xl text-center lg:mx-0 lg:justify-self-start lg:text-left"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: {},
+            visible: { transition: { staggerChildren: 0.28, delayChildren: 0.15 } },
+          }}
+        >
+          <motion.div variants={fadeUp}>
+            <Eyebrow className="mb-4 !text-2xs md:mb-6 md:!text-xs">
+              Your reading log · visualised
+            </Eyebrow>
+          </motion.div>
+          <motion.div variants={fadeUp}>
+            <Display className="mb-5 !text-display md:mb-7 lg:!text-display-xl">
+              Your&nbsp;bookshelf,
+              <br />
+              beautifully.
+            </Display>
+          </motion.div>
+          <motion.p
+            variants={fadeUp}
+            className="mx-auto mb-7 max-w-lg font-serif text-lg italic leading-normal text-ink-muted md:mb-9 md:text-xl lg:mx-0"
+          >
             Turn your reading history into a shareable shelf. Import from
             Goodreads, paste a list of ISBNs, or just your memory — we&apos;ll
             do the rest.
-          </p>
-          <div
+          </motion.p>
+          <motion.div
+            variants={fadeUp}
             className="flex flex-col gap-2.5 sm:flex-row sm:justify-center lg:justify-start"
             style={{ visibility: hydrated ? undefined : "hidden" }}
           >
@@ -117,13 +143,25 @@ export default function LandingPage() {
                 </Link>
               </>
             )}
-          </div>
-          <div className="mt-6 font-sans text-2xs tracking-widest text-ink-faint md:mt-9 md:text-xs">
+          </motion.div>
+          <motion.div
+            variants={fadeUp}
+            className="mt-6 font-sans text-2xs tracking-widest text-ink-faint md:mt-9 md:text-xs"
+          >
             NO SIGNUP · FREE · YOUR DATA STAYS YOURS
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        <div className="flex items-center justify-center pt-2 lg:pt-0">
+        <motion.div
+          className="flex items-center justify-center pt-2 lg:pt-0"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 1.5,
+            delay: 0.8,
+            ease: [0.22, 1, 0.36, 1] as const,
+          }}
+        >
           <div className="relative rounded-xs bg-[#0a0604] p-1.5 shadow-[0_2.5rem_5rem_rgba(0,0,0,0.6),_0_0.875rem_1.875rem_rgba(0,0,0,0.4)]">
             <div
               className="relative overflow-hidden border border-black/50 outline outline-ink/8"
@@ -149,13 +187,22 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       <section className="mx-auto max-w-page border-t border-rule px-5 pt-8 pb-28 md:px-16 md:pt-9 md:pb-15">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-14">
+        <motion.div
+          className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-14"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={{
+            hidden: {},
+            visible: { transition: { staggerChildren: 0.35, delayChildren: 0.15 } },
+          }}
+        >
           {FEATURES.map((f) => (
-            <div key={f.eyebrow}>
+            <motion.div key={f.eyebrow} variants={fadeUp}>
               <div className="mb-2 font-serif text-3xl italic text-gold">
                 {f.eyebrow}
               </div>
@@ -165,9 +212,9 @@ export default function LandingPage() {
               <div className="font-sans text-sm leading-relaxed text-ink-muted">
                 {f.body}
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
     </div>
   );
