@@ -51,6 +51,7 @@ export default function ImportPage() {
   const mobile = useIsMobile();
   const { state, setState, loadDemo, resetEditor } = useAppState();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dropzoneRef = useRef<HTMLDivElement>(null);
   const [method, setMethod] = useState<Method>(null);
   const [dragOver, setDragOver] = useState(false);
   const [parsing, setParsing] = useState(false);
@@ -59,6 +60,14 @@ export default function ImportPage() {
   useEffect(() => {
     trackEvent("import_view");
   }, []);
+
+  useEffect(() => {
+    if (method !== "csv" && method !== "storygraph") return;
+    dropzoneRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  }, [method]);
 
   const selectMethod = (m: "csv" | "storygraph" | "search") => {
     trackEvent("import_method_selected", { method: m });
@@ -176,6 +185,7 @@ export default function ImportPage() {
       <section className="mx-auto min-h-[22.5rem] max-w-6xl px-5 pt-4 pb-12 md:px-12 md:pt-5">
         {isCsv && (
           <div
+            ref={dropzoneRef}
             onDragOver={(e) => {
               if (parsing) return;
               e.preventDefault();
