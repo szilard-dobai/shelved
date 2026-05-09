@@ -471,11 +471,12 @@ function BookCard({
           {book.title}
         </div>
         <div className="italic opacity-70">{book.author}</div>
-        <div className="mt-0.5 text-2xs tracking-wide opacity-55">
-          {"★".repeat(book.rating)}
-          <span className="opacity-30">
+        <div className="mt-0.5 text-2xs tracking-wide">
+          <span className="text-gold">{"★".repeat(book.rating)}</span>
+          <span className="text-ink/15">
             {"★".repeat(5 - book.rating)}
-          </span> · {book.year}
+          </span>
+          <span className="opacity-55"> · {book.year}</span>
         </div>
       </div>
     </button>
@@ -640,11 +641,9 @@ function BookEditModal({
                   onChange={(v) => updateDraft({ year: +v })}
                   small
                 />
-                <Field
-                  label="Rating"
+                <RatingField
                   value={draft.rating}
-                  onChange={(v) => updateDraft({ rating: +v })}
-                  small
+                  onChange={(v) => updateDraft({ rating: v })}
                 />
                 <Field
                   label="Pages"
@@ -742,6 +741,43 @@ function Field({
           small ? "text-base" : "text-lg"
         }`}
       />
+    </div>
+  );
+}
+
+function RatingField({
+  value,
+  onChange,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+}) {
+  const [hover, setHover] = useState(0);
+  const display = hover || value;
+  return (
+    <div className="min-w-0 flex-1">
+      <div className="mb-1 font-sans text-2xs uppercase tracking-widest text-ink-faint">
+        Rating
+      </div>
+      <div
+        className="flex items-center gap-1 border-b border-rule py-1 font-serif text-base"
+        onMouseLeave={() => setHover(0)}
+      >
+        {[1, 2, 3, 4, 5].map((n) => (
+          <button
+            key={n}
+            type="button"
+            onClick={() => onChange(value === n ? 0 : n)}
+            onMouseEnter={() => setHover(n)}
+            aria-label={`${n} star${n > 1 ? "s" : ""}`}
+            className={`cursor-pointer border-0 bg-transparent p-0 transition-colors ${
+              display >= n ? "text-gold" : "text-ink/15"
+            }`}
+          >
+            ★
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
