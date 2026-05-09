@@ -216,31 +216,6 @@ export default function ExportPage() {
     } catch {}
   };
 
-  const everyHasPages =
-    visibleBooks.length > 0 && visibleBooks.every((b) => b.pages != null);
-  const everyHasRating =
-    visibleBooks.length > 0 && visibleBooks.every((b) => b.rating > 0);
-  const stats: { label: string; value: string }[] = [];
-  if (state.showBookCount) {
-    stats.push({ label: "books", value: String(visibleBooks.length) });
-  }
-  if (state.showPages && everyHasPages) {
-    stats.push({
-      label: "pages",
-      value: visibleBooks
-        .reduce((s, b) => s + (b.pages ?? 0), 0)
-        .toLocaleString(),
-    });
-  }
-  if (state.showRating && everyHasRating) {
-    stats.push({
-      label: "avg",
-      value: (
-        visibleBooks.reduce((s, b) => s + b.rating, 0) / visibleBooks.length
-      ).toFixed(1),
-    });
-  }
-
   return (
     <div className="min-h-screen bg-bg text-ink">
       <header className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-rule bg-bg px-4 py-3.5 md:px-8 md:py-4">
