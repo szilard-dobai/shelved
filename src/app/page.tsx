@@ -16,7 +16,7 @@ const FEATURES = [
   {
     eyebrow: "01",
     title: "Import in seconds",
-    body: "Upload your Goodreads CSV, paste a list of ISBNs, or just type your books in by hand.",
+    body: "Upload your Goodreads or StoryGraph CSV, or just type your books in by hand.",
   },
   {
     eyebrow: "02",
@@ -90,8 +90,8 @@ export default function LandingPage() {
             className="mx-auto mb-7 max-w-lg font-serif text-lg italic leading-normal text-ink-muted md:mb-9 md:text-xl lg:mx-0"
           >
             Turn your reading history into a shareable shelf. Import from
-            Goodreads, paste a list of ISBNs, or just your memory — we&apos;ll
-            do the rest.
+            Goodreads, StoryGraph, or just your memory — we&apos;ll do the
+            rest.
           </motion.p>
           <motion.div
             variants={fadeUp}

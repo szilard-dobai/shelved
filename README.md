@@ -21,7 +21,7 @@ Open http://localhost:3000.
 ## Routes
 
 - `/` — landing
-- `/import` — Goodreads CSV / ISBN paste / manual search
+- `/import` — Goodreads CSV / StoryGraph CSV / manual entry
 - `/editor` — book gallery + live shelf preview + controls
 - `/export` — final preview, PNG download, publish share link
 - `/s/[slug]` — public read-only share page
