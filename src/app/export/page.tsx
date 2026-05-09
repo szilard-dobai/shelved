@@ -26,7 +26,12 @@ interface ShareInfo {
 
 export default function ExportPage() {
   const { state, patch, rememberShare, ownedShares, hydrated } = useAppState();
-  const { books, userTitle, sortMode, style, currentSlug } = state;
+  const { books, userTitle, sortMode, style, yearFilter, currentSlug } = state;
+  const visibleBooks =
+    yearFilter != null && books.some((b) => b.year === yearFilter)
+      ? books.filter((b) => b.year === yearFilter)
+      : books;
+  const effectiveYearFilter = visibleBooks === books ? null : yearFilter;
   const mobile = useIsMobile();
   const [share, setShare] = useState<ShareInfo | null>(null);
   const [publishing, setPublishing] = useState(false);
@@ -66,6 +71,7 @@ export default function ExportPage() {
           showBookCount: state.showBookCount,
           showPages: state.showPages,
           showRating: state.showRating,
+          yearFilter: effectiveYearFilter,
         }),
       });
       if (!res.ok) throw new Error(`Publish failed (${res.status})`);
@@ -107,6 +113,10 @@ export default function ExportPage() {
             sortMode,
             style,
             bgVariant: state.bgVariant,
+            showBookCount: state.showBookCount,
+            showPages: state.showPages,
+            showRating: state.showRating,
+            yearFilter: effectiveYearFilter,
           }),
         },
       );
@@ -142,25 +152,27 @@ export default function ExportPage() {
   };
 
   const everyHasPages =
-    books.length > 0 && books.every((b) => b.pages != null);
+    visibleBooks.length > 0 && visibleBooks.every((b) => b.pages != null);
   const everyHasRating =
-    books.length > 0 && books.every((b) => b.rating > 0);
+    visibleBooks.length > 0 && visibleBooks.every((b) => b.rating > 0);
   const stats: { label: string; value: string }[] = [];
   if (state.showBookCount) {
-    stats.push({ label: "books", value: String(books.length) });
+    stats.push({ label: "books", value: String(visibleBooks.length) });
   }
   if (state.showPages && everyHasPages) {
     stats.push({
       label: "pages",
-      value: books.reduce((s, b) => s + (b.pages ?? 0), 0).toLocaleString(),
+      value: visibleBooks
+        .reduce((s, b) => s + (b.pages ?? 0), 0)
+        .toLocaleString(),
     });
   }
   if (state.showRating && everyHasRating) {
     stats.push({
       label: "avg",
-      value: (books.reduce((s, b) => s + b.rating, 0) / books.length).toFixed(
-        1,
-      ),
+      value: (
+        visibleBooks.reduce((s, b) => s + b.rating, 0) / visibleBooks.length
+      ).toFixed(1),
     });
   }
 
@@ -198,9 +210,10 @@ export default function ExportPage() {
           >
             <Shelf
               style={style}
-              books={books}
+              books={visibleBooks}
               userTitle={userTitle}
               sortMode={sortMode}
+              bgVariant={state.bgVariant}
               showBookCount={state.showBookCount}
               showPages={state.showPages}
               showRating={state.showRating}

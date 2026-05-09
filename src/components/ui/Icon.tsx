@@ -17,7 +17,8 @@ export type IconName =
   | "image"
   | "share"
   | "settings"
-  | "trash";
+  | "trash"
+  | "chevronDown";
 
 const paths: Record<IconName, ReactNode> = {
   upload: (
@@ -87,6 +88,7 @@ const paths: Record<IconName, ReactNode> = {
       <path d="M10 11v6M14 11v6" />
     </>
   ),
+  chevronDown: <path d="M6 9l6 6 6-6" />,
 };
 
 export function Icon({

@@ -23,6 +23,7 @@ export interface AppState {
   showBookCount: boolean;
   showPages: boolean;
   showRating: boolean;
+  yearFilter: number | null;
   currentSlug: string | null;
 }
 
@@ -35,6 +36,7 @@ const DEFAULT_STATE: AppState = {
   showBookCount: true,
   showPages: true,
   showRating: true,
+  yearFilter: null,
   currentSlug: null,
 };
 

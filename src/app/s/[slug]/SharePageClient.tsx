@@ -23,6 +23,7 @@ interface Props {
   showBookCount: boolean;
   showPages: boolean;
   showRating: boolean;
+  yearFilter: number | null;
 }
 
 export function SharePageClient({
@@ -35,6 +36,7 @@ export function SharePageClient({
   showBookCount,
   showPages,
   showRating,
+  yearFilter,
 }: Props) {
   const router = useRouter();
   const params = useSearchParams();
@@ -46,6 +48,9 @@ export function SharePageClient({
   const cachedEditKey = ownedShares[slug];
   const canEdit = Boolean(incomingEditKey || cachedEditKey);
   const shareUrl = hydrated ? `${window.location.origin}/s/${slug}` : undefined;
+
+  const visibleBooks =
+    yearFilter != null ? books.filter((b) => b.year === yearFilter) : books;
 
   useEffect(() => {
     trackEvent("share_page_view", { slug });
@@ -71,6 +76,7 @@ export function SharePageClient({
       showBookCount,
       showPages,
       showRating,
+      yearFilter,
       currentSlug: canEdit ? slug : null,
     });
     router.push("/editor");
@@ -111,7 +117,8 @@ export function SharePageClient({
             {userTitle}
           </Display>
           <p className="font-serif text-lg italic text-ink-muted">
-            {books.length} books · curated with{" "}
+            {visibleBooks.length} books
+            {yearFilter != null ? ` · ${yearFilter}` : ""} · curated with{" "}
             <Link href="/" className="underline underline-offset-2">
               Shelved
             </Link>
@@ -123,7 +130,7 @@ export function SharePageClient({
           <ShelfPreview heightOffset={380}>
             <Shelf
               style={style}
-              books={books}
+              books={visibleBooks}
               userTitle={userTitle}
               sortMode={sortMode}
               bgVariant={bgVariant}
@@ -138,7 +145,7 @@ export function SharePageClient({
         <div className="mt-14 border-t border-rule pt-8">
           <Eyebrow className="mb-5 text-center !text-2xs">Every title</Eyebrow>
           <ul className="columns-1 gap-x-10 md:columns-2 lg:columns-3">
-            {books.map((b, i) => (
+            {visibleBooks.map((b, i) => (
               <li
                 key={i}
                 className="flex break-inside-avoid items-start gap-3 border-t border-rule py-3 first:border-t-0"

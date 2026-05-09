@@ -23,7 +23,24 @@ type EditingState =
 export default function EditorPage() {
   const { state, patch, resetEditor, hydrated, ownedShares, forgetShare } =
     useAppState();
-  const { books, userTitle, sortMode, style, bgVariant, currentSlug } = state;
+  const { books, userTitle, sortMode, style, bgVariant, yearFilter, currentSlug } =
+    state;
+  const availableYears = useMemo(
+    () =>
+      Array.from(new Set(books.map((b) => b.year))).sort((a, b) => b - a),
+    [books],
+  );
+  const effectiveYearFilter =
+    yearFilter != null && availableYears.includes(yearFilter)
+      ? yearFilter
+      : null;
+  const visibleBooks = useMemo(
+    () =>
+      effectiveYearFilter != null
+        ? books.filter((b) => b.year === effectiveYearFilter)
+        : books,
+    [books, effectiveYearFilter],
+  );
   const [editing, setEditing] = useState<EditingState | null>(null);
   const [mobileTab, setMobileTab] = useState<MobileTab>("books");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -221,7 +238,7 @@ export default function EditorPage() {
             >
               <Shelf
                 style={style}
-                books={books}
+                books={visibleBooks}
                 userTitle={userTitle}
                 sortMode={sortMode}
                 bgVariant={bgVariant}
@@ -263,66 +280,100 @@ export default function EditorPage() {
               </label>
             </div>
 
-            <div className="grid gap-2.5 [grid-template-columns:repeat(auto-fit,minmax(6.875rem,1fr))] md:gap-3.5 md:[grid-template-columns:repeat(auto-fit,minmax(9.375rem,1fr))]">
-              <SegControl<ShelfStyle>
-                label="Style"
-                options={[
-                  { id: "wood", label: "Wood" },
-                  { id: "minimal", label: "Minimal" },
-                ]}
-                value={style}
-                onChange={(v) => {
-                  patch({ style: v });
-                  trackEvent("shelf_style_changed", { style: v });
-                }}
-              />
-              <SegControl<SortMode>
-                label="Sort"
-                options={[
-                  { id: "year", label: "Date" },
-                  { id: "author", label: "Author" },
-                  { id: "title", label: "Title" },
-                ]}
-                value={sortMode}
-                onChange={(v) => {
-                  patch({ sortMode: v });
-                  trackEvent("sort_changed", { sort: v });
-                }}
-              />
-              <SegControl<BgVariant>
-                label="Background"
-                options={[
-                  { id: "warm", label: "Warm" },
-                  { id: "ink", label: "Ink" },
-                  { id: "paper", label: "Paper" },
-                ]}
-                value={bgVariant}
-                onChange={(v) => {
-                  patch({ bgVariant: v });
-                  trackEvent("background_changed", { background: v });
-                }}
-              />
-              <div>
-                <Eyebrow className="mb-1.5 !text-2xs">Stats</Eyebrow>
-                <div className="flex flex-wrap gap-1.5">
-                  <StatChip
-                    label="Books"
-                    active={state.showBookCount}
-                    onToggle={() =>
-                      patch({ showBookCount: !state.showBookCount })
-                    }
-                  />
-                  <StatChip
-                    label="Pages"
-                    active={state.showPages}
-                    onToggle={() => patch({ showPages: !state.showPages })}
-                  />
-                  <StatChip
-                    label="Rating"
-                    active={state.showRating}
-                    onToggle={() => patch({ showRating: !state.showRating })}
-                  />
+            <div className="space-y-3.5 md:space-y-4">
+              <div className="grid gap-2.5 md:gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(11rem,1fr))]">
+                <SegControl<ShelfStyle>
+                  label="Style"
+                  options={[
+                    { id: "wood", label: "Wood" },
+                    { id: "minimal", label: "Minimal" },
+                  ]}
+                  value={style}
+                  onChange={(v) => {
+                    patch({ style: v });
+                    trackEvent("shelf_style_changed", { style: v });
+                  }}
+                />
+                <SegControl<SortMode>
+                  label="Sort"
+                  options={[
+                    { id: "year", label: "Date" },
+                    { id: "author", label: "Author" },
+                    { id: "title", label: "Title" },
+                  ]}
+                  value={sortMode}
+                  onChange={(v) => {
+                    patch({ sortMode: v });
+                    trackEvent("sort_changed", { sort: v });
+                  }}
+                />
+                <SegControl<BgVariant>
+                  label="Background"
+                  options={[
+                    { id: "warm", label: "Warm" },
+                    { id: "ink", label: "Ink" },
+                    { id: "paper", label: "Paper" },
+                  ]}
+                  value={bgVariant}
+                  onChange={(v) => {
+                    patch({ bgVariant: v });
+                    trackEvent("background_changed", { background: v });
+                  }}
+                />
+              </div>
+
+              <div className="flex flex-col gap-3.5 md:flex-row md:flex-wrap md:items-start md:gap-x-7 md:gap-y-3.5">
+                <div className="flex-shrink-0">
+                  <Eyebrow className="mb-1.5 !text-2xs">Stats</Eyebrow>
+                  <div className="flex flex-wrap gap-1.5">
+                    <StatChip
+                      label="Books"
+                      active={state.showBookCount}
+                      onToggle={() =>
+                        patch({ showBookCount: !state.showBookCount })
+                      }
+                    />
+                    <StatChip
+                      label="Pages"
+                      active={state.showPages}
+                      onToggle={() => patch({ showPages: !state.showPages })}
+                    />
+                    <StatChip
+                      label="Rating"
+                      active={state.showRating}
+                      onToggle={() => patch({ showRating: !state.showRating })}
+                    />
+                  </div>
                 </div>
+                {availableYears.length > 1 && (
+                  <div className="md:w-44">
+                    <Eyebrow className="mb-1.5 !text-2xs">Year</Eyebrow>
+                    <div className="relative">
+                      <select
+                        value={effectiveYearFilter ?? ""}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          const next = v === "" ? null : Number(v);
+                          patch({ yearFilter: next });
+                          trackEvent("year_filter_changed", { year: next });
+                        }}
+                        className="block w-full cursor-pointer appearance-none rounded-2xs border border-rule bg-transparent py-1.5 pl-3 pr-9 font-sans text-2xs uppercase tracking-widest text-ink-muted outline-none hover:border-rule-strong hover:text-ink focus:border-rule-strong focus:text-ink"
+                      >
+                        <option value="">All years</option>
+                        {availableYears.map((y) => (
+                          <option key={y} value={y}>
+                            {y}
+                          </option>
+                        ))}
+                      </select>
+                      <Icon
+                        name="chevronDown"
+                        size={14}
+                        className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-muted"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

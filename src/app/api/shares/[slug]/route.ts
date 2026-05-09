@@ -32,6 +32,7 @@ export async function GET(
       showBookCount: doc.showBookCount !== false,
       showPages: doc.showPages !== false,
       showRating: doc.showRating !== false,
+      yearFilter: doc.yearFilter ?? null,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });
@@ -78,6 +79,7 @@ export async function PUT(
           showBookCount: payload.showBookCount,
           showPages: payload.showPages,
           showRating: payload.showRating,
+          yearFilter: payload.yearFilter,
           updatedAt: new Date(),
         },
       },

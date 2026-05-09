@@ -13,6 +13,7 @@ export type TrackingEventType =
   | "shelf_style_changed"
   | "sort_changed"
   | "background_changed"
+  | "year_filter_changed"
   | "title_edited"
   | "book_edited"
   | "book_removed"

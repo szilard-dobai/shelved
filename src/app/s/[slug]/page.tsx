@@ -34,6 +34,7 @@ export default async function SharePage({
       showBookCount={doc.showBookCount !== false}
       showPages={doc.showPages !== false}
       showRating={doc.showRating !== false}
+      yearFilter={doc.yearFilter ?? null}
     />
   );
 }

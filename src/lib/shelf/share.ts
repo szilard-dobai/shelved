@@ -12,6 +12,7 @@ export interface ShareDoc {
   showBookCount: boolean;
   showPages: boolean;
   showRating: boolean;
+  yearFilter: number | null;
   createdAt: Date;
   updatedAt: Date;
   views?: number;
@@ -26,6 +27,7 @@ export interface SharePayload {
   showBookCount: boolean;
   showPages: boolean;
   showRating: boolean;
+  yearFilter: number | null;
 }
 
 export function hashEditKey(key: string): string {
@@ -81,6 +83,11 @@ export function sanitizePayload(input: unknown): SharePayload | null {
     });
   }
 
+  const yearFilter =
+    typeof o.yearFilter === "number" && Number.isFinite(o.yearFilter)
+      ? Math.trunc(o.yearFilter)
+      : null;
+
   return {
     books,
     userTitle: o.userTitle,
@@ -90,6 +97,7 @@ export function sanitizePayload(input: unknown): SharePayload | null {
     showBookCount: o.showBookCount !== false,
     showPages: o.showPages !== false,
     showRating: o.showRating !== false,
+    yearFilter,
   };
 }
 
