@@ -206,7 +206,7 @@ export default function EditorPage() {
         >
           <div className="flex items-center justify-center p-4 md:flex-1 md:overflow-hidden md:p-8 md:min-h-0">
             <ShelfPreview
-              fitMode={mobile ? "viewport" : "height"}
+              fitMode={mobile ? "viewport" : "container"}
               heightOffset={mobile ? 280 : 220}
               widthOffset={40}
               maxScale={mobile ? 0.38 : 0.5}
