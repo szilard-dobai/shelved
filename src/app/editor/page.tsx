@@ -277,7 +277,7 @@ export default function EditorPage() {
                 }}
               />
               <SegControl<"show" | "hide">
-                label="Books stat"
+                label="Books"
                 options={[
                   { id: "show", label: "Show" },
                   { id: "hide", label: "Hide" },
