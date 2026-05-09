@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
+import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
 import { AppStateProvider } from "@/lib/app-state";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -34,6 +35,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="bg-bg text-ink font-sans">
+        <NextTopLoader color="var(--color-gold)" showSpinner={false} />
         <ThemeProvider>
           <AppStateProvider>
             <main>{children}</main>
