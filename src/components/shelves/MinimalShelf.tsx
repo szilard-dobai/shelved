@@ -71,7 +71,35 @@ interface Density {
 }
 
 function pickDensity(n: number): Density {
-  if (n <= 24)
+  if (n <= 10)
+    return {
+      cols: 1,
+      swatchW: 28,
+      swatchH: 104,
+      titleSize: 34,
+      authorSize: 22,
+      metaSize: 16,
+      rowGap: 28,
+      colGap: 0,
+      yearSize: 64,
+      showMeta: true,
+      itemPadTop: 6,
+    };
+  if (n <= 20)
+    return {
+      cols: 2,
+      swatchW: 22,
+      swatchH: 80,
+      titleSize: 26,
+      authorSize: 18,
+      metaSize: 14,
+      rowGap: 22,
+      colGap: 64,
+      yearSize: 56,
+      showMeta: true,
+      itemPadTop: 4,
+    };
+  if (n <= 30)
     return {
       cols: 3,
       swatchW: 16,
@@ -85,7 +113,7 @@ function pickDensity(n: number): Density {
       showMeta: true,
       itemPadTop: 2,
     };
-  if (n <= 48)
+  if (n <= 50)
     return {
       cols: 4,
       swatchW: 13,
@@ -183,7 +211,10 @@ export function MinimalShelf({
         style={{ background: tone.overlay }}
       />
 
-      <div className="relative text-center" style={{ padding: "72px 80px 32px" }}>
+      <div
+        className="relative text-center"
+        style={{ padding: "72px 80px 32px" }}
+      >
         <div className="text-[18px] uppercase tracking-[0.6em] opacity-55 font-sans">
           — Shelved —
         </div>
@@ -192,13 +223,6 @@ export function MinimalShelf({
           style={{ fontSize: 80, lineHeight: 1, letterSpacing: "-0.035em" }}
         >
           {userTitle}
-        </div>
-        <div className="mt-[14px] text-[20px] opacity-[0.62] font-sans uppercase tracking-[0.18em]">
-          {sortMode === "year"
-            ? "by date read"
-            : sortMode === "title"
-              ? "by title"
-              : "by author"}
         </div>
         {stats.length > 0 && (
           <div
@@ -228,7 +252,7 @@ export function MinimalShelf({
 
       <div
         className="absolute overflow-hidden"
-        style={{ left: 0, right: 0, top: 360, bottom: 156 }}
+        style={{ left: 0, right: 0, top: 310, bottom: 156 }}
       >
         <div
           className="grid"
