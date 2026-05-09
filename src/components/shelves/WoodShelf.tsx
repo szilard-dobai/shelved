@@ -86,7 +86,9 @@ export function WoodShelf({
         : groupByAuthor(books);
 
   const rows = flowGroups(groups, sortMode, 880, 28, 56, "w");
-  const shelfRows = rows.slice(0, 5);
+  const TARGET_ROWS = 5;
+  const shelfRows = rows.slice(0, TARGET_ROWS);
+  const totalRows = Math.max(shelfRows.length, TARGET_ROWS);
 
   const shelfY0 = 240;
   const shelfH = 260;
@@ -129,21 +131,16 @@ export function WoodShelf({
         >
           {userTitle}
         </div>
-        <div className="mt-5 text-[22px] opacity-[0.72] font-sans tracking-[0.06em]">
-          {sortMode === "year"
-            ? "Sorted by date read"
-            : sortMode === "title"
-              ? "Sorted by title"
-              : "Sorted by author"}
-        </div>
       </div>
 
       <div
         className="absolute"
         style={{ left: shelfLeft, top: shelfY0, width: shelfInnerW }}
       >
-        {shelfRows.map((row, ri) => {
+        {Array.from({ length: totalRows }).map((_, ri) => {
+          const row = shelfRows[ri];
           const y = ri * (shelfH + shelfGap);
+          const isLastBookRow = row && ri === shelfRows.length - 1;
           return (
             <div
               key={ri}
@@ -158,7 +155,7 @@ export function WoodShelf({
                 }}
               />
 
-              {row.yearLabel != null && (
+              {row?.yearLabel != null && (
                 <div
                   className="absolute italic"
                   style={{
@@ -186,7 +183,7 @@ export function WoodShelf({
                   height: shelfH - 50,
                 }}
               >
-                {row.books.map((b, i) => {
+                {row?.books.map((b, i) => {
                   const seed = bookSeed(b, "h");
                   const h = Math.round((shelfH - 60) * (0.78 + seed * 0.22));
                   const w = b._spineWidth || 38;
@@ -200,7 +197,7 @@ export function WoodShelf({
                     />
                   );
                 })}
-                {ri === shelfRows.length - 1 && (
+                {isLastBookRow && (
                   <div
                     className="ml-2 rounded-[1px]"
                     style={{
@@ -233,7 +230,6 @@ export function WoodShelf({
                   }}
                 />
               </div>
-
             </div>
           );
         })}
