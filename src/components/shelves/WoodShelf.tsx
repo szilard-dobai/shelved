@@ -23,6 +23,7 @@ interface WoodShelfProps {
   showBookCount?: boolean;
   showPages?: boolean;
   showRating?: boolean;
+  shareUrl?: string;
 }
 
 export function WoodShelf({
@@ -32,6 +33,7 @@ export function WoodShelf({
   showBookCount = true,
   showPages = true,
   showRating = true,
+  shareUrl,
 }: WoodShelfProps) {
   const groups =
     sortMode === "year"
@@ -246,7 +248,7 @@ export function WoodShelf({
           </div>
         </div>
         <div className="p-2" style={{ background: "#f2e7ce" }}>
-          <QRCode size={84} bg="#f2e7ce" fg="#1a0e08" />
+          <QRCode size={84} bg="#f2e7ce" fg="#1a0e08" value={shareUrl} />
         </div>
       </div>
     </div>

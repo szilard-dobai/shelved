@@ -16,6 +16,7 @@ interface MinimalShelfProps {
   showBookCount?: boolean;
   showPages?: boolean;
   showRating?: boolean;
+  shareUrl?: string;
 }
 
 type Rendered =
@@ -29,6 +30,7 @@ export function MinimalShelf({
   showBookCount = true,
   showPages = true,
   showRating = true,
+  shareUrl,
 }: MinimalShelfProps) {
   const groups =
     sortMode === "year"
@@ -230,7 +232,7 @@ export function MinimalShelf({
             shelved.app
           </div>
         </div>
-        <QRCode size={84} bg="#f4ead4" fg="#1a1410" />
+        <QRCode size={84} bg="#f4ead4" fg="#1a1410" value={shareUrl} />
       </div>
     </div>
   );

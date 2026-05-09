@@ -11,6 +11,7 @@ export function Shelf({
   showBookCount = true,
   showPages = true,
   showRating = true,
+  shareUrl,
 }: {
   style: ShelfStyle;
   books: Book[];
@@ -19,8 +20,9 @@ export function Shelf({
   showBookCount?: boolean;
   showPages?: boolean;
   showRating?: boolean;
+  shareUrl?: string;
 }) {
-  const flags = { showBookCount, showPages, showRating };
+  const flags = { showBookCount, showPages, showRating, shareUrl };
   if (style === "minimal") {
     return (
       <MinimalShelf

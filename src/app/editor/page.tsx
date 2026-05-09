@@ -23,11 +23,16 @@ type EditingState =
 export default function EditorPage() {
   const { state, patch, resetEditor, hydrated, ownedShares, forgetShare } =
     useAppState();
-  const { books, userTitle, sortMode, style, bgVariant } = state;
+  const { books, userTitle, sortMode, style, bgVariant, currentSlug } = state;
   const [editing, setEditing] = useState<EditingState | null>(null);
   const [mobileTab, setMobileTab] = useState<MobileTab>("books");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const mobile = useIsMobile();
+
+  const shareUrl =
+    hydrated && currentSlug
+      ? `${window.location.origin}/s/${currentSlug}`
+      : undefined;
 
   useEffect(() => {
     trackEvent("editor_view");
@@ -153,13 +158,15 @@ export default function EditorPage() {
                 <Icon name="plus" size={12} />
                 Add book
               </Button>
-              <button
+              <Button
+                variant="secondary"
+                className="px-2!"
+                title="Library settings"
+                size="sm"
                 onClick={() => setSettingsOpen(true)}
-                aria-label="Library settings"
-                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-2xs border border-rule-strong bg-transparent text-ink-muted hover:text-ink"
               >
-                <Icon name="settings" size={14} />
-              </button>
+                <Icon name="settings" aria-label="Library settings" size={16} />
+              </Button>
             </div>
           </div>
 
@@ -219,6 +226,7 @@ export default function EditorPage() {
                 showBookCount={state.showBookCount}
                 showPages={state.showPages}
                 showRating={state.showRating}
+                shareUrl={shareUrl}
               />
             </ShelfPreview>
           </div>
@@ -355,9 +363,7 @@ function BookCard({
       <div
         className={[
           "box-border flex aspect-[2/3] w-full flex-col justify-between p-2.5 transition-transform group-hover:-translate-y-0.5",
-          selected
-            ? "outline outline-2 outline-offset-4 outline-gold"
-            : "",
+          selected ? "outline outline-2 outline-offset-4 outline-gold" : "",
         ].join(" ")}
         style={{
           background: book.spineColor,
@@ -398,8 +404,9 @@ function BookCard({
         <div className="italic opacity-70">{book.author}</div>
         <div className="mt-0.5 text-2xs tracking-wide opacity-55">
           {"★".repeat(book.rating)}
-          <span className="opacity-30">{"★".repeat(5 - book.rating)}</span> ·{" "}
-          {book.year}
+          <span className="opacity-30">
+            {"★".repeat(5 - book.rating)}
+          </span> · {book.year}
         </div>
       </div>
     </button>
@@ -764,7 +771,7 @@ function SettingsModal({
         >
           <Icon name="x" size={20} />
         </button>
-        <Eyebrow>Library settings</Eyebrow>
+        <Eyebrow>Settings</Eyebrow>
 
         <div className="mt-6">
           <Eyebrow className="mb-2 !text-2xs">Library</Eyebrow>

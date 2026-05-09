@@ -21,6 +21,7 @@ interface SpinesShelfProps {
   showBookCount?: boolean;
   showPages?: boolean;
   showRating?: boolean;
+  shareUrl?: string;
 }
 
 type FlatItem =
@@ -40,6 +41,7 @@ export function SpinesShelf({
   showBookCount = true,
   showPages = true,
   showRating = true,
+  shareUrl,
 }: SpinesShelfProps) {
   const groups =
     sortMode === "year"
@@ -214,7 +216,7 @@ export function SpinesShelf({
           </div>
         </div>
         <div className="p-2" style={{ background: "#e8d8b4" }}>
-          <QRCode size={84} bg="#e8d8b4" fg="#1a0e08" />
+          <QRCode size={84} bg="#e8d8b4" fg="#1a0e08" value={shareUrl} />
         </div>
       </div>
     </div>

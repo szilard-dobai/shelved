@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Display, Eyebrow, Wordmark } from "@/components/ui/typography";
 import { Icon } from "@/components/ui/Icon";
@@ -40,14 +40,22 @@ export function SharePageClient({
   const params = useSearchParams();
   const mobile = useIsMobile();
   const { setState, rememberShare, ownedShares } = useAppState();
+  const [hydrated, setHydrated] = useState(false);
 
   const incomingEditKey = params.get("edit");
   const cachedEditKey = ownedShares[slug];
   const canEdit = Boolean(incomingEditKey || cachedEditKey);
+  const shareUrl = hydrated ? `${window.location.origin}/s/${slug}` : undefined;
 
   useEffect(() => {
     trackEvent("share_page_view", { slug });
   }, [slug]);
+
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (incomingEditKey) rememberShare(slug, incomingEditKey);
@@ -107,6 +115,7 @@ export function SharePageClient({
               showBookCount={showBookCount}
               showPages={showPages}
               showRating={showRating}
+              shareUrl={shareUrl}
             />
           </ShelfPreview>
         </div>

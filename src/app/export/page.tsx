@@ -39,6 +39,12 @@ export default function ExportPage() {
     currentSlug && ownedShares[currentSlug] ? ownedShares[currentSlug] : null;
   const isBound = Boolean(currentSlug && boundEditKey);
 
+  const previewSlug = share?.slug ?? currentSlug;
+  const shareUrl =
+    hydrated && previewSlug
+      ? `${window.location.origin}/s/${previewSlug}`
+      : undefined;
+
   useEffect(() => {
     trackEvent("export_view");
   }, []);
@@ -198,6 +204,7 @@ export default function ExportPage() {
               showBookCount={state.showBookCount}
               showPages={state.showPages}
               showRating={state.showRating}
+              shareUrl={shareUrl}
             />
           </ShelfPreview>
         </div>
@@ -362,7 +369,7 @@ function SharePanel({
                   size={72}
                   bg="#f4ead4"
                   fg="#1a0e08"
-                  seed={share.editUrl}
+                  value={share.editUrl}
                 />
               </div>
               <p className="font-sans text-xs leading-normal text-ink-muted">
