@@ -100,7 +100,7 @@ function pickDensity(n: number): Density {
       showMeta: true,
       itemPadTop: 4,
     };
-  if (n <= 30)
+  if (n <= 45)
     return {
       cols: 3,
       swatchW: 16,
@@ -114,7 +114,7 @@ function pickDensity(n: number): Density {
       showMeta: true,
       itemPadTop: 2,
     };
-  if (n <= 50)
+  if (n <= 60)
     return {
       cols: 4,
       swatchW: 13,
