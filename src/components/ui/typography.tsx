@@ -53,7 +53,7 @@ export function Wordmark({
   return (
     <div
       style={{ fontSize: size }}
-      className={`inline-flex items-baseline font-serif italic font-semibold tracking-tight text-ink ${className}`}
+      className={`inline-flex items-baseline font-serif italic font-semibold tracking-tight text-ink select-none ${className}`}
     >
       <span>Shelved</span>
       <span className="ml-0.5 text-gold">.</span>
