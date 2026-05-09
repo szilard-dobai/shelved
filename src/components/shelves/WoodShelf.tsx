@@ -59,7 +59,7 @@ const WOOD_TONES: Record<
     wall: "radial-gradient(ellipse at 50% 0%, #f4e6c4 0%, #e4d3a8 55%, #cab98a 100%), #cab98a",
     glow: "rgba(255,240,200,0.4)",
     ink: "#2a1810",
-    inkAccent: "#7a4a1a",
+    inkAccent: "#2a1810",
     plank:
       "linear-gradient(180deg, #b8884a 0%, #d2a06a 20%, #dcae7a 45%, #b88858 80%, #6a4828 100%)",
     bookend: "linear-gradient(90deg, #8c6238, #a8784c, #8c6238)",
