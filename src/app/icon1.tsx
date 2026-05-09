@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const size = { width: 192, height: 192 };
+export const size = { width: 512, height: 512 };
 export const contentType = "image/png";
 
 export default function Icon() {
@@ -14,13 +14,13 @@ export default function Icon() {
           alignItems: "flex-end",
           justifyContent: "center",
           background: "#140a06",
-          paddingBottom: 16,
-          gap: 6,
+          paddingBottom: 42,
+          gap: 16,
         }}
       >
-        <div style={{ width: 42, height: 144, background: "#f4ead4" }} />
-        <div style={{ width: 42, height: 162, background: "#d9b858" }} />
-        <div style={{ width: 42, height: 132, background: "#f4ead4" }} />
+        <div style={{ width: 112, height: 384, background: "#f4ead4" }} />
+        <div style={{ width: 112, height: 432, background: "#d9b858" }} />
+        <div style={{ width: 112, height: 352, background: "#f4ead4" }} />
       </div>
     ),
     { ...size },
